@@ -6,11 +6,7 @@ export const Header = () => {
 
   return (
     <div className="navbar bg-primary text-primary-content">
-      <div className="test-3xl flex-1 pl-5 font-bold">
-        {sessionData?.user.name
-          ? `Yo, ${sessionData.user.name}`
-          : "Beach bookings"}
-      </div>
+      <div className="test-3xl flex-1 pl-5 font-bold">Beach bookings</div>
       <div className="btn-group btn">
         {sessionData?.user.id && (
           <button className="btn-add btn-success btn-sm btn font-bold text-white">

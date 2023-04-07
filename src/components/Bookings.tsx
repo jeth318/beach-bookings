@@ -73,15 +73,15 @@ const parseDate = (booking: Booking) => {
 const getProgressAccent = (booking: Booking) => {
   switch (booking?.players?.length) {
     case 1:
-      return "progress-error";
+      return "text-error";
     case 2:
-      return "progress-warning";
+      return "text-warning";
     case 3:
-      return "progress-warning";
+      return "text-warning";
     case 4:
-      return "progress-success";
+      return "text-success";
     default:
-      return "progress-error";
+      return "text-error";
   }
 };
 
@@ -89,6 +89,7 @@ export const Bookings = () => {
   const session = useSession();
   const { data: users = [] } = api.user.getAll.useQuery();
   const removeBooking = api.booking.delete.useMutation();
+  const updateBooking = api.booking.update.useMutation();
   const { data: bookings, refetch: refetchBookings } =
     api.booking.getAll.useQuery();
   if (!bookings) {
@@ -99,8 +100,28 @@ export const Bookings = () => {
     removeBooking.mutate({ id });
     setTimeout(() => {
       void refetchBookings();
-    }, 200);
-    console.log("Delete");
+    }, 1000);
+  };
+
+  const joinGame = (booking: Booking) => {
+    const updatedPlayers = [...booking.players, session.data?.user.id];
+    console.log("YUPP", { ...booking, players: updatedPlayers });
+
+    updateBooking.mutate({ ...booking, players: updatedPlayers });
+    setTimeout(() => {
+      void refetchBookings();
+    }, 1000);
+  };
+
+  const leaveGame = (booking: Booking) => {
+    const updatedPlayers = booking.players.filter(
+      (player) => player !== session.data?.user.id
+    );
+
+    updateBooking.mutate({ ...booking, players: updatedPlayers });
+    setTimeout(() => {
+      void refetchBookings();
+    }, 1000);
   };
 
   const bookingsByDate = bookings.sort(
@@ -111,7 +132,7 @@ export const Bookings = () => {
     <div>
       {bookingsByDate.map((booking: Booking, index: number) => {
         return (
-          <div key={booking.id} className="border border-zinc-400">
+          <div key={booking.id} className="border-b border-zinc-400">
             <div className="border-spacing card card-compact">
               <div className="bg-gray card-body min-w-min text-primary-content">
                 <div className="flex items-center justify-between">
@@ -131,11 +152,7 @@ export const Bookings = () => {
                     </div>
                   </div>
                 </div>
-                <progress
-                  className={`w-100 progress ${getProgressAccent(booking)}`}
-                  value={booking.players.length * 25}
-                  max="100"
-                ></progress>
+
                 <div className="flex justify-between">
                   <div>
                     {getUsersInBooking(users, booking).map((user: User) => {
@@ -146,39 +163,56 @@ export const Bookings = () => {
                       );
                     })}
                   </div>
-                  <div className="btn-group btn-group-vertical flex self-end">
-                    {session.data?.user.id &&
-                      booking.players.includes(session.data?.user.id) && (
-                        <button className="btn-secondary btn-sm btn">
-                          Leave
+                  <div className="flex flex-col">
+                    <div
+                      className={`radial-progress self-end text-lg ${getProgressAccent(
+                        booking
+                      )}`}
+                      style={{ "--value": booking.players.length * 25 }}
+                    >
+                      {booking.players.length}/4
+                    </div>
+                    <br />
+                    <div className="btn-group btn-group flex self-end">
+                      {session.data?.user.id &&
+                        booking.players.includes(session.data?.user.id) && (
+                          <button
+                            onClick={() => leaveGame(booking)}
+                            className="btn-secondary btn-sm btn"
+                          >
+                            Leave
+                          </button>
+                        )}
+                      {session.data?.user.id &&
+                        !booking.players.includes(session.data?.user.id) && (
+                          <button
+                            onClick={() => joinGame(booking)}
+                            className="btn-primary btn-sm  btn"
+                          >
+                            Join
+                          </button>
+                        )}
+                      {session.data?.user.id === booking?.userId && (
+                        <button className="btn-primary btn-sm btn">
+                          <Link
+                            href={{
+                              pathname: "/booking",
+                              query: { booking: booking.id },
+                            }}
+                          >
+                            Edit
+                          </Link>
                         </button>
                       )}
-                    {session.data?.user.id &&
-                      !booking.players.includes(session.data?.user.id) && (
-                        <button className="btn-primary btn-sm  btn">
-                          Join
-                        </button>
-                      )}
-                    {session.data?.user.id === booking?.userId && (
-                      <button className="btn-primary btn-sm btn">
-                        <Link
-                          href={{
-                            pathname: "/booking",
-                            query: { booking: booking.id },
-                          }}
+                      {session.data?.user.id === booking?.userId && (
+                        <button
+                          onClick={() => deleteBooking(booking.id)}
+                          className="btn-warning btn-sm btn"
                         >
-                          Edit
-                        </Link>
-                      </button>
-                    )}
-                    {session.data?.user.id === booking?.userId && (
-                      <button
-                        onClick={() => deleteBooking(booking.id)}
-                        className="btn-warning btn-sm btn"
-                      >
-                        Delete
-                      </button>
-                    )}
+                          Delete
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
