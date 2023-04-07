@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export const Header = () => {
   const { data: sessionData } = useSession();
@@ -7,14 +7,15 @@ export const Header = () => {
     <div className="navbar bg-primary text-primary-content">
       <div className="test-3xl flex-1 pl-5 font-bold">
         {sessionData?.user.name
-          ? `Signed in as ${sessionData.user.name}`
+          ? `Yo, ${sessionData.user.name}`
           : "Beach bookings"}
       </div>
-      {sessionData?.user.id ? (
-        <button className="btn-success btn">Add Booking</button>
-      ) : (
-        <button className="btn">Sign in</button>
-      )}
+      <button
+        onClick={sessionData ? () => void signOut() : () => void signIn()}
+        className="btn-add btn-sm btn font-bold text-white"
+      >
+        {sessionData ? "Sign out" : "Sign in"}
+      </button>
     </div>
   );
 };

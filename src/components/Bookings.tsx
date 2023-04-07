@@ -49,10 +49,10 @@ export const Bookings = ({ bookings, users }: Props) => {
 
   return (
     <div>
-      {bookingsByDate.map((booking) => {
+      {bookingsByDate.map((booking: Booking, index: number) => {
         return (
           <div key={booking.id}>
-            <div className="card">
+            <div className="card card-compact">
               <div className="bg-gray card-body min-w-min text-primary-content">
                 <div className="flex items-center justify-between">
                   <div className="container">
@@ -61,20 +61,16 @@ export const Bookings = ({ bookings, users }: Props) => {
                         <h2 className="card-title">
                           {booking.date?.toDateString()}
                         </h2>
-                        <div>{parseTime(booking)}</div>
+                        <div className="text-lg">{parseTime(booking)}</div>
                       </div>
                       <div>
-                        <div>{booking.duration} minutes</div>
+                        <div className="text-lg">
+                          {booking.duration} minutes
+                        </div>
                         <div>Court {booking.court}</div>
                       </div>
                     </div>
                   </div>
-                  {/*<div
-                    className="radial-progress"
-                    style={{ "--value": 100, "--size": "3rem" }}
-                  >
-                    90
-        </div>*/}
                 </div>
                 <progress
                   className={`w-100 progress progress-${getProgressAccent(
@@ -87,13 +83,13 @@ export const Bookings = ({ bookings, users }: Props) => {
                   <div>
                     {getUsersInBooking(users, booking).map((user: User) => {
                       return (
-                        <div key={user.id}>
+                        <div key={user.id} className="text-lg">
                           {user.name} {booking.userId === user.id ? "👑" : ""}
                         </div>
                       );
                     })}
                   </div>
-                  <div className="card-actions justify-end">
+                  <div className="card-actions flex justify-end">
                     {session.data?.user.id &&
                       booking.players.includes(session.data?.user.id) && (
                         <button className="btn-secondary btn-sm btn">
@@ -105,120 +101,18 @@ export const Bookings = ({ bookings, users }: Props) => {
                         <button className="btn-primary btn-sm btn">Join</button>
                       )}
                     {session.data?.user.id === booking?.userId && (
-                      <button className="btn-error btn-sm btn">Delete</button>
-                    )}
-                    {!session.data?.user.id && booking.players.length < 4 && (
-                      <button className="text-grey btn-sm btn">Join 🔐</button>
+                      <button className="btn-warning btn-sm btn">Delete</button>
                     )}
                   </div>
                 </div>
               </div>
             </div>
-            <div className="divider before:bg-slate-700 after:bg-slate-700" />
+            {index < bookings.length - 1 && (
+              <div className="divider opacity-50 before:bg-white after:bg-white" />
+            )}
           </div>
         );
       })}
     </div>
   );
-  /*return (
-    <>
-      <div className="card">
-        <div className="bg-gray card-body min-w-min text-primary-content">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="card-title">Tuesday, April 19</h2>
-              <p>19:30 - 21:00</p>
-              <p>Court 4</p>
-            </div>
-            <div
-              className="radial-progress"
-              style={{ "--value": 100, "--size": "3rem" }}
-            >
-              90
-            </div>
-          </div>
-          <progress
-            className="w-100 progress progress-warning"
-            value="75"
-            max="100"
-          ></progress>
-          <div className="flex items-center justify-between">
-            <div>
-              <div>Niklas Höglund 👑</div>
-              <div>Magnus Rudström</div>
-              <div>Jesper Thörnberg</div>
-            </div>
-            <div className="card-actions justify-end">
-              <button className="btn-primary btn">Join</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="divider" />
-      <div className="card">
-        <div className="bg-gray card-body min-w-min text-primary-content">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="card-title">Tuesday, April 24</h2>
-              <p>19:30 - 21:00</p>
-              <p>Court 4</p>
-            </div>
-            <div
-              className="radial-progress"
-              style={{ "--value": 100, "--size": "3rem" }}
-            >
-              90
-            </div>
-          </div>
-          <progress
-            className="w-100 progress progress-accent"
-            value="100"
-            max="100"
-          ></progress>
-          <div className="flex items-center justify-between">
-            <div>
-              <div>Niklas Höglund 👑</div>
-              <div>Magnus Rudström</div>
-              <div>Jesper Thörnberg</div>
-              <div>John Doe</div>
-            </div>
-            <div className="card-actions justify-end">
-              <button className="btn-secondary btn">Leave</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="divider" />
-      <div className="card">
-        <div className="bg-gray card-body min-w-min text-primary-content">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="card-title">Tuesday, April 19</h2>
-              <p>15:00 - 16:00</p>
-              <p>Court 6</p>
-            </div>
-            <div
-              className="radial-progress"
-              style={{ "--value": 75, "--size": "3rem" }}
-            >
-              60
-            </div>
-          </div>
-          <progress
-            className="w-100 progress progress-error"
-            value="25"
-            max="100"
-          ></progress>
-          <div className="flex items-center justify-between">
-            <div>
-              <div>Niklas Höglund 👑</div>
-            </div>
-            <div className="card-actions justify-end">
-              <button className="btn-primary btn">Join</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );*/
 };
