@@ -1,4 +1,5 @@
 import { signIn, signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export const Header = () => {
   const { data: sessionData } = useSession();
@@ -10,12 +11,19 @@ export const Header = () => {
           ? `Yo, ${sessionData.user.name}`
           : "Beach bookings"}
       </div>
-      <button
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-        className="btn-add btn-sm btn font-bold text-white"
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
+      <div className="btn-group btn">
+        {sessionData?.user.id && (
+          <button className="btn-add btn-success btn-sm btn font-bold text-white">
+            <Link href="/booking">Add</Link>
+          </button>
+        )}
+        <button
+          onClick={sessionData ? () => void signOut() : () => void signIn()}
+          className="btn-add btn-primary btn-sm btn font-bold text-white"
+        >
+          {sessionData ? "Sign out" : "Sign in"}
+        </button>
+      </div>
     </div>
   );
 };

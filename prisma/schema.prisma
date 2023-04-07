@@ -67,7 +67,7 @@ model VerificationToken {
 }
 
 model Booking {
-    id       String   @id @default(cuid())
+    id       String   @id
     players  String[]
     date     DateTime
     duration Int      @default(90)

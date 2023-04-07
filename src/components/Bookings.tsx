@@ -1,12 +1,10 @@
 import { type User, type Booking } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { api } from "~/utils/api";
 
 type Bookings = {
   data: Booking[];
-};
-type Props = {
-  users: User[];
-  bookings: Booking[];
 };
 
 const days = [
@@ -38,9 +36,27 @@ const parseTime = (booking: Booking) => {
   const endDate = new Date(
     booking.date.getTime() + booking.duration * 60 * 1000
   );
-  const endHour = endDate.getHours();
-  const endMinutes = endDate.getMinutes();
-  return `${booking.date?.getHours()}:${booking.date?.getMinutes()}0 - ${endHour}:${endMinutes}`;
+
+  const endHour =
+    endDate.getHours().toString().length === 1
+      ? `0${endDate.getHours()}`
+      : endDate.getHours();
+
+  const endMinutes =
+    endDate.getMinutes().toString().length === 1
+      ? `0${endDate.getMinutes()}`
+      : endDate.getMinutes();
+
+  const startHours =
+    booking.date.getHours().toString().length > 1
+      ? booking.date.getHours()
+      : `0${booking.date.getHours()}`;
+
+  const startMinutes =
+    booking.date.getMinutes().toString().length > 1
+      ? booking.date.getMinutes()
+      : `0${booking.date.getMinutes()}`;
+  return `${startHours}:${startMinutes} - ${endHour}:${endMinutes}`;
 };
 
 const getUsersInBooking = (users: User[], booking: Booking) => {
@@ -50,32 +66,42 @@ const getUsersInBooking = (users: User[], booking: Booking) => {
 const parseDate = (booking: Booking) => {
   const nameOfTheDay = days[booking.date.getDay()];
   const dayOfTheMonth = booking.date.getDate();
-  const month = months[booking.date.getMonth() + 1];
+  const month = months[booking.date.getMonth()];
   return `${dayOfTheMonth} ${month} - ${nameOfTheDay} `;
 };
 
 const getProgressAccent = (booking: Booking) => {
-  console.log(booking?.players?.length);
-
   switch (booking?.players?.length) {
     case 1:
-      return "error";
+      return "progress-error";
     case 2:
-      return "warning";
+      return "progress-warning";
     case 3:
-      return "warning";
+      return "progress-warning";
     case 4:
-      return "success";
+      return "progress-success";
     default:
-      return "error";
+      return "progress-error";
   }
 };
 
-export const Bookings = ({ bookings, users }: Props) => {
+export const Bookings = () => {
   const session = useSession();
+  const { data: users = [] } = api.user.getAll.useQuery();
+  const removeBooking = api.booking.delete.useMutation();
+  const { data: bookings, refetch: refetchBookings } =
+    api.booking.getAll.useQuery();
   if (!bookings) {
     return null;
   }
+
+  const deleteBooking = (id: string) => {
+    removeBooking.mutate({ id });
+    setTimeout(() => {
+      void refetchBookings();
+    }, 200);
+    console.log("Delete");
+  };
 
   const bookingsByDate = bookings.sort(
     (a: Booking, b: Booking) => a.date.getTime() - b.date.getTime()
@@ -106,9 +132,7 @@ export const Bookings = ({ bookings, users }: Props) => {
                   </div>
                 </div>
                 <progress
-                  className={`w-100 progress progress-${getProgressAccent(
-                    booking
-                  )}`}
+                  className={`w-100 progress ${getProgressAccent(booking)}`}
                   value={booking.players.length * 25}
                   max="100"
                 ></progress>
@@ -136,10 +160,24 @@ export const Bookings = ({ bookings, users }: Props) => {
                         </button>
                       )}
                     {session.data?.user.id === booking?.userId && (
-                      <button className="btn-primary btn-sm btn">Edit</button>
+                      <button className="btn-primary btn-sm btn">
+                        <Link
+                          href={{
+                            pathname: "/booking",
+                            query: { booking: booking.id },
+                          }}
+                        >
+                          Edit
+                        </Link>
+                      </button>
                     )}
                     {session.data?.user.id === booking?.userId && (
-                      <button className="btn-warning btn-sm btn">Delete</button>
+                      <button
+                        onClick={() => deleteBooking(booking.id)}
+                        className="btn-warning btn-sm btn"
+                      >
+                        Delete
+                      </button>
                     )}
                   </div>
                 </div>

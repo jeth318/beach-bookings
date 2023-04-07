@@ -1,13 +1,12 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
 import { Header } from "~/components/Header";
 import { Bookings } from "~/components/Bookings";
 
 const Home: NextPage = () => {
-  const bookings = api.booking.getAll.useQuery();
   const users = api.user.getAll.useQuery();
 
   return (
@@ -19,9 +18,7 @@ const Home: NextPage = () => {
       </Head>
       <Header />
       <main className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        {!!users.data && bookings.data && (
-          <Bookings users={users?.data} bookings={bookings?.data} />
-        )}
+        <Bookings />
         <AuthShowcase />
         <div className="container mx-auto"></div>
       </main>
