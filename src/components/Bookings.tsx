@@ -1,6 +1,5 @@
 import { type User, type Booking } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { api } from "~/utils/api";
 
 type Bookings = {
   data: Booking[];
@@ -10,8 +9,13 @@ type Props = {
   bookings: Booking[];
 };
 
-const parseTime = (date: Date) => {
-  return `${date?.getHours()}:${date?.getMinutes()}${date?.getSeconds()}`;
+const parseTime = (booking: Booking) => {
+  const endDate = new Date(
+    booking.date.getTime() + booking.duration * 60 * 1000
+  );
+  const endHour = endDate.getHours();
+  const endMinutes = endDate.getMinutes();
+  return `${booking.date?.getHours()}:${booking.date?.getMinutes()}0 - ${endHour}:${endMinutes}`;
 };
 
 const getUsersInBooking = (users: User[], booking: Booking) => {
@@ -43,8 +47,6 @@ export const Bookings = ({ bookings, users }: Props) => {
     (a: Booking, b: Booking) => a.date.getTime() - b.date.getTime()
   );
 
-  console.log(bookingsByDate);
-
   return (
     <div>
       {bookingsByDate.map((booking) => {
@@ -53,12 +55,19 @@ export const Bookings = ({ bookings, users }: Props) => {
             <div className="card">
               <div className="bg-gray card-body min-w-min text-primary-content">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="card-title">
-                      {booking.date?.toDateString()}
-                    </h2>
-                    <p>{parseTime(booking.date)}</p>
-                    <p>Court {booking.court}</p>
+                  <div className="container">
+                    <div className="flex justify-between">
+                      <div>
+                        <h2 className="card-title">
+                          {booking.date?.toDateString()}
+                        </h2>
+                        <div>{parseTime(booking)}</div>
+                      </div>
+                      <div>
+                        <div>{booking.duration} minutes</div>
+                        <div>Court {booking.court}</div>
+                      </div>
+                    </div>
                   </div>
                   {/*<div
                     className="radial-progress"
@@ -87,17 +96,19 @@ export const Bookings = ({ bookings, users }: Props) => {
                   <div className="card-actions justify-end">
                     {session.data?.user.id &&
                       booking.players.includes(session.data?.user.id) && (
-                        <button className="btn-secondary btn">Leave</button>
+                        <button className="btn-secondary btn-sm btn">
+                          Leave
+                        </button>
                       )}
                     {session.data?.user.id &&
                       !booking.players.includes(session.data?.user.id) && (
-                        <button className="btn-primary btn">Join</button>
+                        <button className="btn-primary btn-sm btn">Join</button>
                       )}
                     {session.data?.user.id === booking?.userId && (
-                      <button className="btn-error btn">Delete</button>
+                      <button className="btn-error btn-sm btn">Delete</button>
                     )}
                     {!session.data?.user.id && booking.players.length < 4 && (
-                      <button className="text-grey  btn">Join 🔐</button>
+                      <button className="text-grey btn-sm btn">Join 🔐</button>
                     )}
                   </div>
                 </div>
