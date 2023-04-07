@@ -9,6 +9,31 @@ type Props = {
   bookings: Booking[];
 };
 
+const days = [
+  "Monday",
+  "Tuesday",
+  "Wednsday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 const parseTime = (booking: Booking) => {
   const endDate = new Date(
     booking.date.getTime() + booking.duration * 60 * 1000
@@ -22,7 +47,16 @@ const getUsersInBooking = (users: User[], booking: Booking) => {
   return users.filter((user) => booking.players.includes(user.id));
 };
 
+const parseDate = (booking: Booking) => {
+  const nameOfTheDay = days[booking.date.getDay()];
+  const dayOfTheMonth = booking.date.getDate();
+  const month = months[booking.date.getMonth() + 1];
+  return `${dayOfTheMonth} ${month} - ${nameOfTheDay} `;
+};
+
 const getProgressAccent = (booking: Booking) => {
+  console.log(booking?.players?.length);
+
   switch (booking?.players?.length) {
     case 1:
       return "error";
@@ -31,7 +65,7 @@ const getProgressAccent = (booking: Booking) => {
     case 3:
       return "warning";
     case 4:
-      return "accent";
+      return "success";
     default:
       return "error";
   }
@@ -51,22 +85,21 @@ export const Bookings = ({ bookings, users }: Props) => {
     <div>
       {bookingsByDate.map((booking: Booking, index: number) => {
         return (
-          <div key={booking.id}>
-            <div className="card card-compact">
+          <div key={booking.id} className="border border-zinc-400">
+            <div className="border-spacing card card-compact">
               <div className="bg-gray card-body min-w-min text-primary-content">
                 <div className="flex items-center justify-between">
                   <div className="container">
                     <div className="flex justify-between">
                       <div>
                         <h2 className="card-title">
-                          {booking.date?.toDateString()}
+                          {parseDate(booking)}
+                          {booking.players.length === 4 && " ✅"}
                         </h2>
-                        <div className="text-lg">{parseTime(booking)}</div>
+                        <div className="text-base">{parseTime(booking)}</div>
                       </div>
                       <div>
-                        <div className="text-lg">
-                          {booking.duration} minutes
-                        </div>
+                        <div className="">{booking.duration} minutes</div>
                         <div>Court {booking.court}</div>
                       </div>
                     </div>
@@ -79,17 +112,17 @@ export const Bookings = ({ bookings, users }: Props) => {
                   value={booking.players.length * 25}
                   max="100"
                 ></progress>
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between">
                   <div>
                     {getUsersInBooking(users, booking).map((user: User) => {
                       return (
-                        <div key={user.id} className="text-lg">
+                        <div key={user.id}>
                           {user.name} {booking.userId === user.id ? "👑" : ""}
                         </div>
                       );
                     })}
                   </div>
-                  <div className="card-actions flex justify-end">
+                  <div className="btn-group btn-group-vertical flex self-end">
                     {session.data?.user.id &&
                       booking.players.includes(session.data?.user.id) && (
                         <button className="btn-secondary btn-sm btn">
@@ -98,8 +131,13 @@ export const Bookings = ({ bookings, users }: Props) => {
                       )}
                     {session.data?.user.id &&
                       !booking.players.includes(session.data?.user.id) && (
-                        <button className="btn-primary btn-sm btn">Join</button>
+                        <button className="btn-primary btn-sm  btn">
+                          Join
+                        </button>
                       )}
+                    {session.data?.user.id === booking?.userId && (
+                      <button className="btn-primary btn-sm btn">Edit</button>
+                    )}
                     {session.data?.user.id === booking?.userId && (
                       <button className="btn-warning btn-sm btn">Delete</button>
                     )}
@@ -107,9 +145,6 @@ export const Bookings = ({ bookings, users }: Props) => {
                 </div>
               </div>
             </div>
-            {index < bookings.length - 1 && (
-              <div className="divider opacity-50 before:bg-white after:bg-white" />
-            )}
           </div>
         );
       })}
