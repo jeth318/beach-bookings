@@ -39,7 +39,9 @@ export const Bookings = ({ bookings, users }: Props) => {
     return null;
   }
 
-  const bookingsByDate = bookings.sort((a, b) => a.date - b.date);
+  const bookingsByDate = bookings.sort(
+    (a: Booking, b: Booking) => a.date.getTime() - b.date.getTime()
+  );
 
   console.log(bookingsByDate);
 

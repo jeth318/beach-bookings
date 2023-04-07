@@ -69,11 +69,11 @@ model VerificationToken {
 }
 
 model Booking {
-    id      String    @id @default(cuid())
+    id      String   @id @default(cuid())
     players String[]
-    date    DateTime?
+    date    DateTime
     court   Int?
-    creator User      @relation(fields: [userId], references: [id])
+    creator User     @relation(fields: [userId], references: [id])
     userId  String
     Party   Party[]
 }
