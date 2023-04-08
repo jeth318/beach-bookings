@@ -6,7 +6,7 @@ export const Header = () => {
   const { data: sessionData } = useSession();
 
   return (
-    <div className="navbar sticky top-0 z-50 bg-white shadow-md shadow-black">
+    <div className="navbar sticky top-0 z-50 bg-white ">
       <div className="navbar-start">
         <Link className="text-lg" href="/">
           🏐 ßeach ßookings 🏖️
