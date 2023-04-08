@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { api } from "~/utils/api";
 import { useState } from "react";
-
+import { BeatLoader } from "react-spinners";
 type Bookings = {
   data: Booking[];
 };
@@ -94,8 +94,11 @@ export const Bookings = () => {
   const { data: users = [] } = api.user.getAll.useQuery();
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
-  const { data: bookings, refetch: refetchBookings } =
-    api.booking.getAll.useQuery();
+  const {
+    data: bookings,
+    refetch: refetchBookings,
+    isInitialLoading: isInitialLoadingBookings,
+  } = api.booking.getAll.useQuery();
   if (!bookings) {
     return null;
   }
@@ -136,9 +139,8 @@ export const Bookings = () => {
   const bookingsByDate = bookings.sort(
     (a: Booking, b: Booking) => a.date.getTime() - b.date.getTime()
   );
-
   return (
-    <div>
+    <div className="">
       <div>
         {/* Put this part before </body> tag */}
         <input type="checkbox" id="action-modal" className="modal-toggle" />
@@ -169,102 +171,109 @@ export const Bookings = () => {
           </div>
         </div>
       </div>
-      {bookingsByDate.map((booking: Booking) => {
-        return (
-          <div key={booking.id} className="border-b border-zinc-400">
-            <div className="border-spacing card-compact card">
-              <div className="bg-gray card-body min-w-min text-primary-content">
-                <div className="flex items-center justify-between">
-                  <div className="container">
-                    <div className="flex justify-between">
-                      <div>
-                        <h2 className="card-title">
-                          {parseDate(booking)}
-                          {booking.players.length === 4 && " ✅"}
-                        </h2>
-                        <div className="text-base">{parseTime(booking)}</div>
-                      </div>
-                      <div>
-                        <div className="">{booking.duration} minutes</div>
-                        <div>Court {booking.court}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-between">
-                  <div>
-                    {getUsersInBooking(users, booking).map((user: User) => {
-                      return (
-                        <div key={user.id}>
-                          {user.name} {booking.userId === user.id ? "👑" : ""}
+      {isInitialLoadingBookings ? (
+        <div className="flex flex-col items-center justify-center pt-20">
+          <h2 className="pb-4 text-xl text-white">Loading bookings</h2>
+          <BeatLoader color="#36d7b7" />
+        </div>
+      ) : (
+        bookingsByDate.map((booking: Booking) => {
+          return (
+            <div key={booking.id} className="border-b border-zinc-400">
+              <div className="border-spacing card-compact card">
+                <div className="bg-gray card-body min-w-min text-primary-content">
+                  <div className="flex items-center justify-between">
+                    <div className="container">
+                      <div className="flex justify-between">
+                        <div>
+                          <h2 className="card-title">
+                            {parseDate(booking)}
+                            {booking.players.length === 4 && " ✅"}
+                          </h2>
+                          <div className="text-base">{parseTime(booking)}</div>
                         </div>
-                      );
-                    })}
-                  </div>
-                  <div className="flex flex-col">
-                    <div
-                      className={`radial-progress self-end text-lg font-bold ${getProgressAccent(
-                        booking
-                      )}`}
-                      style={{
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        "--value": booking.players.length * 25,
-                        "--thickness": "3px",
-                      }}
-                    >
-                      {booking.players.length}/4
+                        <div>
+                          <div className="">{booking.duration} minutes</div>
+                          <div>Court {booking.court}</div>
+                        </div>
+                      </div>
                     </div>
-                    <br />
-                    <div className="btn-group btn-group flex self-end">
-                      {session.data?.user.id &&
-                        booking.players.includes(session.data?.user.id) && (
-                          <button
-                            onClick={() => leaveGame(booking)}
-                            className="btn-sm btn btn"
-                          >
-                            Leave
+                  </div>
+
+                  <div className="flex justify-between">
+                    <div className="">
+                      {getUsersInBooking(users, booking).map((user: User) => {
+                        return (
+                          <div className="" key={user.id}>
+                            {user.name} {booking.userId === user.id ? "👑" : ""}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="flex flex-col items-center justify-center">
+                      <div
+                        className={`radial-progress self-end text-lg font-bold ${getProgressAccent(
+                          booking
+                        )}`}
+                        style={{
+                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                          // @ts-ignore
+                          "--value": booking.players.length * 25,
+                          "--thickness": "3px",
+                        }}
+                      >
+                        {booking.players.length}/4
+                      </div>
+                      <br />
+                      <div className="btn-group btn-group flex">
+                        {session.data?.user.id &&
+                          booking.players.includes(session.data?.user.id) && (
+                            <button
+                              onClick={() => leaveGame(booking)}
+                              className="btn-sm btn btn"
+                            >
+                              Leave
+                            </button>
+                          )}
+                        {session.data?.user.id &&
+                          !booking.players.includes(session.data?.user.id) && (
+                            <button
+                              onClick={() => joinGame(booking)}
+                              className="btn-sm btn  btn"
+                            >
+                              Join
+                            </button>
+                          )}
+                        {session.data?.user.id === booking?.userId && (
+                          <button className="btn-sm btn btn">
+                            <Link
+                              href={{
+                                pathname: "/booking",
+                                query: { booking: booking.id },
+                              }}
+                            >
+                              Edit
+                            </Link>
                           </button>
                         )}
-                      {session.data?.user.id &&
-                        !booking.players.includes(session.data?.user.id) && (
-                          <button
-                            onClick={() => joinGame(booking)}
-                            className="btn-sm btn  btn"
+                        {session.data?.user.id === booking?.userId && (
+                          <label
+                            htmlFor="action-modal"
+                            onClick={() => void setBookingToDelete(booking)}
+                            className="btn-error btn-sm btn text-white"
                           >
-                            Join
-                          </button>
+                            Delete
+                          </label>
                         )}
-                      {session.data?.user.id === booking?.userId && (
-                        <button className="btn-sm btn btn">
-                          <Link
-                            href={{
-                              pathname: "/booking",
-                              query: { booking: booking.id },
-                            }}
-                          >
-                            Edit
-                          </Link>
-                        </button>
-                      )}
-                      {session.data?.user.id === booking?.userId && (
-                        <label
-                          htmlFor="action-modal"
-                          onClick={() => void setBookingToDelete(booking)}
-                          className="btn-error btn-sm btn text-white"
-                        >
-                          Delete
-                        </label>
-                      )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })
+      )}
     </div>
   );
 };

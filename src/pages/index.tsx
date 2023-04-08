@@ -5,12 +5,8 @@ import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { Header } from "~/components/Header";
 import { Bookings } from "~/components/Bookings";
-import { useState } from "react";
 
 const Home: NextPage = () => {
-  const users = api.user.getAll.useQuery();
-  const [activeNavbarButton, setActiveNavbarButton] = useState<string>("home");
-
   return (
     <>
       <Head>
@@ -27,15 +23,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-const AuthShowcase: React.FC = () => {
-  const { data: sessionData } = useSession();
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-      </p>
-    </div>
-  );
-};
