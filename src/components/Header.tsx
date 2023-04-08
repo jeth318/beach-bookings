@@ -78,7 +78,7 @@ export const Header = () => {
         <div className="navbar-end">
           <button
             onClick={() => void signIn()}
-            className="btn-sm btn btn self-end"
+            className="btn-outline btn-sm btn self-end"
           >
             Login
           </button>
