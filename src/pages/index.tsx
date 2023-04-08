@@ -5,9 +5,11 @@ import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { Header } from "~/components/Header";
 import { Bookings } from "~/components/Bookings";
+import { useState } from "react";
 
 const Home: NextPage = () => {
   const users = api.user.getAll.useQuery();
+  const [activeNavbarButton, setActiveNavbarButton] = useState<string>("home");
 
   return (
     <>
@@ -19,8 +21,6 @@ const Home: NextPage = () => {
       <Header />
       <main className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <Bookings />
-        <AuthShowcase />
-        <div className="container mx-auto"></div>
       </main>
     </>
   );

@@ -2,6 +2,8 @@ import { type User, type Booking } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { api } from "~/utils/api";
+import { ConfirmationModal } from "./ConfirmationModal";
+import { useState } from "react";
 
 type Bookings = {
   data: Booking[];
@@ -87,6 +89,8 @@ const getProgressAccent = (booking: Booking) => {
 
 export const Bookings = () => {
   const session = useSession();
+  const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
+
   const { data: users = [] } = api.user.getAll.useQuery();
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
@@ -96,16 +100,20 @@ export const Bookings = () => {
     return null;
   }
 
-  const deleteBooking = (id: string) => {
-    removeBooking.mutate({ id });
-    setTimeout(() => {
-      void refetchBookings();
-    }, 1000);
+  const deleteBooking = () => {
+    console.log({ bookingToDelete });
+
+    if (!!bookingToDelete) {
+      removeBooking.mutate({ id: bookingToDelete.id });
+      setTimeout(() => {
+        setBookingToDelete(undefined);
+        void refetchBookings();
+      }, 1000);
+    }
   };
 
   const joinGame = (booking: Booking) => {
     const updatedPlayers = [...booking.players, session.data?.user.id];
-    console.log("YUPP", { ...booking, players: updatedPlayers });
 
     updateBooking.mutate({ ...booking, players: updatedPlayers });
     setTimeout(() => {
@@ -130,10 +138,40 @@ export const Bookings = () => {
 
   return (
     <div>
+      <div>
+        {/* Put this part before </body> tag */}
+        <input type="checkbox" id="action-modal" className="modal-toggle" />
+        <div className="modal modal-bottom sm:modal-middle">
+          <div className="modal-box">
+            <h3 className="text-lg font-bold">Confirm deletion</h3>
+            <p className="py-4">
+              If you remove this booking, it's gone forever. But hey, I'm not
+              your mommy so you are in charge.
+            </p>
+            <div className="modal-action">
+              <div className="btn-group">
+                <label htmlFor="action-modal" className="btn text-white">
+                  Cancel
+                </label>
+                <label
+                  htmlFor="action-modal"
+                  className="btn-error btn text-white"
+                  onClick={() => {
+                    console.log({ bookingToDelete });
+                    deleteBooking();
+                  }}
+                >
+                  Delete
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       {bookingsByDate.map((booking: Booking, index: number) => {
         return (
           <div key={booking.id} className="border-b border-zinc-400">
-            <div className="border-spacing card card-compact">
+            <div className="border-spacing card-compact card">
               <div className="bg-gray card-body min-w-min text-primary-content">
                 <div className="flex items-center justify-between">
                   <div className="container">
@@ -165,10 +203,13 @@ export const Bookings = () => {
                   </div>
                   <div className="flex flex-col">
                     <div
-                      className={`radial-progress self-end text-lg ${getProgressAccent(
+                      className={`radial-progress self-end text-lg font-bold ${getProgressAccent(
                         booking
                       )}`}
-                      style={{ "--value": booking.players.length * 25 }}
+                      style={{
+                        "--value": booking.players.length * 25,
+                        "--thickness": "3px",
+                      }}
                     >
                       {booking.players.length}/4
                     </div>
@@ -178,7 +219,7 @@ export const Bookings = () => {
                         booking.players.includes(session.data?.user.id) && (
                           <button
                             onClick={() => leaveGame(booking)}
-                            className="btn-secondary btn-sm btn"
+                            className="btn-sm btn btn"
                           >
                             Leave
                           </button>
@@ -187,13 +228,13 @@ export const Bookings = () => {
                         !booking.players.includes(session.data?.user.id) && (
                           <button
                             onClick={() => joinGame(booking)}
-                            className="btn-primary btn-sm  btn"
+                            className="btn-sm btn  btn"
                           >
                             Join
                           </button>
                         )}
                       {session.data?.user.id === booking?.userId && (
-                        <button className="btn-primary btn-sm btn">
+                        <button className="btn-sm btn btn">
                           <Link
                             href={{
                               pathname: "/booking",
@@ -205,12 +246,13 @@ export const Bookings = () => {
                         </button>
                       )}
                       {session.data?.user.id === booking?.userId && (
-                        <button
-                          onClick={() => deleteBooking(booking.id)}
-                          className="btn-warning btn-sm btn"
+                        <label
+                          htmlFor="action-modal"
+                          onClick={() => void setBookingToDelete(booking)}
+                          className="btn-error btn-sm btn text-white"
                         >
                           Delete
-                        </button>
+                        </label>
                       )}
                     </div>
                   </div>

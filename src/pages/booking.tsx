@@ -4,11 +4,11 @@ import { useSession } from "next-auth/react";
 
 import { Header } from "~/components/Header";
 import { useEffect, useState } from "react";
-import crypto from "crypto";
 
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { Booking } from "@prisma/client";
+import Link from "next/link";
 
 const Booking: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -52,8 +52,6 @@ const Booking: NextPage = () => {
     }
 
     if (!!bookingToEdit) {
-      console.log("T", time);
-
       const newDate = new Date(`${date}T${time}`);
 
       updateBooking.mutate({
@@ -63,18 +61,14 @@ const Booking: NextPage = () => {
         duration,
       });
     } else {
-      console.log("NEW BOOKING");
-
       createBooking.mutate({
         userId: sessionData?.user.id,
         players: [sessionData?.user.id],
         date: new Date(`${date}T${time}`),
         court,
-        id: crypto.randomBytes(10).toString("hex"),
       });
     }
     void refetchBookings().then(() => {
-      console.log("DONE REFETCH");
       setTimeout(() => {
         router.push("/");
       }, 200);
@@ -92,99 +86,112 @@ const Booking: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
-      <main className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="p3 container">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text text-white">When</span>
-            </label>
-            <label className="input-group">
-              <span>Date</span>
-              <input
-                onChange={({ target }) => {
-                  console.log("target.value", target.value);
-                  setDate(target.value);
-                }}
-                defaultValue={date}
-                type="date"
-                className="input-bordered input"
-              />
-              <input
-                defaultValue={time}
-                onChange={({ target }) => {
-                  console.log("TIME", target.value);
+      <main className="min-w-sm pd-3 flex h-screen min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        {sessionData?.user.id ? (
+          <div className="container h-screen p-4">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text text-white">When</span>
+              </label>
+              <label className="input-group">
+                <span>Date</span>
+                <input
+                  onChange={({ target }) => {
+                    console.log("target.value", target.value);
+                    setDate(target.value);
+                  }}
+                  defaultValue={date}
+                  type="date"
+                  className="input-bordered input"
+                />
+                <input
+                  defaultValue={time}
+                  onChange={({ target }) => {
+                    console.log("TIME", target.value);
 
-                  setTime(target.value);
-                }}
-                type="time"
-                className="input-bordered input"
-              />
-            </label>
+                    setTime(target.value);
+                  }}
+                  type="time"
+                  className="input-bordered input"
+                />
+              </label>
 
-            <br />
-            <label className="label">
-              <span className="label-text text-white">Duration</span>
-            </label>
-            <div className="btn-group">
-              <button
-                onClick={({ target }) => {
-                  setDuration(parseInt(target.value));
-                }}
-                className={`btn ${duration === 60 ? "btn-active" : ""}`}
-                value={60}
-              >
-                60 min
-              </button>
-              <button
-                onClick={({ target }) => {
-                  setDuration(parseInt(target.value));
-                }}
-                className={`btn ${duration === 90 ? "btn-active" : ""}`}
-                value={90}
-              >
-                90 min
-              </button>
+              <br />
+              <label className="label">
+                <span className="label-text text-white">Duration</span>
+              </label>
+              <div className="btn-group">
+                <button
+                  onClick={({ target }) => {
+                    setDuration(parseInt(target.value));
+                  }}
+                  className={`btn ${duration === 60 ? "btn-active" : ""}`}
+                  value={60}
+                >
+                  60 min
+                </button>
+                <button
+                  onClick={({ target }) => {
+                    setDuration(parseInt(target.value));
+                  }}
+                  className={`btn ${duration === 90 ? "btn-active" : ""}`}
+                  value={90}
+                >
+                  90 min
+                </button>
+              </div>
+              <br />
+              <label className="label">
+                <span className="label-text text-white">Where</span>
+              </label>
+              <label className="input-group">
+                <span>Court</span>
+                <select
+                  className="select-bordered select"
+                  onChange={(val) => {
+                    setCourt(parseInt(val.target.value));
+                  }}
+                  value={court || "Pick court"}
+                >
+                  <option disabled>Pick court</option>
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                  <option value={6}>6</option>
+                  <option>6</option>
+                  <option>7</option>
+                  <option>8</option>
+                  <option>9</option>
+                  <option>9</option>
+                  <option>11</option>
+                  <option>12</option>
+                </select>
+              </label>
+              <br />
+              <div className="btn-group btn-group-vertical pt-5">
+                <Link className="btn-warning btn" href="/">
+                  Cancel
+                </Link>
+                <button
+                  onClick={addBooking}
+                  className={`${
+                    validBooking ? "btn-success" : "btn-disabled"
+                  } btn text-white`}
+                >
+                  Confirm
+                </button>
+              </div>
             </div>
-            <br />
-            <label className="label">
-              <span className="label-text text-white">Where</span>
-            </label>
-            <label className="input-group">
-              <span>Court</span>
-              <select
-                className="select-bordered select"
-                onChange={(val) => {
-                  setCourt(parseInt(val.target.value));
-                }}
-                value={court || "Pick court"}
-              >
-                <option disabled>Pick court</option>
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-                <option value={6}>6</option>
-                <option>6</option>
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>9</option>
-                <option>11</option>
-                <option>12</option>
-              </select>
-            </label>
-            <br />
-            <button
-              onClick={addBooking}
-              className={`${
-                validBooking ? "btn-success" : "btn-disabled"
-              } btn text-white`}
-            >
-              Submit
-            </button>
           </div>
-        </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center p-3">
+            <h2 className="text-center text-2xl text-white">
+              If you want to add or edit bookings, you have to be logged in.
+            </h2>
+          </div>
+        )}
       </main>
     </>
   );
