@@ -1,6 +1,4 @@
-import { typeUser } from '@prisma/client';
 import { z } from "zod";
-import { Booking } from "~/components/Booking";
 import crypto from "crypto";
 
 
@@ -28,24 +26,24 @@ export const bookingRouter = createTRPCRouter({
       }
     })
   }),
-  create: protectedProcedure.input(z.object({ players: z.any(), userId: z.string(), court: z.number(), date: z.date()})).mutation(({ ctx, input }) => {
+  create: protectedProcedure.input(z.object({ userId: z.string(), court: z.number().or(z.null()), date: z.date()})).mutation(({ ctx, input }) => {
     return ctx.prisma.booking.create({
       data: {
         id: crypto.randomBytes(10).toString("hex"),
         userId: input.userId,
-        players: input.players,
+        players: [ctx.session.user.id],
         court: input.court,
         date: input.date,
       }
     })
   }),
-  update: protectedProcedure.input(z.object({ id: z.string(), duration: z.number(), court: z.any(), date: z.date(), players: z.any()})).mutation(({ ctx, input }) => {
+  update: protectedProcedure.input(z.object({ id: z.string(), duration: z.number(), court: z.number().or(z.null()), date: z.date(), players: z.string().array()})).mutation(({ ctx, input }) => {
     return ctx.prisma.booking.update({
       where: {
         id: input.id
       },
       data: {
-          court: input.court,
+          court: input?.court,
           date: input.date,
           duration: input.duration,
           players: input.players

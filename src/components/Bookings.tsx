@@ -2,7 +2,6 @@ import { type User, type Booking } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { api } from "~/utils/api";
-import { ConfirmationModal } from "./ConfirmationModal";
 import { useState } from "react";
 
 type Bookings = {
@@ -69,7 +68,8 @@ const parseDate = (booking: Booking) => {
   const nameOfTheDay = days[booking.date.getDay()];
   const dayOfTheMonth = booking.date.getDate();
   const month = months[booking.date.getMonth()];
-  return `${dayOfTheMonth} ${month} - ${nameOfTheDay} `;
+  const str = `${dayOfTheMonth} ${month || ""} - ${nameOfTheDay || ""} `;
+  return str;
 };
 
 const getProgressAccent = (booking: Booking) => {
@@ -113,12 +113,13 @@ export const Bookings = () => {
   };
 
   const joinGame = (booking: Booking) => {
-    const updatedPlayers = [...booking.players, session.data?.user.id];
-
-    updateBooking.mutate({ ...booking, players: updatedPlayers });
-    setTimeout(() => {
-      void refetchBookings();
-    }, 1000);
+    if (session.data?.user.id) {
+      const updatedPlayers = [...booking.players, session.data.user.id];
+      updateBooking.mutate({ ...booking, players: updatedPlayers });
+      setTimeout(() => {
+        void refetchBookings();
+      }, 1000);
+    }
   };
 
   const leaveGame = (booking: Booking) => {
@@ -145,8 +146,8 @@ export const Bookings = () => {
           <div className="modal-box">
             <h3 className="text-lg font-bold">Confirm deletion</h3>
             <p className="py-4">
-              If you remove this booking, it's gone forever. But hey, I'm not
-              your mommy so you are in charge.
+              If you remove this booking, it will be gone forever. But hey, I am
+              not your mommy, you are incharge.
             </p>
             <div className="modal-action">
               <div className="btn-group">
@@ -168,7 +169,7 @@ export const Bookings = () => {
           </div>
         </div>
       </div>
-      {bookingsByDate.map((booking: Booking, index: number) => {
+      {bookingsByDate.map((booking: Booking) => {
         return (
           <div key={booking.id} className="border-b border-zinc-400">
             <div className="border-spacing card-compact card">
@@ -207,6 +208,8 @@ export const Bookings = () => {
                         booking
                       )}`}
                       style={{
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
                         "--value": booking.players.length * 25,
                         "--thickness": "3px",
                       }}

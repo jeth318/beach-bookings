@@ -58,19 +58,19 @@ const Booking: NextPage = () => {
         id: bookingToEdit.id,
         date: newDate,
         court,
+        players: bookingToEdit.players,
         duration,
       });
     } else {
       createBooking.mutate({
         userId: sessionData?.user.id,
-        players: [sessionData?.user.id],
         date: new Date(`${date}T${time}`),
         court,
       });
     }
     void refetchBookings().then(() => {
       setTimeout(() => {
-        router.push("/");
+        void router.push("/");
       }, 200);
     });
   };
@@ -122,7 +122,9 @@ const Booking: NextPage = () => {
               </label>
               <div className="btn-group">
                 <button
-                  onClick={({ target }) => {
+                  onClick={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+
                     setDuration(parseInt(target.value));
                   }}
                   className={`btn ${duration === 60 ? "btn-active" : ""}`}
@@ -131,7 +133,8 @@ const Booking: NextPage = () => {
                   60 min
                 </button>
                 <button
-                  onClick={({ target }) => {
+                  onClick={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
                     setDuration(parseInt(target.value));
                   }}
                   className={`btn ${duration === 90 ? "btn-active" : ""}`}
