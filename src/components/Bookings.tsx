@@ -171,109 +171,102 @@ export const Bookings = () => {
           </div>
         </div>
       </div>
-      {isInitialLoadingBookings ? (
-        <div className="flex flex-col items-center justify-center pt-20">
-          <h2 className="pb-4 text-xl text-white">Loading bookings</h2>
-          <BeatLoader color="#36d7b7" />
-        </div>
-      ) : (
-        bookingsByDate.map((booking: Booking) => {
-          return (
-            <div key={booking.id} className="border-b border-zinc-400">
-              <div className="border-spacing card-compact card">
-                <div className="bg-gray card-body min-w-min text-primary-content">
-                  <div className="flex items-center justify-between">
-                    <div className="container">
-                      <div className="flex justify-between">
-                        <div>
-                          <h2 className="card-title">
-                            {parseDate(booking)}
-                            {booking.players.length === 4 && " ✅"}
-                          </h2>
-                          <div className="text-base">{parseTime(booking)}</div>
-                        </div>
-                        <div>
-                          <div className="">{booking.duration} minutes</div>
-                          <div>Court {booking.court}</div>
-                        </div>
+      {bookingsByDate.map((booking: Booking) => {
+        return (
+          <div key={booking.id} className="border-b border-zinc-400">
+            <div className="border-spacing card-compact card">
+              <div className="bg-gray card-body min-w-min text-primary-content">
+                <div className="flex items-center justify-between">
+                  <div className="container">
+                    <div className="flex justify-between">
+                      <div>
+                        <h2 className="card-title">
+                          {parseDate(booking)}
+                          {booking.players.length === 4 && " ✅"}
+                        </h2>
+                        <div className="text-base">{parseTime(booking)}</div>
+                      </div>
+                      <div>
+                        <div className="">{booking.duration} minutes</div>
+                        <div>Court {booking.court}</div>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="flex justify-between">
-                    <div className="">
-                      {getUsersInBooking(users, booking).map((user: User) => {
-                        return (
-                          <div className="" key={user.id}>
-                            {user.name} {booking.userId === user.id ? "👑" : ""}
-                          </div>
-                        );
-                      })}
+                <div className="flex justify-between">
+                  <div className="">
+                    {getUsersInBooking(users, booking).map((user: User) => {
+                      return (
+                        <div className="" key={user.id}>
+                          {user.name} {booking.userId === user.id ? "👑" : ""}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex flex-col items-center justify-center">
+                    <div
+                      className={`radial-progress self-end text-lg font-bold ${getProgressAccent(
+                        booking
+                      )}`}
+                      style={{
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        "--value": booking.players.length * 25,
+                        "--thickness": "3px",
+                      }}
+                    >
+                      {booking.players.length}/4
                     </div>
-                    <div className="flex flex-col items-center justify-center">
-                      <div
-                        className={`radial-progress self-end text-lg font-bold ${getProgressAccent(
-                          booking
-                        )}`}
-                        style={{
-                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                          // @ts-ignore
-                          "--value": booking.players.length * 25,
-                          "--thickness": "3px",
-                        }}
-                      >
-                        {booking.players.length}/4
-                      </div>
-                      <br />
-                      <div className="btn-group btn-group flex">
-                        {session.data?.user.id &&
-                          booking.players.includes(session.data?.user.id) && (
-                            <button
-                              onClick={() => leaveGame(booking)}
-                              className="btn-sm btn btn"
-                            >
-                              Leave
-                            </button>
-                          )}
-                        {session.data?.user.id &&
-                          !booking.players.includes(session.data?.user.id) && (
-                            <button
-                              onClick={() => joinGame(booking)}
-                              className="btn-sm btn  btn"
-                            >
-                              Join
-                            </button>
-                          )}
-                        {session.data?.user.id === booking?.userId && (
-                          <button className="btn-sm btn btn">
-                            <Link
-                              href={{
-                                pathname: "/booking",
-                                query: { booking: booking.id },
-                              }}
-                            >
-                              Edit
-                            </Link>
+                    <br />
+                    <div className="btn-group btn-group flex">
+                      {session.data?.user.id &&
+                        booking.players.includes(session.data?.user.id) && (
+                          <button
+                            onClick={() => leaveGame(booking)}
+                            className="btn-sm btn btn"
+                          >
+                            Leave
                           </button>
                         )}
-                        {session.data?.user.id === booking?.userId && (
-                          <label
-                            htmlFor="action-modal"
-                            onClick={() => void setBookingToDelete(booking)}
-                            className="btn-error btn-sm btn text-white"
+                      {session.data?.user.id &&
+                        !booking.players.includes(session.data?.user.id) && (
+                          <button
+                            onClick={() => joinGame(booking)}
+                            className="btn-sm btn  btn"
                           >
-                            Delete
-                          </label>
+                            Join
+                          </button>
                         )}
-                      </div>
+                      {session.data?.user.id === booking?.userId && (
+                        <button className="btn-sm btn btn">
+                          <Link
+                            href={{
+                              pathname: "/booking",
+                              query: { booking: booking.id },
+                            }}
+                          >
+                            Edit
+                          </Link>
+                        </button>
+                      )}
+                      {session.data?.user.id === booking?.userId && (
+                        <label
+                          htmlFor="action-modal"
+                          onClick={() => void setBookingToDelete(booking)}
+                          className="btn-error btn-sm btn text-white"
+                        >
+                          Delete
+                        </label>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          );
-        })
-      )}
+          </div>
+        );
+      })}
     </div>
   );
 };
