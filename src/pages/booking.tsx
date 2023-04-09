@@ -19,6 +19,14 @@ const Booking: NextPage = () => {
   const [date, setDate] = useState<string>();
   const [time, setTime] = useState<string>();
 
+  const resetBooking = () => {
+    setBookingToEdit;
+    setCourt(null);
+    setDuration(undefined);
+    setDate(undefined);
+    setTime(undefined);
+  };
+
   const { data: bookings, refetch: refetchBookings } =
     api.booking.getAll.useQuery();
   const createBooking = api.booking.create.useMutation({});
@@ -26,6 +34,8 @@ const Booking: NextPage = () => {
 
   useEffect(() => {
     if (router.query.booking) {
+      console.log({ hupp: router.query.booking });
+
       const booking = bookings?.find(
         ({ id }) => router.query.booking === id
       ) as Booking;
@@ -43,6 +53,8 @@ const Booking: NextPage = () => {
         setCourt(booking?.court);
         setDuration(booking?.duration);
       }
+    } else {
+      resetBooking();
     }
   }, [bookingToEdit, bookings, router.query.booking]);
 
@@ -157,16 +169,14 @@ const Booking: NextPage = () => {
                   value={court || "Pick court"}
                 >
                   <option disabled>Pick court</option>
-                  <option value={1}>1</option>
-                  <option value={2}>2</option>
+                  <option>1</option>
+                  <option>2</option>
                   <option>3</option>
                   <option>4</option>
                   <option>5</option>
-                  <option value={6}>6</option>
                   <option>6</option>
                   <option>7</option>
                   <option>8</option>
-                  <option>9</option>
                   <option>9</option>
                   <option>11</option>
                   <option>12</option>

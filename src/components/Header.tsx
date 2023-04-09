@@ -42,7 +42,7 @@ export const Header = () => {
           {sessionData?.user.id ? (
             <div className="dropdown-end dropdown">
               <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
-                <div className="w-10 rounded-full">
+                <div className="w-9 rounded-full">
                   <Image
                     height={100}
                     width={100}

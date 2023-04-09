@@ -90,16 +90,31 @@ const getProgressAccent = (booking: Booking) => {
 export const Bookings = () => {
   const session = useSession();
   const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
-
-  const { data: users = [], isInitialLoading: isInitialLoadingUsers } =
-    api.user.getAll.useQuery();
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
+  const {
+    data: users = [],
+    isInitialLoading: isInitialLoadingUsers,
+    isLoading: isLoadingUsers,
+    isFetching: isFetchingUsers,
+  } = api.user.getAll.useQuery();
+
   const {
     data: bookings,
     refetch: refetchBookings,
     isInitialLoading: isInitialLoadingBookings,
+    isLoading: isLoadingBookings,
+    isFetching: isFetchingBookings,
   } = api.booking.getAll.useQuery();
+
+  const isLoading =
+    isLoadingBookings ||
+    isFetchingBookings ||
+    isLoadingUsers ||
+    isFetchingUsers;
+
+  console.log({ isLoading });
+
   if (!bookings) {
     return null;
   }
@@ -150,7 +165,7 @@ export const Bookings = () => {
             <h3 className="text-lg font-bold">Confirm deletion</h3>
             <p className="py-4">
               If you remove this booking, it will be gone forever. But hey, I am
-              not your mommy, you are incharge.
+              not your mommy, you are in charge.
             </p>
             <div className="modal-action">
               <div className="btn-group">
@@ -235,7 +250,11 @@ export const Bookings = () => {
                           !booking.players.includes(session.data?.user.id) && (
                             <button
                               onClick={() => joinGame(booking)}
-                              className="btn-success btn-sm btn"
+                              className={`${
+                                booking.players.length < 4
+                                  ? "btn-success"
+                                  : "hidden"
+                              } btn-sm btn`}
                             >
                               Join
                             </button>
@@ -270,7 +289,8 @@ export const Bookings = () => {
           );
         })
       ) : (
-        <div className="flex h-screen items-center justify-center">
+        <div className="flex h-screen flex-col items-center justify-center">
+          <h2 className="pb-4 text-2xl text-white">Loading bookings</h2>
           <BeatLoader size={20} color="#36d7b7" />
         </div>
       )}
