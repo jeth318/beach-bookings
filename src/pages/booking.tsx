@@ -39,8 +39,6 @@ const Booking: NextPage = () => {
 
   useEffect(() => {
     if (router.query.booking) {
-      console.log({ hupp: router.query.booking });
-
       const booking = bookings?.find(
         ({ id }) => router.query.booking === id
       ) as Booking;
@@ -67,8 +65,6 @@ const Booking: NextPage = () => {
     isInitialLoadingBookings ||
     isInitialLoadingUsers ||
     sessionStatus === "loading";
-
-  console.log(sessionStatus);
 
   const defaultBooking = {
     players: [sessionData?.user.id],
@@ -140,7 +136,6 @@ const Booking: NextPage = () => {
                   <span>Date</span>
                   <input
                     onChange={({ target }) => {
-                      console.log("target.value", target.value);
                       setDate(target.value);
                     }}
                     defaultValue={date}
@@ -150,8 +145,6 @@ const Booking: NextPage = () => {
                   <input
                     defaultValue={time}
                     onChange={({ target }) => {
-                      console.log("TIME", target.value);
-
                       setTime(target.value);
                     }}
                     type="time"
@@ -228,7 +221,7 @@ const Booking: NextPage = () => {
                       validBooking ? "btn-success" : "btn-disabled"
                     } btn text-white`}
                   >
-                    Confirm
+                    SAVE
                   </button>
                 </div>
               </div>

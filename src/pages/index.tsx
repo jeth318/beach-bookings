@@ -9,7 +9,6 @@ import { BeatLoader } from "react-spinners";
 const Home: NextPage = () => {
   const { isInitialLoading: isInitialLoadingBookings, data: bookings } =
     api.booking.getAll.useQuery();
-  console.log(isInitialLoadingBookings);
 
   return (
     <>

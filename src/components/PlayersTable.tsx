@@ -11,20 +11,14 @@ type Props = {
 export const PlayersTable = ({ booking }: Props) => {
   const { refetch: refetchBookings } = api.booking.getAll.useQuery();
   const updateBooking = api.booking.update.useMutation();
-  const {
-    data: users,
-    isFetching: isFetchingUsers,
-    isRefetching: isRefetchingUsers,
-  } = api.user.getAll.useQuery();
+  const { data: users, isFetching: isFetchingUsers } =
+    api.user.getAll.useQuery();
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
-  console.log("isfetching", isFetchingUsers);
 
   const playersInBooking =
     users?.filter((user) => booking.players.includes(user.id)) || [];
 
   const removePlayer = (playerId: string) => {
-    console.log({ playerId });
-
     updateBooking.mutate({
       ...booking,
       players: booking.players.filter((id) => id !== playerId),

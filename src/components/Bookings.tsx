@@ -113,15 +113,11 @@ export const Bookings = () => {
     isLoadingUsers ||
     isFetchingUsers;
 
-  console.log({ isLoading });
-
   if (!bookings) {
     return null;
   }
 
   const deleteBooking = () => {
-    console.log({ bookingToDelete });
-
     if (!!bookingToDelete) {
       removeBooking.mutate({ id: bookingToDelete.id });
       setTimeout(() => {
@@ -180,7 +176,6 @@ export const Bookings = () => {
                   htmlFor="action-modal"
                   className="btn-error btn text-white"
                   onClick={() => {
-                    console.log({ bookingToDelete });
                     deleteBooking();
                   }}
                 >
