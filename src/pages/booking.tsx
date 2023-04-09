@@ -9,9 +9,11 @@ import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { Booking } from "@prisma/client";
 import Link from "next/link";
+import { PlayersTable } from "~/components/PlayersTable";
 
 const Booking: NextPage = () => {
   const { data: sessionData } = useSession();
+  const { data: users } = api.user.getAll.useQuery();
   const router = useRouter();
   const [bookingToEdit, setBookingToEdit] = useState<Booking>();
   const [court, setCourt] = useState<number | null>();
@@ -20,7 +22,6 @@ const Booking: NextPage = () => {
   const [time, setTime] = useState<string>();
 
   const resetBooking = () => {
-    setBookingToEdit;
     setCourt(null);
     setDuration(undefined);
     setDate(undefined);
@@ -87,6 +88,12 @@ const Booking: NextPage = () => {
     });
   };
 
+  const getPlayers = (booking: Booking) => {
+    if (!users?.length) {
+      return [];
+    }
+    return users?.filter(({ id }) => booking.players.includes(id));
+  };
   const validBooking =
     sessionData?.user.id && !!court && !!duration && !!date && !!time;
 
@@ -98,9 +105,9 @@ const Booking: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
-      <main className="min-w-sm pd-3 flex h-screen min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="min-w-sm pd-3 flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {sessionData?.user.id ? (
-          <div className="container h-screen p-4">
+          <div className="container p-4">
             <div className="form-control">
               <label className="label">
                 <span className="label-text text-white">When</span>
@@ -183,9 +190,15 @@ const Booking: NextPage = () => {
                 </select>
               </label>
               <br />
+              <label className="label">
+                <span className="label-text text-white">Players</span>
+              </label>
+              {!!bookingToEdit && (
+                <PlayersTable players={getPlayers(bookingToEdit)} />
+              )}
               <div className="btn-group btn-group-vertical pt-5">
                 <Link className="btn-warning btn" href="/">
-                  Cancel
+                  Back
                 </Link>
                 <button
                   onClick={addBooking}

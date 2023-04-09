@@ -152,6 +152,10 @@ export const Bookings = () => {
     }, 1000);
   };
 
+  const isUserInBooking = (booking: Booking) => {
+    return !!booking.players.find((id) => id === session.data?.user.id);
+  };
+
   const bookingsByDate = bookings.sort(
     (a: Booking, b: Booking) => a.date.getTime() - b.date.getTime()
   );
@@ -190,7 +194,7 @@ export const Bookings = () => {
       {!isInitialLoadingUsers && !isInitialLoadingBookings ? (
         bookingsByDate.map((booking: Booking) => {
           return (
-            <div key={booking.id} className="border-b border-zinc-400">
+            <div key={booking.id} className="border-b border-zinc-400 ">
               <div className="border-spacing card-compact card">
                 <div className="bg-gray card-body min-w-min text-primary-content">
                   <div className="flex items-center justify-between">
@@ -241,7 +245,7 @@ export const Bookings = () => {
                           booking.players.includes(session.data?.user.id) && (
                             <button
                               onClick={() => leaveGame(booking)}
-                              className="btn-warning btn-sm btn"
+                              className="btn-warning btn-sm btn text-white"
                             >
                               Leave
                             </button>
@@ -254,7 +258,7 @@ export const Bookings = () => {
                                 booking.players.length < 4
                                   ? "btn-success"
                                   : "hidden"
-                              } btn-sm btn`}
+                              } btn-sm btn text-white`}
                             >
                               Join
                             </button>

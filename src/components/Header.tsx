@@ -32,7 +32,7 @@ export const Header = () => {
             <a
               onClick={sessionData ? () => void signOut() : () => void signIn()}
             >
-              {sessionData ? "Logout" : "Login"}
+              {sessionData ? "Log out" : "Login"}
             </a>
           </li>
         </ul>
@@ -66,7 +66,7 @@ export const Header = () => {
                   <a>Joined games</a>
           </li>*/}
                 <li>
-                  <a onClick={() => void signOut()}>Logout</a>
+                  <a onClick={() => void signOut()}>Log out</a>
                 </li>
               </ul>
             </div>
