@@ -71,7 +71,7 @@ export const PlayersTable = ({ booking }: Props) => {
             If you remove this player from this booking, he or she will have to
             re-join them selfes.
           </p>
-          <div>
+          <div className="modal-action">
             <div className="btn-group">
               <label
                 htmlFor="action-modal-player-remove"
@@ -97,8 +97,7 @@ export const PlayersTable = ({ booking }: Props) => {
         {/* head */}
         <thead>
           <tr>
-            <th></th>
-            <th></th>
+            <th colSpan={2}></th>
           </tr>
         </thead>
         <tbody>
@@ -130,7 +129,17 @@ export const PlayersTable = ({ booking }: Props) => {
                       </div>
                       <div>
                         <div className="font-bold">{player.name}</div>
-                        <div className="text-sm opacity-50">{player.email}</div>
+                        <div
+                          className="text-sm opacity-50"
+                          style={{
+                            display: "inline-block",
+                            width: 210,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          jesper.thornberg@hejsan.svejsan.se
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -153,8 +162,7 @@ export const PlayersTable = ({ booking }: Props) => {
         {/* foot */}
         <tfoot>
           <tr>
-            <th></th>
-            <th></th>
+            <th colSpan={2}></th>
           </tr>
         </tfoot>
       </table>
