@@ -138,7 +138,7 @@ export const PlayersTable = ({ booking }: Props) => {
                             textOverflow: "ellipsis",
                           }}
                         >
-                          jesper.thornberg@hejsan.svejsan.se
+                          {player.email}
                         </div>
                       </div>
                     </div>

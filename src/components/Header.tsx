@@ -2,13 +2,21 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
-export const Header = () => {
+type Props = {
+  noBoxShadow?: boolean;
+};
+
+export const Header = ({ noBoxShadow }: Props) => {
   const { data: sessionData } = useSession();
 
   const avatar = sessionData?.user.image;
 
   return (
-    <div className="navbar sticky top-0 z-50 bg-white ">
+    <div
+      className={`navbar sticky top-0 z-50 bg-white ${
+        noBoxShadow ? "" : "shadow-lg shadow-black"
+      }`}
+    >
       <div className="navbar-start">
         <>
           <Link
@@ -37,12 +45,14 @@ export const Header = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu rounded-box menu-compact mt-3 w-48 bg-base-100 p-2 shadow-2xl shadow-black"
+                className="v dropdown-content menu rounded-box menu-compact mt-3 w-48 bg-base-100 p-2 shadow-xl shadow-stone-900"
               >
                 <li>
                   <Link href="/booking" className="p-1">
                     Bookings
                   </Link>
+                </li>
+                <li>
                   <Link href="/booking" className="p-1">
                     <svg
                       width="25px"
@@ -63,6 +73,8 @@ export const Header = () => {
                     </svg>
                     Add booking
                   </Link>
+                </li>
+                <li>
                   <Link className="p-1" href="/joined">
                     <svg
                       width="25px"
@@ -488,6 +500,8 @@ export const Header = () => {
                     </svg>
                     Joined games
                   </Link>
+                </li>
+                <li>
                   <Link className="p-1" href="/created">
                     <svg
                       fill="#000000"
@@ -501,6 +515,69 @@ export const Header = () => {
                       <path d="M0 32l4-4 4 4 4-4 4 4 4-4 4 4 4-4 4 4v-25.984q0-2.496-1.76-4.256t-4.224-1.76h-20q-2.496 0-4.256 1.76t-1.76 4.256v25.984zM4 22.016v-16q0-0.832 0.576-1.408t1.44-0.608h20q0.8 0 1.408 0.608t0.576 1.408v16l-4 4-4-4-4 4-4-4-4 4zM8 18.016h16v-2.016h-16v2.016zM8 14.016h16v-2.016h-16v2.016zM8 10.016h16v-2.016h-16v2.016z"></path>
                     </svg>
                     Booked by me
+                  </Link>
+                </li>
+                <li>
+                  <Link className="p-1" href="/history">
+                    <svg
+                      width="25px"
+                      height="25px"
+                      viewBox="0 0 36 36"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                      role="img"
+                      preserveAspectRatio="xMidYMid meet"
+                    >
+                      <path
+                        fill="#553788"
+                        d="M15 31c0 2.209-.791 4-3 4H5c-4 0-4-14 0-14h7c2.209 0 3 1.791 3 4v6z"
+                      ></path>
+                      <path
+                        fill="#9266CC"
+                        d="M34 33h-1V23h1a1 1 0 1 0 0-2H10c-4 0-4 14 0 14h24a1 1 0 1 0 0-2z"
+                      ></path>
+                      <path
+                        fill="#CCD6DD"
+                        d="M34.172 33H11c-2 0-2-10 0-10h23.172c1.104 0 1.104 10 0 10z"
+                      ></path>
+                      <path
+                        fill="#99AAB5"
+                        d="M11.5 25h23.35c-.135-1.175-.36-2-.678-2H11c-1.651 0-1.938 6.808-.863 9.188C9.745 29.229 10.199 25 11.5 25z"
+                      ></path>
+                      <path
+                        fill="#269"
+                        d="M12 8a4 4 0 0 1-4 4H4C0 12 0 1 4 1h4a4 4 0 0 1 4 4v3z"
+                      ></path>
+                      <path
+                        fill="#55ACEE"
+                        d="M31 10h-1V3h1a1 1 0 1 0 0-2H7C3 1 3 12 7 12h24a1 1 0 1 0 0-2z"
+                      ></path>
+                      <path
+                        fill="#CCD6DD"
+                        d="M31.172 10H8c-2 0-2-7 0-7h23.172c1.104 0 1.104 7 0 7z"
+                      ></path>
+                      <path
+                        fill="#99AAB5"
+                        d="M8 5h23.925c-.114-1.125-.364-2-.753-2H8C6.807 3 6.331 5.489 6.562 7.5C6.718 6.142 7.193 5 8 5z"
+                      ></path>
+                      <path
+                        fill="#F4900C"
+                        d="M20 17a4 4 0 0 1-4 4H6c-4 0-4-9 0-9h10a4 4 0 0 1 4 4v1z"
+                      ></path>
+                      <path
+                        fill="#FFAC33"
+                        d="M35 19h-1v-5h1a1 1 0 1 0 0-2H15c-4 0-4 9 0 9h20a1 1 0 1 0 0-2z"
+                      ></path>
+                      <path
+                        fill="#CCD6DD"
+                        d="M35.172 19H16c-2 0-2-5 0-5h19.172c1.104 0 1.104 5 0 5z"
+                      ></path>
+                      <path
+                        fill="#99AAB5"
+                        d="M16 16h19.984c-.065-1.062-.334-2-.812-2H16c-1.274 0-1.733 2.027-1.383 3.5c.198-.839.657-1.5 1.383-1.5z"
+                      ></path>
+                    </svg>
+                    History
                   </Link>
                 </li>
               </ul>

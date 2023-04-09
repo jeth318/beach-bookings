@@ -6,7 +6,7 @@ import { Header } from "~/components/Header";
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
 
-const Joined: NextPage = () => {
+const History: NextPage = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
   if (sessionStatus === "unauthenticated") {
@@ -15,14 +15,14 @@ const Joined: NextPage = () => {
   return (
     <div>
       <Header noBoxShadow />
-      <div className="text-gray sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-xl shadow-stone-900">
-        Joined games
+      <div className="sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-xl shadow-stone-900">
+        History
       </div>
       <div style={{ backgroundColor: "#2f2f2f" }}>
-        <Bookings joinedOnly={true} />
+        <Bookings historyOnly={true} />
       </div>
     </div>
   );
 };
 
-export default Joined;
+export default History;

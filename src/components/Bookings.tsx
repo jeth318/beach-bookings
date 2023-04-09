@@ -4,9 +4,11 @@ import Link from "next/link";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
+
 type Bookings = {
   data: Booking[];
 };
+const today = new Date().getTime();
 
 const days = [
   "Monday",
@@ -90,13 +92,29 @@ const getProgressAccent = (booking: Booking) => {
 type Props = {
   joinedOnly?: boolean;
   createdOnly?: boolean;
+  historyOnly?: boolean;
 };
 
-export const Bookings = ({ joinedOnly, createdOnly }: Props) => {
+type BookingAction = {
+  isWorking: boolean;
+  bookingId?: string;
+};
+
+export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
   const session = useSession();
   const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
-  const [isJoining, setIsJoining] = useState<boolean>(false);
-  const [isLeaving, setIsLeaving] = useState<boolean>(false);
+  const [joining, setIsJoining] = useState<BookingAction>({
+    isWorking: false,
+    bookingId: "",
+  });
+  const [leaving, setLeaving] = useState<BookingAction>({
+    isWorking: false,
+    bookingId: "",
+  });
+  const [deleting, setDeleting] = useState<BookingAction>({
+    isWorking: false,
+    bookingId: "",
+  });
 
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
@@ -115,28 +133,30 @@ export const Bookings = ({ joinedOnly, createdOnly }: Props) => {
 
   const deleteBooking = () => {
     if (!!bookingToDelete) {
+      setDeleting({ isWorking: true, bookingId: bookingToDelete.id });
       removeBooking.mutate({ id: bookingToDelete.id });
       setTimeout(() => {
         setBookingToDelete(undefined);
         void refetchBookings();
+        setDeleting({ isWorking: false, bookingId: undefined });
       }, 1000);
     }
   };
 
   const joinGame = (booking: Booking) => {
     if (session.data?.user.id) {
-      setIsJoining(true);
+      setIsJoining({ isWorking: true, bookingId: booking.id });
       const updatedPlayers = [...booking.players, session.data.user.id];
       updateBooking.mutate({ ...booking, players: updatedPlayers });
       setTimeout(() => {
         void refetchBookings();
-        setIsJoining(false);
+        setIsJoining({ isWorking: false, bookingId: undefined });
       }, 1000);
     }
   };
 
   const leaveGame = (booking: Booking) => {
-    setIsLeaving(true);
+    setLeaving({ isWorking: true, bookingId: booking.id });
     const updatedPlayers = booking.players.filter(
       (player) => player !== session.data?.user.id
     );
@@ -144,23 +164,32 @@ export const Bookings = ({ joinedOnly, createdOnly }: Props) => {
     updateBooking.mutate({ ...booking, players: updatedPlayers });
     setTimeout(() => {
       void refetchBookings();
-      setIsLeaving(false);
+      setLeaving({ isWorking: false, bookingId: undefined });
     }, 1000);
+  };
+
+  const isUserInBooking = (booking: Booking) => {
+    return (
+      session?.data?.user.id && booking.players.includes(session?.data?.user.id)
+    );
   };
 
   const bookingsByDate = bookings
     .sort((a: Booking, b: Booking) => a.date.getTime() - b.date.getTime())
     .filter((booking) => {
       if (!session?.data?.user.id) {
-        return true;
+        return booking.date.getTime() >= today;
       }
 
       if (joinedOnly) {
         return booking.players.includes(session.data.user.id);
       } else if (createdOnly) {
         return booking.userId === session.data?.user.id;
+      } else if (historyOnly) {
+        return booking.date.getTime() < today;
+      } else {
+        return booking.date.getTime() >= today;
       }
-      return true;
     });
   return (
     <div>
@@ -198,7 +227,11 @@ export const Bookings = ({ joinedOnly, createdOnly }: Props) => {
           return (
             <div key={booking.id} className="border-b border-zinc-400 ">
               <div className="border-spacing card-compact card">
-                <div className="card-body min-w-min flex-row justify-between text-primary-content">
+                <div
+                  className={`card-body min-w-min flex-row justify-between text-primary-content ${
+                    isUserInBooking(booking) ? "bg-primary" : ""
+                  }`}
+                >
                   <div>
                     <div className="container">
                       <div className="flex">
@@ -208,7 +241,7 @@ export const Bookings = ({ joinedOnly, createdOnly }: Props) => {
                             {booking.players.length === 4 && " ✅"}
                           </h2>
                           <div className="text-lg">{parseTime(booking)}</div>
-                          <div className="self-start pt-5">
+                          <div className="self-start pt-4">
                             {getUsersInBooking(users, booking).map(
                               (user: User) => {
                                 return (
@@ -226,7 +259,7 @@ export const Bookings = ({ joinedOnly, createdOnly }: Props) => {
                   </div>
                   <div>
                     <div className="flex flex-col justify-between">
-                      <div className="self-start pb-3">
+                      <div className="self-start pb-4">
                         <div className="">{booking.duration} minutes</div>
                         <div>Court {booking.court}</div>
                       </div>
@@ -244,59 +277,70 @@ export const Bookings = ({ joinedOnly, createdOnly }: Props) => {
                         {booking.players.length}/4
                       </div>
                       <br />
-                      <div className="btn-group btn-group-vertical flex">
-                        {session.data?.user.id &&
-                          booking.players.includes(session.data?.user.id) && (
-                            <button
-                              onClick={() => leaveGame(booking)}
-                              className="btn-warning btn-sm btn "
-                            >
-                              {isLeaving ? (
-                                <BeatLoader size={10} color="white" />
-                              ) : (
-                                "Leave"
-                              )}
-                            </button>
-                          )}
-                        {session.data?.user.id &&
-                          !booking.players.includes(session.data?.user.id) && (
-                            <button
-                              onClick={() => joinGame(booking)}
-                              className={`${
-                                booking.players.length < 4
-                                  ? "btn-success"
-                                  : "hidden"
-                              } btn-sm btn `}
-                            >
-                              {isJoining ? (
-                                <BeatLoader size={10} color="white" />
-                              ) : (
-                                "Join"
-                              )}
-                            </button>
-                          )}
-                        {session.data?.user.id === booking?.userId && (
-                          <button className="btn-sm btn">
-                            <Link
-                              href={{
-                                pathname: "/booking",
-                                query: { booking: booking.id },
-                              }}
-                            >
-                              Edit
-                            </Link>
-                          </button>
-                        )}
-                        {session.data?.user.id === booking?.userId && (
-                          <label
-                            htmlFor="action-modal"
-                            onClick={() => void setBookingToDelete(booking)}
-                            className="btn-error btn-sm btn "
-                          >
-                            Delete
-                          </label>
-                        )}
-                      </div>
+                      {session.data?.user.id && (
+                        <div className="btn-group btn-group-vertical flex">
+                          {!historyOnly &&
+                            booking.players.includes(session.data.user.id) && (
+                              <button
+                                onClick={() => leaveGame(booking)}
+                                className="btn-warning btn-sm btn "
+                              >
+                                {leaving.isWorking &&
+                                leaving.bookingId === booking.id ? (
+                                  <BeatLoader size={10} color="white" />
+                                ) : (
+                                  "Leave"
+                                )}
+                              </button>
+                            )}
+                          {!historyOnly &&
+                            !booking.players.includes(session.data.user.id) && (
+                              <button
+                                onClick={() => joinGame(booking)}
+                                className={`${
+                                  booking.players.length < 4
+                                    ? "btn-success"
+                                    : "hidden"
+                                } btn-sm btn `}
+                              >
+                                {joining.isWorking &&
+                                booking.id === joining.bookingId ? (
+                                  <BeatLoader size={10} color="white" />
+                                ) : (
+                                  "Join"
+                                )}
+                              </button>
+                            )}
+                          {session.data.user.id === booking?.userId &&
+                            !historyOnly && (
+                              <button className="btn-sm btn">
+                                <Link
+                                  href={{
+                                    pathname: "/booking",
+                                    query: { booking: booking.id },
+                                  }}
+                                >
+                                  Edit
+                                </Link>
+                              </button>
+                            )}
+                          {session.data.user.id === booking?.userId &&
+                            !historyOnly && (
+                              <label
+                                htmlFor="action-modal"
+                                onClick={() => void setBookingToDelete(booking)}
+                                className="btn-error btn-sm btn "
+                              >
+                                {deleting.isWorking &&
+                                booking.id === deleting.bookingId ? (
+                                  <BeatLoader size={10} color="white" />
+                                ) : (
+                                  "Delete"
+                                )}
+                              </label>
+                            )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
