@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
+import { Toast } from "./Toast";
 
 type Props = {
   booking: Booking;
@@ -10,6 +11,8 @@ type Props = {
 
 export const PlayersTable = ({ booking }: Props) => {
   const [playersInBooking, setPlayersInBooking] = useState<User[]>();
+  const [toastMessage, setToastMessage] = useState<string>();
+
   const {
     refetch: refetchBookings,
     isInitialLoading: isInitialLodaingBookings,
@@ -29,6 +32,13 @@ export const PlayersTable = ({ booking }: Props) => {
     );
   }, [booking, users]);
 
+  const renderToast = (body: string) => {
+    setToastMessage(body);
+    setTimeout(() => {
+      setToastMessage(undefined);
+    }, 3000);
+  };
+
   const removePlayer = (playerId: string) => {
     void updateBooking.mutate(
       {
@@ -40,6 +50,7 @@ export const PlayersTable = ({ booking }: Props) => {
           setPlayersInBooking(
             playersInBooking?.filter((player) => player.id !== playerId)
           );
+          renderToast(`Player was removed from the booking.`);
           void refetchBookings();
         },
       }
@@ -47,6 +58,7 @@ export const PlayersTable = ({ booking }: Props) => {
   };
   return (
     <div>
+      {toastMessage && <Toast body={toastMessage} />}
       <input
         type="checkbox"
         id="action-modal-player-remove"
