@@ -1,6 +1,6 @@
 import { type Booking, type User } from "@prisma/client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
 
@@ -9,24 +9,41 @@ type Props = {
 };
 
 export const PlayersTable = ({ booking }: Props) => {
-  const { refetch: refetchBookings } = api.booking.getAll.useQuery();
+  const [playersInBooking, setPlayersInBooking] = useState<User[]>();
+  const {
+    refetch: refetchBookings,
+    isInitialLoading: isInitialLodaingBookings,
+    data: bookings,
+  } = api.booking.getAll.useQuery();
   const updateBooking = api.booking.update.useMutation();
-  const { data: users, isFetching: isFetchingUsers } =
-    api.user.getAll.useQuery();
+  const {
+    data: users,
+    isFetching: isFetchingUsers,
+    isInitialLoading: isInitialLodaingUsers,
+  } = api.user.getAll.useQuery();
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
 
-  const playersInBooking =
-    users?.filter((user) => booking.players.includes(user.id)) || [];
+  useEffect(() => {
+    setPlayersInBooking(
+      users?.filter((user) => booking.players.includes(user.id))
+    );
+  }, [booking, users]);
 
   const removePlayer = (playerId: string) => {
-    updateBooking.mutate({
-      ...booking,
-      players: booking.players.filter((id) => id !== playerId),
-    });
-    setPlayerToRemove(undefined);
-    setTimeout(() => {
-      void refetchBookings();
-    }, 1000);
+    void updateBooking.mutate(
+      {
+        ...booking,
+        players: booking.players.filter((id) => id !== playerId),
+      },
+      {
+        onSuccess: () => {
+          setPlayersInBooking(
+            playersInBooking?.filter((player) => player.id !== playerId)
+          );
+          void refetchBookings();
+        },
+      }
+    );
   };
   return (
     <div>
@@ -73,7 +90,9 @@ export const PlayersTable = ({ booking }: Props) => {
           </tr>
         </thead>
         <tbody>
-          {!playersInBooking || isFetchingUsers ? (
+          {!playersInBooking ||
+          isInitialLodaingBookings ||
+          isInitialLodaingUsers ? (
             <tr>
               <td colSpan={2}>
                 <div className="flex justify-center">
@@ -106,7 +125,9 @@ export const PlayersTable = ({ booking }: Props) => {
                   <td style={{ textAlign: "center" }}>
                     <label
                       onClick={() => setPlayerToRemove(player.id)}
-                      className="btn-outline btn-sm btn"
+                      className={`btn-outline btn-sm btn ${
+                        playersInBooking.length < 2 ? "btn-disabled" : ""
+                      }`}
                       htmlFor="action-modal-player-remove"
                     >
                       Kick 👋

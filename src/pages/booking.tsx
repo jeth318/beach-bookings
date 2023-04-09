@@ -43,7 +43,7 @@ const Booking: NextPage = () => {
         ({ id }) => router.query.booking === id
       ) as Booking;
 
-      if (!!booking) {
+      if (!!booking && !bookingToEdit) {
         setBookingToEdit(booking);
 
         setDate(booking?.date?.toLocaleDateString("sv-SE"));
@@ -79,6 +79,8 @@ const Booking: NextPage = () => {
 
     if (!!bookingToEdit) {
       const newDate = new Date(`${date}T${time}`);
+      console.log({ court });
+      console.log({ bookingToEdit });
 
       updateBooking.mutate({
         id: bookingToEdit.id,
@@ -95,18 +97,10 @@ const Booking: NextPage = () => {
       });
     }
     void refetchBookings().then(() => {
-      setTimeout(() => {
-        void router.push("/");
-      }, 200);
+      void router.push("/");
     });
   };
 
-  const getPlayers = (booking: Booking) => {
-    if (!users?.length) {
-      return [];
-    }
-    return users?.filter(({ id }) => booking.players.includes(id));
-  };
   const validBooking =
     sessionData?.user.id && !!court && !!duration && !!date && !!time;
 
