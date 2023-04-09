@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { api } from "~/utils/api";
 import { useState } from "react";
-import { BeatLoader, ScaleLoader } from "react-spinners";
+import { BeatLoader } from "react-spinners";
 type Bookings = {
   data: Booking[];
 };
@@ -90,6 +90,9 @@ const getProgressAccent = (booking: Booking) => {
 export const Bookings = () => {
   const session = useSession();
   const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
+  const [isJoining, setIsJoining] = useState<boolean>(false);
+  const [isLeaving, setIsLeaving] = useState<boolean>(false);
+
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
   const {
@@ -129,15 +132,18 @@ export const Bookings = () => {
 
   const joinGame = (booking: Booking) => {
     if (session.data?.user.id) {
+      setIsJoining(true);
       const updatedPlayers = [...booking.players, session.data.user.id];
       updateBooking.mutate({ ...booking, players: updatedPlayers });
       setTimeout(() => {
         void refetchBookings();
+        setIsJoining(false);
       }, 1000);
     }
   };
 
   const leaveGame = (booking: Booking) => {
+    setIsLeaving(true);
     const updatedPlayers = booking.players.filter(
       (player) => player !== session.data?.user.id
     );
@@ -145,6 +151,7 @@ export const Bookings = () => {
     updateBooking.mutate({ ...booking, players: updatedPlayers });
     setTimeout(() => {
       void refetchBookings();
+      setIsLeaving(false);
     }, 1000);
   };
 
@@ -242,7 +249,11 @@ export const Bookings = () => {
                               onClick={() => leaveGame(booking)}
                               className="btn-warning btn-sm btn text-white"
                             >
-                              Leave
+                              {isLeaving ? (
+                                <BeatLoader size={10} color="white" />
+                              ) : (
+                                "Leave"
+                              )}
                             </button>
                           )}
                         {session.data?.user.id &&
@@ -255,7 +266,11 @@ export const Bookings = () => {
                                   : "hidden"
                               } btn-sm btn text-white`}
                             >
-                              Join
+                              {isJoining ? (
+                                <BeatLoader size={10} color="white" />
+                              ) : (
+                                "Join"
+                              )}
                             </button>
                           )}
                         {session.data?.user.id === booking?.userId && (
