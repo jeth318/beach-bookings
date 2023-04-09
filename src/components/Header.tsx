@@ -10,7 +10,7 @@ export const Header = () => {
   return (
     <div className="navbar sticky top-0 z-50 bg-white ">
       <div className="navbar-start">
-        <Link className="text-lg" href="/">
+        <Link className="text-lg text-black" href="/">
           🏐 ßeach ßookings 🏖️
         </Link>
       </div>
@@ -21,12 +21,12 @@ export const Header = () => {
             <Link href="/booking">Add booking</Link>
           </li>
 
-          <li>
+          {/*<li>
             <a>Booked by me</a>
           </li>
           <li>
             <a>Joined games</a>
-          </li>
+  </li>*/}
 
           <li>
             <a
@@ -40,7 +40,7 @@ export const Header = () => {
       {sessionData !== undefined && (
         <div className="navbar-end">
           {sessionData?.user.id ? (
-            <div className="dropdown dropdown-end">
+            <div className="dropdown-end dropdown">
               <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
                 <div className="w-10 rounded-full">
                   <Image
@@ -53,18 +53,18 @@ export const Header = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu rounded-box menu-compact mt-3 w-36 bg-base-100 p-2 text-black shadow"
+                className="dropdown-content menu rounded-box menu-compact mt-3 w-36 bg-base-100 p-2 shadow"
               >
                 <li>
-                  <Link href="/booking">Add booking</Link>
+                  <Link href="/booking">New booking</Link>
                 </li>
 
-                <li>
+                {/*<li>
                   <a>Booked by me</a>
                 </li>
                 <li>
                   <a>Joined games</a>
-                </li>
+          </li>*/}
                 <li>
                   <a onClick={() => void signOut()}>Logout</a>
                 </li>
@@ -73,7 +73,7 @@ export const Header = () => {
           ) : (
             <button
               onClick={() => void signIn()}
-              className="btn-outline btn-sm btn self-end"
+              className="btn-outline btn-sm btn self-end text-black"
             >
               Login
             </button>
