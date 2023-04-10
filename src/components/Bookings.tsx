@@ -4,7 +4,6 @@ import Link from "next/link";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
-import { log } from "console";
 import Image from "next/image";
 
 type Bookings = {
@@ -261,7 +260,9 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
             <div className="border-spacing card-compact card">
               <div
                 className={`card-body min-w-min flex-row justify-between text-primary-content ${
-                  isUserInBooking(booking) ? " bg-indigo-800" : ""
+                  joinedOnly || createdOnly
+                    ? "bg-gradient-to-b from-[#007621a6] to-[#062d35d8]"
+                    : ""
                 }`}
               >
                 <div>

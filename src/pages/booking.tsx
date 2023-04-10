@@ -205,16 +205,6 @@ const Booking: NextPage = () => {
                         })
                       );
                     }}
-                    popperModifiers={[
-                      {
-                        name: "preventOverflow",
-                        options: {
-                          rootBoundary: "viewport",
-                          tether: true,
-                          altAxis: true,
-                        },
-                      },
-                    ]}
                   />
                 </div>
                 <label className="label">
