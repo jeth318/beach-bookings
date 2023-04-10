@@ -13,6 +13,7 @@ import { PlayersTable } from "~/components/PlayersTable";
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { SubHeader } from "~/components/SubHeader";
 
 const Booking: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -151,9 +152,9 @@ const Booking: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header noBoxShadow />
-      <div className="sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-md shadow-stone-900">
-        {router.query.booking ? "Change booking" : "Add booking"}
-      </div>
+      <SubHeader
+        title={router.query.booking ? "Change booking" : "Add booking"}
+      />
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
@@ -223,7 +224,6 @@ const Booking: NextPage = () => {
                     <option value={60}>60 min</option>
                     <option value={90}>90 min</option>
                   </select>
-                  s
                 </label>
                 <label className="label">
                   <span className="label-text text-white">What court?</span>
@@ -263,7 +263,7 @@ const Booking: NextPage = () => {
                   <button
                     onClick={addBooking}
                     className={`${
-                      validBooking ? "btn-success" : "btn-disabled"
+                      validBooking ? "btn-accent" : "btn-disabled"
                     } btn text-white`}
                   >
                     Save

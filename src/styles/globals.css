@@ -8,6 +8,10 @@ body {
   height: 100%;
 }
 
+.sub-header {
+  margin-bottom: -10px;
+}
+
 .smooth-render-in {
   opacity: 1;
   animation-name: fadeInOpacity;

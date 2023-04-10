@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
 import { Toast } from "./Toast";
+import { CustomIcon } from "./CustomIcon";
 
 type Props = {
   booking: Booking;
@@ -16,14 +17,10 @@ export const PlayersTable = ({ booking }: Props) => {
   const {
     refetch: refetchBookings,
     isInitialLoading: isInitialLodaingBookings,
-    data: bookings,
   } = api.booking.getAll.useQuery();
   const updateBooking = api.booking.update.useMutation();
-  const {
-    data: users,
-    isFetching: isFetchingUsers,
-    isInitialLoading: isInitialLodaingUsers,
-  } = api.user.getAll.useQuery();
+  const { data: users, isInitialLoading: isInitialLodaingUsers } =
+    api.user.getAll.useQuery();
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
 
   useEffect(() => {
@@ -56,6 +53,7 @@ export const PlayersTable = ({ booking }: Props) => {
       }
     );
   };
+
   return (
     <div>
       {toastMessage && <Toast body={toastMessage} />}
@@ -96,12 +94,8 @@ export const PlayersTable = ({ booking }: Props) => {
       {!playersInBooking ||
       isInitialLodaingBookings ||
       isInitialLodaingUsers ? (
-        <div>
-          <div>
-            <div className="flex justify-center">
-              <BeatLoader size={20} color="#36d7b7" />
-            </div>
-          </div>
+        <div className="flex justify-center">
+          <BeatLoader size={20} color="#36d7b7" />
         </div>
       ) : (
         playersInBooking?.map((player) => {
@@ -109,7 +103,7 @@ export const PlayersTable = ({ booking }: Props) => {
             <div
               key={player.id}
               style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
-              className="flex flex-row justify-between bg-slate-300 p-2"
+              className="flex flex-row justify-between bg-slate-200 p-2 dark:bg-slate-800"
             >
               <div className="flex items-center space-x-3">
                 <div className="avatar">
@@ -134,7 +128,7 @@ export const PlayersTable = ({ booking }: Props) => {
                     {player.name}
                   </div>
                   <div
-                    className="hej text-sm opacity-50"
+                    className="text-sm opacity-50"
                     style={{
                       overflow: "hidden",
                       maxWidth: "150px",
@@ -146,15 +140,19 @@ export const PlayersTable = ({ booking }: Props) => {
                 </div>
               </div>
               <div className="self-center pr-2" style={{ textAlign: "center" }}>
-                <label
-                  onClick={() => setPlayerToRemove(player.id)}
-                  className={`btn-outline btn-sm btn ${
-                    playersInBooking.length < 2 ? "btn-disabled" : ""
-                  }`}
-                  htmlFor="action-modal-player-remove"
-                >
-                  Kick 👋
-                </label>
+                {playersInBooking.length >= 2 ? (
+                  <label
+                    onClick={() => setPlayerToRemove(player.id)}
+                    className="btn-outline btn-sm btn"
+                    htmlFor="action-modal-player-remove"
+                  >
+                    Kick 👋
+                  </label>
+                ) : (
+                  <div>
+                    <CustomIcon path="/svg/crown.svg" />
+                  </div>
+                )}
               </div>
             </div>
           );

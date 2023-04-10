@@ -5,6 +5,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import Image from "next/image";
+import { CustomIcon } from "./CustomIcon";
 
 type Bookings = {
   data: Booking[];
@@ -254,50 +255,61 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
           </div>
         </div>
       </div>
+
       {bookingsByDate.map((booking: Booking) => {
         return (
           <div
             key={booking.id}
-            className="smooth-render-in border-b border-zinc-400"
+            className="bookings-wrapper smooth-render-in border-b border-zinc-400"
           >
-            <div className="border-spacing card-compact card">
+            <div className=" border-spacing card-compact card">
               <div
-                className={`card-body min-w-min flex-row justify-between text-primary-content ${
+                className={` card-body min-w-min flex-row justify-between text-primary-content ${
                   joinedOnly
                     ? "bg-gradient-to-b from-[#007621a6] to-[#062d35d8]"
-                    : createdOnly ? "bg-gradient-to-b from-[#02968f91] to-[#0d0754d8]" : ""
+                    : createdOnly
+                    ? "bg-gradient-to-b from-[#02968f91] to-[#0d0754d8]"
+                    : ""
                 }`}
               >
-                <div>
-                  <div className="container">
-                    <div className="flex">
-                      <div>
-                        <h2 className="card-title text-2xl">
-                          {parseDate(booking)}
-                          {booking.players.length === 4 && " ✅"}
-                        </h2>
-                        <div className="text-lg">{parseTime(booking)}</div>
-                        <div className="self-start pt-4">
-                          {isInitialLoadingUsers ? (
-                            <div className="flex justify-start">
-                              <BeatLoader size={10} color="#36d7b7" />
-                            </div>
-                          ) : (
-                            getUsersInBooking(users, booking).map(
-                              (user: User) => {
-                                return (
-                                  <div
-                                    key={user.id}
-                                    className="smooth-render-in"
-                                  >
-                                    {user.name}{" "}
-                                    {booking.userId === user.id ? "👑" : ""}
-                                  </div>
-                                );
-                              }
-                            )
-                          )}
-                        </div>
+                <div className="container">
+                  <div className="flex">
+                    <div>
+                      <h2 className="card-title text-2xl">
+                        {parseDate(booking)}
+                        {booking.players.length === 4 && " ✅"}
+                      </h2>
+                      <div className="text-lg">{parseTime(booking)}</div>
+                      <div className="self-start pt-4">
+                        {isInitialLoadingUsers ? (
+                          <div className="flex justify-start">
+                            <BeatLoader size={10} color="#36d7b7" />
+                          </div>
+                        ) : (
+                          getUsersInBooking(users, booking).map(
+                            (user: User) => {
+                              return (
+                                <div
+                                  key={user.id}
+                                  style={{ marginTop: "-15" }}
+                                  className="smooth-render-in flex flex-row items-center"
+                                >
+                                  {user.name}
+                                  {booking.userId === user.id ? (
+                                    <div className="pl-2">
+                                      <CustomIcon
+                                        path="/svg/crown.svg"
+                                        width={17}
+                                      />
+                                    </div>
+                                  ) : (
+                                    ""
+                                  )}
+                                </div>
+                              );
+                            }
+                          )
+                        )}
                       </div>
                     </div>
                   </div>
@@ -342,7 +354,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                             onClick={() => joinGame(booking)}
                             className={`${
                               booking.players.length < 4
-                                ? "btn-success"
+                                ? "btn-accent"
                                 : "hidden"
                             } btn-sm btn text-white`}
                           >
