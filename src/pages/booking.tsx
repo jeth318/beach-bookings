@@ -10,6 +10,9 @@ import { useRouter } from "next/router";
 import { Booking } from "@prisma/client";
 import Link from "next/link";
 import { PlayersTable } from "~/components/PlayersTable";
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 const Booking: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -19,8 +22,20 @@ const Booking: NextPage = () => {
   const [bookingToEdit, setBookingToEdit] = useState<Booking>();
   const [court, setCourt] = useState<number | null>();
   const [duration, setDuration] = useState<number>();
-  const [date, setDate] = useState<string>();
+  const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
+
+  const setHours = (date: Date, hours: number) => {
+    const updated = new Date(date);
+    updated.setHours(hours);
+    return updated;
+  };
+
+  const setMinutes = (minutes: number) => {
+    const now = new Date();
+    const updated = now.setMinutes(minutes);
+    return new Date(updated);
+  };
 
   const resetBooking = () => {
     setCourt(null);
@@ -46,7 +61,7 @@ const Booking: NextPage = () => {
       if (!!booking && !bookingToEdit) {
         setBookingToEdit(booking);
 
-        setDate(booking?.date?.toLocaleDateString("sv-SE"));
+        setDate(booking?.date);
         setTime(
           booking?.date.toLocaleTimeString("sv-SE", {
             hour: "2-digit",
@@ -72,6 +87,30 @@ const Booking: NextPage = () => {
     userId: sessionData?.user.id,
   } as Booking;
 
+  const today = new Date(new Date().setDate(new Date().getDate() - 1));
+  const bookingDateFutureLimit = new Date(
+    new Date().setDate(new Date().getDate() + 21)
+  );
+
+  const getBookableHours = () => {
+    const timeSlots = [];
+
+    for (let i = 9; i <= 21; i++) {
+      timeSlots.push(setHours(setMinutes(0), i));
+      if (i < 21) {
+        timeSlots.push(setHours(setMinutes(30), i));
+      }
+    }
+    return timeSlots;
+  };
+
+  const filterPassedTime = (time: Date) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(time);
+
+    return currentDate.getTime() < selectedDate.getTime();
+  };
+
   const addBooking = () => {
     if (!validBooking) {
       return null;
@@ -79,8 +118,6 @@ const Booking: NextPage = () => {
 
     if (!!bookingToEdit) {
       const newDate = new Date(`${date}T${time}`);
-      console.log({ court });
-      console.log({ bookingToEdit });
 
       updateBooking.mutate({
         id: bookingToEdit.id,
@@ -90,9 +127,12 @@ const Booking: NextPage = () => {
         duration,
       });
     } else {
+      const formattedDate = date.toLocaleString("sv-SE");
+      console.log("DAATE", formattedDate.replace(" ", "T"));
+
       createBooking.mutate({
         userId: sessionData?.user.id,
-        date: new Date(`${date}T${time}`),
+        date: new Date(formattedDate.replace(" ", "T")),
         court,
       });
     }
@@ -115,7 +155,7 @@ const Booking: NextPage = () => {
       <div className="sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-md shadow-stone-900">
         {router.query.booking ? "Change booking" : "Add booking"}
       </div>
-      <main className="min-w-sm pd-3 flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
             <h2 className="text-center text-2xl text-white">
@@ -127,34 +167,42 @@ const Booking: NextPage = () => {
             {sessionData?.user.id && (
               <div>
                 <label className="label">
-                  <span className="label-text text-white">When</span>
+                  <span className="label-text text-white">
+                    When are you playing?
+                  </span>
                 </label>
-                <label className="input-group pb-2">
-                  <span>Date</span>
-                  <input
-                    onChange={({ target }) => {
-                      setDate(target.value);
+                <div>
+                  <DatePicker
+                    id="booking-date-picker"
+                    className="p-3"
+                    showTimeSelect
+                    selected={date}
+                    placeholderText="Pick date and time"
+                    timeFormat="HH:mm"
+                    dateFormat="yyyy-MM-dd - HH:mm"
+                    filterTime={filterPassedTime}
+                    includeTimes={getBookableHours()}
+                    includeDateIntervals={[
+                      {
+                        start: today,
+                        end: bookingDateFutureLimit,
+                      },
+                    ]}
+                    onChange={(date: Date) => {
+                      setDate(date);
+                      setTime(
+                        date.toLocaleTimeString("sv-SE", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      );
                     }}
-                    defaultValue={date}
-                    type="date"
-                    className="input-bordered input"
                   />
-                </label>
-                <label className="input-group">
-                  <span>Time</span>
-                  <input
-                    defaultValue={time}
-                    onChange={({ target }) => {
-                      setTime(target.value);
-                    }}
-                    type="time"
-                    className="input-bordered input"
-                  />
-                </label>
+                </div>
 
                 <br />
                 <label className="label">
-                  <span className="label-text text-white">Duration</span>
+                  <span className="label-text text-white">For how long?</span>
                 </label>
                 <label className="input-group">
                   <span>Duration</span>
@@ -173,7 +221,7 @@ const Booking: NextPage = () => {
                 </label>
                 <br />
                 <label className="label">
-                  <span className="label-text text-white">Where</span>
+                  <span className="label-text text-white">What court?</span>
                 </label>
                 <label className="input-group">
                   <span>Court</span>

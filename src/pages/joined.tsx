@@ -22,7 +22,6 @@ const Joined: NextPage = () => {
       <div className="text-gray sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-md shadow-stone-900">
         Joined games
       </div>
-
       {isInitialLoadingBookings || !bookings?.length ? (
         <div className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
           {isInitialLoadingBookings ? (

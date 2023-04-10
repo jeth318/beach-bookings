@@ -5,3 +5,7 @@
 html {
   background-color: black;
 }
+
+#booking-date-picker {
+  border-radius: 0.5rem;
+}
