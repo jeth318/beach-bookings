@@ -93,79 +93,73 @@ export const PlayersTable = ({ booking }: Props) => {
         </div>
       </div>
 
-      <table className="table-compact collapse table w-full overflow-x-auto">
-        {/* head */}
-        <thead>
-          <tr>
-            <th colSpan={2}></th>
-          </tr>
-        </thead>
-        <tbody>
-          {!playersInBooking ||
-          isInitialLodaingBookings ||
-          isInitialLodaingUsers ? (
-            <tr>
-              <td colSpan={2}>
-                <div className="flex justify-center">
-                  <BeatLoader size={20} color="#36d7b7" />
+      {!playersInBooking ||
+      isInitialLodaingBookings ||
+      isInitialLodaingUsers ? (
+        <div>
+          <div>
+            <div className="flex justify-center">
+              <BeatLoader size={20} color="#36d7b7" />
+            </div>
+          </div>
+        </div>
+      ) : (
+        playersInBooking?.map((player) => {
+          return (
+            <div
+              key={player.id}
+              style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
+              className="flex flex-row justify-between bg-slate-300 p-2"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="avatar">
+                  <div className="mask mask-squircle h-12 w-12">
+                    <Image
+                      height={100}
+                      width={100}
+                      alt="user-icon-default"
+                      src={player.image || "/user-default.png"}
+                    />
+                  </div>
                 </div>
-              </td>
-            </tr>
-          ) : (
-            playersInBooking?.map((player) => {
-              return (
-                <tr key={player.id}>
-                  <td>
-                    <div className="flex items-center space-x-3">
-                      <div className="avatar">
-                        <div className="mask mask-squircle h-12 w-12">
-                          <Image
-                            height={100}
-                            width={100}
-                            alt="user-icon-default"
-                            src={player.image || "/user-default.png"}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <div className="font-bold">{player.name}</div>
-                        <div
-                          className="text-sm opacity-50"
-                          style={{
-                            display: "inline-block",
-                            width: 210,
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
-                          {player.email}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{ textAlign: "center" }}>
-                    <label
-                      onClick={() => setPlayerToRemove(player.id)}
-                      className={`btn-outline btn-sm btn ${
-                        playersInBooking.length < 2 ? "btn-disabled" : ""
-                      }`}
-                      htmlFor="action-modal-player-remove"
-                    >
-                      Kick 👋
-                    </label>
-                  </td>
-                </tr>
-              );
-            })
-          )}
-        </tbody>
-        {/* foot */}
-        <tfoot>
-          <tr>
-            <th colSpan={2}></th>
-          </tr>
-        </tfoot>
-      </table>
+                <div>
+                  <div
+                    style={{
+                      overflow: "hidden",
+                      maxWidth: "150px",
+                      textOverflow: "ellipsis",
+                    }}
+                    className="font-bold"
+                  >
+                    {player.name}
+                  </div>
+                  <div
+                    className="hej text-sm opacity-50"
+                    style={{
+                      overflow: "hidden",
+                      maxWidth: "150px",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {player.email}
+                  </div>
+                </div>
+              </div>
+              <div className="self-center pr-2" style={{ textAlign: "center" }}>
+                <label
+                  onClick={() => setPlayerToRemove(player.id)}
+                  className={`btn-outline btn-sm btn ${
+                    playersInBooking.length < 2 ? "btn-disabled" : ""
+                  }`}
+                  htmlFor="action-modal-player-remove"
+                >
+                  Kick 👋
+                </label>
+              </div>
+            </div>
+          );
+        })
+      )}
     </div>
   );
 };

@@ -125,11 +125,11 @@ const Booking: NextPage = () => {
         ) : (
           <div className="container p-4">
             {sessionData?.user.id && (
-              <div className="form-control">
+              <div>
                 <label className="label">
                   <span className="label-text text-white">When</span>
                 </label>
-                <label className="input-group">
+                <label className="input-group pb-2">
                   <span>Date</span>
                   <input
                     onChange={({ target }) => {
@@ -139,6 +139,9 @@ const Booking: NextPage = () => {
                     type="date"
                     className="input-bordered input"
                   />
+                </label>
+                <label className="input-group">
+                  <span>Time</span>
                   <input
                     defaultValue={time}
                     onChange={({ target }) => {
@@ -153,29 +156,21 @@ const Booking: NextPage = () => {
                 <label className="label">
                   <span className="label-text text-white">Duration</span>
                 </label>
-                <div className="btn-group">
-                  <button
-                    onClick={(e) => {
-                      const target = e.target as HTMLTextAreaElement;
-
-                      setDuration(parseInt(target.value));
+                <label className="input-group">
+                  <span>Duration</span>
+                  <select
+                    className="select-bordered select"
+                    onChange={(val) => {
+                      setDuration(parseInt(val.target.value));
                     }}
-                    className={`btn ${duration === 60 ? "btn-active" : ""}`}
-                    value={60}
+                    value={duration || "Select duration"}
                   >
-                    60 min
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      const target = e.target as HTMLTextAreaElement;
-                      setDuration(parseInt(target.value));
-                    }}
-                    className={`btn ${duration === 90 ? "btn-active" : ""}`}
-                    value={90}
-                  >
-                    90 min
-                  </button>
-                </div>
+                    <option disabled>Select duration</option>
+                    <option value={60}>60 min</option>
+                    <option value={90}>90 min</option>
+                  </select>
+                  s
+                </label>
                 <br />
                 <label className="label">
                   <span className="label-text text-white">Where</span>
@@ -208,7 +203,7 @@ const Booking: NextPage = () => {
                   <span className="label-text text-white">Players</span>
                 </label>
                 <PlayersTable booking={bookingToEdit || defaultBooking} />
-                <div className="btn-group btn-group-vertical pt-5">
+                <div className="btn-group btn-group-vertical flex pt-5">
                   <Link className="btn-warning btn text-white" href="/">
                     Back
                   </Link>
@@ -218,7 +213,7 @@ const Booking: NextPage = () => {
                       validBooking ? "btn-success" : "btn-disabled"
                     } btn text-white`}
                   >
-                    SAVE
+                    Save
                   </button>
                 </div>
               </div>
