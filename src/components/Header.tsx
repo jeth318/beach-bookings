@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const Header = ({ noBoxShadow }: Props) => {
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status: sessionStatus } = useSession();
 
   const avatar = sessionData?.user.image;
 
@@ -20,11 +20,14 @@ export const Header = ({ noBoxShadow }: Props) => {
     >
       <div className="navbar-start">
         <>
-          <Link className="hidden text-lg md:hidden lg:flex" href="/">
+          <Link
+            className="smooth-render-in-slower hidden text-lg md:hidden lg:flex"
+            href="/"
+          >
             🏐 ßeach ßookings 🏖️
           </Link>
-          {sessionData?.user.id && (
-            <div className="dropdown-start dropdown z-50 lg:hidden">
+          {sessionStatus === "authenticated" && (
+            <div className="smooth-render-in-slower dropdown-start dropdown z-50 text-lg lg:hidden">
               <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -46,31 +49,31 @@ export const Header = ({ noBoxShadow }: Props) => {
                 className="v dropdown-content menu rounded-box menu-compact mt-3 w-48 bg-base-100 p-2 shadow-md shadow-stone-900"
               >
                 <li>
-                  <Link href="/booking" className="p-1">
+                  <Link href="/booking" className="p-1 text-lg">
                     <CustomIcon path="/svg/add-circle.svg" />
                     Add booking
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="p-1">
+                  <Link href="/" className="p-1 text-lg">
                     <CustomIcon path="/svg/home.svg" />
                     All
                   </Link>
                 </li>
                 <li>
-                  <Link className="p-1" href="/joined">
+                  <Link className="p-1 text-lg" href="/joined">
                     <CustomIcon path="/svg/handshake.svg" />
                     Joins
                   </Link>
                 </li>
                 <li>
-                  <Link className="p-1" href="/created">
+                  <Link className="p-1 text-lg" href="/created">
                     <CustomIcon path="/svg/bookings-white.svg" />
                     My bookings
                   </Link>
                 </li>
                 <li>
-                  <Link className="p-1" href="/history">
+                  <Link className="p-1 text-lg" href="/history">
                     <CustomIcon path="/svg/history.svg" width={15} />
                     History
                   </Link>
@@ -88,7 +91,7 @@ export const Header = ({ noBoxShadow }: Props) => {
       <div className="navbar-end">
         {sessionData?.user?.id ? (
           <>
-            <div className="navbar-center hidden lg:flex">
+            <div className="smooth-render-in-slower navbar-center hidden lg:flex">
               <ul className="menu menu-horizontal px-5">
                 <li>
                   <Link href="/booking" className="gap-1 p-2">
@@ -135,11 +138,11 @@ export const Header = ({ noBoxShadow }: Props) => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu rounded-box menu-compact z-50 mt-3 w-28 bg-base-100 p-2 shadow-md shadow-black"
+                className="dropdown-content menu rounded-box menu-compact z-50 mt-3 w-32 bg-base-100 p-2 shadow-md shadow-black"
               >
                 <li>
                   <a
-                    className="whitespace-nowrap p-1"
+                    className="whitespace-nowrap p-1 text-lg"
                     onClick={() => void signOut()}
                   >
                     <svg
@@ -167,14 +170,16 @@ export const Header = ({ noBoxShadow }: Props) => {
             </div>
           </>
         ) : (
-          <div>
-            <button
-              onClick={() => void signIn()}
-              className="btn-outline btn-sm btn self-end"
-            >
-              Login
-            </button>
-          </div>
+          sessionStatus === "unauthenticated" && (
+            <div className="smooth-render-in-slower">
+              <button
+                onClick={() => void signIn()}
+                className="btn-outline btn-sm btn self-end"
+              >
+                Login
+              </button>
+            </div>
+          )
         )}
       </div>
     </div>
