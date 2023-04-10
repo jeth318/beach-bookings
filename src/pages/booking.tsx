@@ -112,7 +112,7 @@ const Booking: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header noBoxShadow />
-      <div className="sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg shadow-xl shadow-stone-900">
+      <div className="sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-md shadow-stone-900">
         Add booking
       </div>
       <main className="min-w-sm pd-3 flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">

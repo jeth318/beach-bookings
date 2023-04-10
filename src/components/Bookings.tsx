@@ -229,7 +229,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
               <div className="border-spacing card-compact card">
                 <div
                   className={`card-body min-w-min flex-row justify-between text-primary-content ${
-                    isUserInBooking(booking) ? "bg-primary" : ""
+                    isUserInBooking(booking) ? " bg-indigo-800" : ""
                   }`}
                 >
                   <div>

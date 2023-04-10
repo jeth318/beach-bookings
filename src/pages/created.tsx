@@ -15,7 +15,7 @@ const Created: NextPage = () => {
   return (
     <div>
       <Header noBoxShadow />
-      <div className="sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-xl shadow-stone-900">
+      <div className="sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-md shadow-stone-900">
         Booked by me
       </div>
       <div style={{ backgroundColor: "#2f2f2f" }}>

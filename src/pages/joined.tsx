@@ -15,7 +15,7 @@ const Joined: NextPage = () => {
   return (
     <div>
       <Header noBoxShadow />
-      <div className="text-gray sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-xl shadow-stone-900">
+      <div className="text-gray sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-md shadow-stone-900">
         Joined games
       </div>
       <div style={{ backgroundColor: "#2f2f2f" }}>
