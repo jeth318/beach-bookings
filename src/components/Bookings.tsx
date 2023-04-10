@@ -13,13 +13,13 @@ type Bookings = {
 const today = new Date().getTime();
 
 const days = [
+  "Sunday",
   "Monday",
   "Tuesday",
   "Wednsday",
   "Thursday",
   "Friday",
   "Saturday",
-  "Sunday",
 ];
 
 const months = [
