@@ -33,8 +33,8 @@ const Home: NextPage = () => {
                 style={{ borderRadius: "50%" }}
                 alt="frog"
                 src="/cig-frog.gif"
-                width={200}
-                height={200}
+                width={210}
+                height={210}
               />
               <h2 className="text-2xl text-white">No bookings found! 😥🌴</h2>
             </div>
