@@ -209,7 +209,7 @@ const Booking: NextPage = () => {
                 </label>
                 <PlayersTable booking={bookingToEdit || defaultBooking} />
                 <div className="btn-group btn-group-vertical pt-5">
-                  <Link className="btn-warning btn" href="/">
+                  <Link className="btn-warning btn text-white" href="/">
                     Back
                   </Link>
                   <button

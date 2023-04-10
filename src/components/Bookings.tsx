@@ -283,7 +283,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                             booking.players.includes(session.data.user.id) && (
                               <button
                                 onClick={() => leaveGame(booking)}
-                                className="btn-warning btn-sm btn "
+                                className="btn-warning btn-sm btn text-white"
                               >
                                 {leaving.isWorking &&
                                 leaving.bookingId === booking.id ? (
@@ -301,7 +301,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                                   booking.players.length < 4
                                     ? "btn-success"
                                     : "hidden"
-                                } btn-sm btn `}
+                                } btn-sm btn text-white`}
                               >
                                 {joining.isWorking &&
                                 booking.id === joining.bookingId ? (
@@ -313,7 +313,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                             )}
                           {session.data.user.id === booking?.userId &&
                             !historyOnly && (
-                              <button className="btn-sm btn">
+                              <button className="btn-sm btn text-white">
                                 <Link
                                   href={{
                                     pathname: "/booking",
@@ -329,7 +329,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                               <label
                                 htmlFor="action-modal"
                                 onClick={() => void setBookingToDelete(booking)}
-                                className="btn-error btn-sm btn "
+                                className="btn-error btn-sm btn text-white"
                               >
                                 {deleting.isWorking &&
                                 booking.id === deleting.bookingId ? (
