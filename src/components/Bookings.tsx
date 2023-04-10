@@ -216,7 +216,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                 </label>
                 <label
                   htmlFor="action-modal"
-                  className="btn-error btn "
+                  className="btn-error btn text-white"
                   onClick={() => {
                     deleteBooking();
                   }}
