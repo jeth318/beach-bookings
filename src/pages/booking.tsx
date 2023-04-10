@@ -162,20 +162,23 @@ const Booking: NextPage = () => {
             </h2>
           </div>
         ) : (
-          <div className="container h-screen max-w-md p-4">
+          <div className="container max-w-md p-4">
             {sessionData?.user.id && (
-              <div className="h-screen">
+              <div>
                 <label className="label">
                   <span className="label-text text-white">
                     When are you playing?
                   </span>
                 </label>
-                <div>
+                <div className="custom-datepicker-wrapper">
                   <DatePicker
+                    popperPlacement="top"
                     id="booking-date-picker"
                     className="p-3"
                     showTimeSelect
                     selected={date}
+                    open={true}
+                    fixedHeight={true}
                     placeholderText="Pick date and time"
                     timeFormat="HH:mm"
                     dateFormat="yyyy-MM-dd - HH:mm"
@@ -202,10 +205,18 @@ const Booking: NextPage = () => {
                         })
                       );
                     }}
+                    popperModifiers={[
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          rootBoundary: "viewport",
+                          tether: true,
+                          altAxis: true,
+                        },
+                      },
+                    ]}
                   />
                 </div>
-
-                <br />
                 <label className="label">
                   <span className="label-text text-white">For how long?</span>
                 </label>
@@ -224,7 +235,6 @@ const Booking: NextPage = () => {
                   </select>
                   s
                 </label>
-                <br />
                 <label className="label">
                   <span className="label-text text-white">What court?</span>
                 </label>
@@ -252,7 +262,6 @@ const Booking: NextPage = () => {
                     <option>12</option>
                   </select>
                 </label>
-                <br />
                 <label className="label">
                   <span className="label-text text-white">Players</span>
                 </label>

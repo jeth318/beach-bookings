@@ -2,10 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
+html,
+body {
   background-color: black;
+  height: 100%;
 }
 
 #booking-date-picker {
   border-radius: 0.5rem;
+}
+
+.react-datepicker-popper {
+  position: relative !important;
+  transform: none !important;
+}
+
+.react-datepicker {
+  display: flex !important;
+}
+
+.react-datepicker__month-container {
+  width: 100% !important;
+}
+
+.react-datepicker__time-container {
+  width: 25%;
+}
+
+.custom-datepicker-wrapper {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.react-datepicker-popper[data-placement="bottom"] {
+  color: red !important;
+}
+
+.react-datepicker-popper[data-placement="top"] {
+  color: red !important;
+}
+
+@media (max-width: 360px) {
+  .react-datepicker {
+    flex-direction: column;
+  }
+  .react-datepicker__time-container {
+    width: 100% !important;
+  }
+  .react-datepicker__month-container {
+    width: 100% !important;
+  }
+
+  .react-datepicker__time  {
+    height: "100px" !important;
+    overflow: hidden;
+  }
+
+  .react-datepicker__time-box  {
+    height: "100px" !important;
+    width: 100% !important;
+  }
+
+  .react-datepicker__navigation--next--with-time:not(
+      .react-datepicker__navigation--next--with-today-button
+    ) {
+    right: 5px !important;
+  }
+
+  .react-datepicker__time-list {
+    height: "40px" !important;
+  }
 }
