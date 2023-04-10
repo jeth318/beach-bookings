@@ -256,7 +256,10 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
       </div>
       {bookingsByDate.map((booking: Booking) => {
         return (
-          <div key={booking.id} className="border-b border-zinc-400">
+          <div
+            key={booking.id}
+            className="smooth-render-in border-b border-zinc-400"
+          >
             <div className="border-spacing card-compact card">
               <div
                 className={`card-body min-w-min flex-row justify-between text-primary-content ${
@@ -275,15 +278,24 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                         </h2>
                         <div className="text-lg">{parseTime(booking)}</div>
                         <div className="self-start pt-4">
-                          {getUsersInBooking(users, booking).map(
-                            (user: User) => {
-                              return (
-                                <div key={user.id}>
-                                  {user.name}{" "}
-                                  {booking.userId === user.id ? "👑" : ""}
-                                </div>
-                              );
-                            }
+                          {isInitialLoadingUsers ? (
+                            <div className="flex justify-start">
+                              <BeatLoader size={10} color="#36d7b7" />
+                            </div>
+                          ) : (
+                            getUsersInBooking(users, booking).map(
+                              (user: User) => {
+                                return (
+                                  <div
+                                    key={user.id}
+                                    className="smooth-render-in"
+                                  >
+                                    {user.name}{" "}
+                                    {booking.userId === user.id ? "👑" : ""}
+                                  </div>
+                                );
+                              }
+                            )
                           )}
                         </div>
                       </div>
