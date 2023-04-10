@@ -115,19 +115,17 @@ const Booking: NextPage = () => {
     if (!validBooking) {
       return null;
     }
+    const formattedDate = date.toLocaleString("sv-SE");
 
     if (!!bookingToEdit) {
-      const newDate = new Date(`${date}T${time}`);
-
       updateBooking.mutate({
         id: bookingToEdit.id,
-        date: newDate,
+        date: new Date(formattedDate.replace(" ", "T")),
         court,
         players: bookingToEdit.players,
         duration,
       });
     } else {
-      const formattedDate = date.toLocaleString("sv-SE");
       console.log("DAATE", formattedDate.replace(" ", "T"));
 
       createBooking.mutate({
