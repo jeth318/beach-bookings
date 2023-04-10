@@ -40,7 +40,9 @@ const Joined: NextPage = () => {
                 width={210}
                 height={210}
               />
-              <h2 className="text-2xl text-white">No bookings found! 😥🌴</h2>
+              <h2 className="text-2xl text-white">
+                Ey, looking quite lonely. You better find a game to join 🐸
+              </h2>
             </div>
           )}
         </div>

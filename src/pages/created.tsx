@@ -23,7 +23,7 @@ const Created: NextPage = () => {
     <div>
       <Header noBoxShadow />
       <div className="text-gray sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-md shadow-stone-900">
-        Booked by me
+        My bookings
       </div>
 
       {isInitialLoadingBookings || !bookings?.length ? (
@@ -43,7 +43,9 @@ const Created: NextPage = () => {
                 width={210}
                 height={210}
               />
-              <h2 className="text-2xl text-white">No bookings found! 😥🌴</h2>
+              <h2 className="text-2xl text-white">
+                There are no booknings created by you. 🐸
+              </h2>
             </div>
           )}
         </div>

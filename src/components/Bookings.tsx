@@ -5,6 +5,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { log } from "console";
+import Image from "next/image";
 
 type Bookings = {
   data: Booking[];
@@ -197,6 +198,41 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
         return booking.date.getTime() >= today;
       }
     });
+
+  if (isInitialLoadingUsers || isInitialLoadingBookings) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center">
+        <h2 className="pb-4 text-2xl ">Loading bookings</h2>
+        <BeatLoader size={20} color="#36d7b7" />
+      </div>
+    );
+  }
+
+  if (!bookingsByDate.length) {
+    const frogText = joinedOnly
+      ? "Ey, looking quite lonely. You better find a game to join 🐸"
+      : createdOnly
+      ? "You haven't created any bookings here 🐸"
+      : historyOnly
+      ? "No old bookings were found. Wierd... 🐸"
+      : "No bookings found. Either we have to step it up and start playing and adding bookings, or else there is a bug somewhere in the code 🐸";
+
+    return (
+      <div className="flex h-screen flex-row items-center">
+        <div className="flex flex-col items-center justify-center pb-14">
+          <Image
+            style={{ borderRadius: "50%" }}
+            alt="frog"
+            src="/cig-frog.gif"
+            width={210}
+            height={210}
+          />
+          <div className="p-4 text-center text-xl text-white">{frogText}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div>
@@ -228,135 +264,128 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
           </div>
         </div>
       </div>
-      {!isInitialLoadingUsers && !isInitialLoadingBookings ? (
-        bookingsByDate.map((booking: Booking) => {
-          return (
-            <div key={booking.id} className="border-b border-zinc-400">
-              <div className="border-spacing card-compact card">
-                <div
-                  className={`card-body min-w-min flex-row justify-between text-primary-content ${
-                    isUserInBooking(booking) ? " bg-indigo-800" : ""
-                  }`}
-                >
-                  <div>
-                    <div className="container">
-                      <div className="flex">
-                        <div>
-                          <h2 className="card-title text-2xl">
-                            {parseDate(booking)}
-                            {booking.players.length === 4 && " ✅"}
-                          </h2>
-                          <div className="text-lg">{parseTime(booking)}</div>
-                          <div className="self-start pt-4">
-                            {getUsersInBooking(users, booking).map(
-                              (user: User) => {
-                                return (
-                                  <div key={user.id}>
-                                    {user.name}{" "}
-                                    {booking.userId === user.id ? "👑" : ""}
-                                  </div>
-                                );
-                              }
-                            )}
-                          </div>
+      {bookingsByDate.map((booking: Booking) => {
+        return (
+          <div key={booking.id} className="border-b border-zinc-400">
+            <div className="border-spacing card-compact card">
+              <div
+                className={`card-body min-w-min flex-row justify-between text-primary-content ${
+                  isUserInBooking(booking) ? " bg-indigo-800" : ""
+                }`}
+              >
+                <div>
+                  <div className="container">
+                    <div className="flex">
+                      <div>
+                        <h2 className="card-title text-2xl">
+                          {parseDate(booking)}
+                          {booking.players.length === 4 && " ✅"}
+                        </h2>
+                        <div className="text-lg">{parseTime(booking)}</div>
+                        <div className="self-start pt-4">
+                          {getUsersInBooking(users, booking).map(
+                            (user: User) => {
+                              return (
+                                <div key={user.id}>
+                                  {user.name}{" "}
+                                  {booking.userId === user.id ? "👑" : ""}
+                                </div>
+                              );
+                            }
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div>
-                    <div className="flex flex-col justify-between">
-                      <div className="self-start pb-4">
-                        <div className="">{booking.duration} minutes</div>
-                        <div>Court {booking.court}</div>
-                      </div>
-                      <div
-                        className={`radial-progress self-end text-lg font-bold ${getProgressAccent(
-                          booking
-                        )}`}
-                        style={{
-                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                          // @ts-ignore
-                          "--value": booking.players.length * 25,
-                          "--thickness": "3px",
-                        }}
-                      >
-                        {booking.players.length}/4
-                      </div>
-                      <br />
-                      {session.data?.user.id && !historyOnly && (
-                        <div className="btn-group btn-group-vertical flex">
-                          {booking.players.includes(session.data.user.id) && (
-                            <button
-                              onClick={() => leaveGame(booking)}
-                              className="btn-warning btn-sm btn text-white"
-                            >
-                              {leaving.isWorking &&
-                              leaving.bookingId === booking.id ? (
-                                <BeatLoader size={10} color="white" />
-                              ) : (
-                                "Leave"
-                              )}
-                            </button>
-                          )}
-                          {!booking.players.includes(session.data.user.id) && (
-                            <button
-                              onClick={() => joinGame(booking)}
-                              className={`${
-                                booking.players.length < 4
-                                  ? "btn-success"
-                                  : "hidden"
-                              } btn-sm btn text-white`}
-                            >
-                              {joining.isWorking &&
-                              booking.id === joining.bookingId ? (
-                                <BeatLoader size={10} color="white" />
-                              ) : (
-                                "Join"
-                              )}
-                            </button>
-                          )}
-                          {session.data.user.id === booking?.userId && (
-                            <button className="btn-sm btn text-white">
-                              <Link
-                                href={{
-                                  pathname: "/booking",
-                                  query: { booking: booking.id },
-                                }}
-                              >
-                                Edit
-                              </Link>
-                            </button>
-                          )}
-                          {session.data.user.id === booking?.userId &&
-                            !historyOnly && (
-                              <label
-                                htmlFor="action-modal"
-                                onClick={() => void setBookingToDelete(booking)}
-                                className="btn-error btn-sm btn text-white"
-                              >
-                                {deleting.isWorking &&
-                                booking.id === deleting.bookingId ? (
-                                  <BeatLoader size={10} color="white" />
-                                ) : (
-                                  "Delete"
-                                )}
-                              </label>
-                            )}
-                        </div>
-                      )}
+                </div>
+                <div>
+                  <div className="flex flex-col justify-between">
+                    <div className="self-start pb-4">
+                      <div className="">{booking.duration} minutes</div>
+                      <div>Court {booking.court}</div>
                     </div>
+                    <div
+                      className={`radial-progress self-end text-lg font-bold ${getProgressAccent(
+                        booking
+                      )}`}
+                      style={{
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        "--value": booking.players.length * 25,
+                        "--thickness": "3px",
+                      }}
+                    >
+                      {booking.players.length}/4
+                    </div>
+                    <br />
+                    {session.data?.user.id && !historyOnly && (
+                      <div className="btn-group btn-group-vertical flex">
+                        {booking.players.includes(session.data.user.id) && (
+                          <button
+                            onClick={() => leaveGame(booking)}
+                            className="btn-warning btn-sm btn text-white"
+                          >
+                            {leaving.isWorking &&
+                            leaving.bookingId === booking.id ? (
+                              <BeatLoader size={10} color="white" />
+                            ) : (
+                              "Leave"
+                            )}
+                          </button>
+                        )}
+                        {!booking.players.includes(session.data.user.id) && (
+                          <button
+                            onClick={() => joinGame(booking)}
+                            className={`${
+                              booking.players.length < 4
+                                ? "btn-success"
+                                : "hidden"
+                            } btn-sm btn text-white`}
+                          >
+                            {joining.isWorking &&
+                            booking.id === joining.bookingId ? (
+                              <BeatLoader size={10} color="white" />
+                            ) : (
+                              "Join"
+                            )}
+                          </button>
+                        )}
+                        {session.data.user.id === booking?.userId && (
+                          <button className="btn-sm btn text-white">
+                            <Link
+                              href={{
+                                pathname: "/booking",
+                                query: { booking: booking.id },
+                              }}
+                            >
+                              Edit
+                            </Link>
+                          </button>
+                        )}
+                        {session.data.user.id === booking?.userId &&
+                          !historyOnly && (
+                            <label
+                              htmlFor="action-modal"
+                              onClick={() => void setBookingToDelete(booking)}
+                              className="btn-error btn-sm btn text-white"
+                            >
+                              {deleting.isWorking &&
+                              booking.id === deleting.bookingId ? (
+                                <BeatLoader size={10} color="white" />
+                              ) : (
+                                "Delete"
+                              )}
+                            </label>
+                          )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-          );
-        })
-      ) : (
-        <div className="flex h-screen flex-col items-center justify-center">
-          <h2 className="pb-4 text-2xl ">Loading bookings</h2>
-          <BeatLoader size={20} color="#36d7b7" />
-        </div>
-      )}
+          </div>
+        );
+      })}
     </div>
   );
 };
