@@ -23,28 +23,12 @@ const Joined: NextPage = () => {
       <div className="text-gray sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-md shadow-stone-900">
         Joined games
       </div>
-      {isInitialLoadingBookings || !bookings?.length ? (
+      {isInitialLoadingBookings ? (
         <div className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-          {isInitialLoadingBookings ? (
-            <div className="flex flex-col items-center justify-center">
-              <h2 className="pb-4 text-2xl text-white">Loading bookings</h2>
-              <BeatLoader size={20} color="#36d7b7" />
-            </div>
-          ) : (
-            <div className="flex flex-col">
-              <Image
-                className="self-center pb-4"
-                style={{ borderRadius: "50%" }}
-                alt="frog"
-                src="/cig-frog.gif"
-                width={210}
-                height={210}
-              />
-              <h2 className="text-2xl text-white">
-                Ey, looking quite lonely. You better find a game to join 🐸
-              </h2>
-            </div>
-          )}
+          <div className="flex flex-col items-center justify-center">
+            <h2 className="pb-4 text-2xl text-white">Loading bookings</h2>
+            <BeatLoader size={20} color="#36d7b7" />
+          </div>
         </div>
       ) : (
         <main className="h-screen" style={{ backgroundColor: "currentcolor" }}>

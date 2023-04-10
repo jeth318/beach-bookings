@@ -199,20 +199,11 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
       }
     });
 
-  if (isInitialLoadingUsers || isInitialLoadingBookings) {
-    return (
-      <div className="flex h-screen flex-col items-center justify-center">
-        <h2 className="pb-4 text-2xl ">Loading bookings</h2>
-        <BeatLoader size={20} color="#36d7b7" />
-      </div>
-    );
-  }
-
   if (!bookingsByDate.length) {
     const frogText = joinedOnly
-      ? "Ey, looking quite lonely. You better find a game to join 🐸"
+      ? "Ey, looking quite lonely. You'd better find a game to join 🐸"
       : createdOnly
-      ? "You haven't created any bookings here 🐸"
+      ? "You have no active bookings 🐸"
       : historyOnly
       ? "No old bookings were found. Wierd... 🐸"
       : "No bookings found. Either we have to step it up and start playing and adding bookings, or else there is a bug somewhere in the code 🐸";
