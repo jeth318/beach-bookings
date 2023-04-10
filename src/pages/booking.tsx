@@ -13,7 +13,7 @@ import { PlayersTable } from "~/components/PlayersTable";
 
 const Booking: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
-  const { data: users, isInitialLoading: isInitialLoadingUsers } =
+  const { isInitialLoading: isInitialLoadingUsers } =
     api.user.getAll.useQuery();
   const router = useRouter();
   const [bookingToEdit, setBookingToEdit] = useState<Booking>();
@@ -113,7 +113,7 @@ const Booking: NextPage = () => {
       </Head>
       <Header noBoxShadow />
       <div className="sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-md shadow-stone-900">
-        Add booking
+        {router.query.booking ? "Change booking" : "Add booking"}
       </div>
       <main className="min-w-sm pd-3 flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (

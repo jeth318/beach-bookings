@@ -210,7 +210,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                 </label>
                 <label
                   htmlFor="action-modal"
-                  className="btn-error btn "
+                  className="btn-error btn text-white"
                   onClick={() => {
                     deleteBooking();
                   }}
@@ -225,7 +225,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
       {!isInitialLoadingUsers && !isInitialLoadingBookings ? (
         bookingsByDate.map((booking: Booking) => {
           return (
-            <div key={booking.id} className="border-b border-zinc-400 ">
+            <div key={booking.id} className="border-b border-zinc-400">
               <div className="border-spacing card-compact card">
                 <div
                   className={`card-body min-w-min flex-row justify-between text-primary-content ${
@@ -277,68 +277,64 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                         {booking.players.length}/4
                       </div>
                       <br />
-                      {session.data?.user.id && (
+                      {session.data?.user.id && !historyOnly && (
                         <div className="btn-group btn-group-vertical flex">
-                          {!historyOnly &&
-                            booking.players.includes(session.data.user.id) && (
-                              <button
-                                onClick={() => leaveGame(booking)}
-                                className="btn-warning btn-sm btn text-white"
+                          {booking.players.includes(session.data.user.id) && (
+                            <button
+                              onClick={() => leaveGame(booking)}
+                              className="btn-warning btn-sm btn text-white"
+                            >
+                              {leaving.isWorking &&
+                              leaving.bookingId === booking.id ? (
+                                <BeatLoader size={10} color="white" />
+                              ) : (
+                                "Leave"
+                              )}
+                            </button>
+                          )}
+                          {!booking.players.includes(session.data.user.id) && (
+                            <button
+                              onClick={() => joinGame(booking)}
+                              className={`${
+                                booking.players.length < 4
+                                  ? "btn-success"
+                                  : "hidden"
+                              } btn-sm btn text-white`}
+                            >
+                              {joining.isWorking &&
+                              booking.id === joining.bookingId ? (
+                                <BeatLoader size={10} color="white" />
+                              ) : (
+                                "Join"
+                              )}
+                            </button>
+                          )}
+                          {session.data.user.id === booking?.userId && (
+                            <button className="btn-sm btn text-white">
+                              <Link
+                                href={{
+                                  pathname: "/booking",
+                                  query: { booking: booking.id },
+                                }}
                               >
-                                {leaving.isWorking &&
-                                leaving.bookingId === booking.id ? (
-                                  <BeatLoader size={10} color="white" />
-                                ) : (
-                                  "Leave"
-                                )}
-                              </button>
-                            )}
-                          {!historyOnly &&
-                            !booking.players.includes(session.data.user.id) && (
-                              <button
-                                onClick={() => joinGame(booking)}
-                                className={`${
-                                  booking.players.length < 4
-                                    ? "btn-success"
-                                    : "hidden"
-                                } btn-sm btn text-white`}
-                              >
-                                {joining.isWorking &&
-                                booking.id === joining.bookingId ? (
-                                  <BeatLoader size={10} color="white" />
-                                ) : (
-                                  "Join"
-                                )}
-                              </button>
-                            )}
-                          {session.data.user.id === booking?.userId &&
-                            !historyOnly && (
-                              <button className="btn-sm btn text-white">
-                                <Link
-                                  href={{
-                                    pathname: "/booking",
-                                    query: { booking: booking.id },
-                                  }}
-                                >
-                                  Edit
-                                </Link>
-                              </button>
-                            )}
-                          {session.data.user.id === booking?.userId &&
-                            !historyOnly && (
-                              <label
-                                htmlFor="action-modal"
-                                onClick={() => void setBookingToDelete(booking)}
-                                className="btn-error btn-sm btn text-white"
-                              >
-                                {deleting.isWorking &&
-                                booking.id === deleting.bookingId ? (
-                                  <BeatLoader size={10} color="white" />
-                                ) : (
-                                  "Delete"
-                                )}
-                              </label>
-                            )}
+                                Edit
+                              </Link>
+                            </button>
+                          )}
+                          {session.data.user.id === booking?.userId && (
+                            <label
+                              htmlFor="action-modal"
+                              onClick={() => void setBookingToDelete(booking)}
+                              className="btn-error btn-sm btn text-white"
+                            >
+                              {deleting.isWorking &&
+                              booking.id === deleting.bookingId ? (
+                                <BeatLoader size={10} color="white" />
+                              ) : (
+                                "Delete"
+                              )}
+                            </label>
+                          )}
                         </div>
                       )}
                     </div>
