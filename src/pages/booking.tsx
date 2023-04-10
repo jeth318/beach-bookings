@@ -115,7 +115,7 @@ const Booking: NextPage = () => {
       <div className="sticky top-16 z-30 bg-slate-800 p-2 text-center text-lg text-slate-400 shadow-md shadow-stone-900">
         {router.query.booking ? "Change booking" : "Add booking"}
       </div>
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="min-w-sm pd-3 flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
             <h2 className="text-center text-2xl text-white">
@@ -123,7 +123,7 @@ const Booking: NextPage = () => {
             </h2>
           </div>
         ) : (
-          <div className="container p-4">
+          <div className="container max-w-md p-4">
             {sessionData?.user.id && (
               <div>
                 <label className="label">
