@@ -162,9 +162,9 @@ const Booking: NextPage = () => {
             </h2>
           </div>
         ) : (
-          <div className="container max-w-md p-4">
+          <div className="container h-screen max-w-md p-4">
             {sessionData?.user.id && (
-              <div>
+              <div className="h-screen">
                 <label className="label">
                   <span className="label-text text-white">
                     When are you playing?
@@ -256,7 +256,7 @@ const Booking: NextPage = () => {
                   <span className="label-text text-white">Players</span>
                 </label>
                 <PlayersTable booking={bookingToEdit || defaultBooking} />
-                <div className="btn-group btn-group-vertical flex pt-5">
+                <div className="btn-group btn-group-vertical flex self-end pt-5">
                   <Link className="btn-warning btn text-white" href="/">
                     Back
                   </Link>
