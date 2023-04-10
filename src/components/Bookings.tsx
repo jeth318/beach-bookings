@@ -4,6 +4,7 @@ import Link from "next/link";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
+import { log } from "console";
 
 type Bookings = {
   data: Booking[];
@@ -176,6 +177,11 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
 
   const bookingsByDate = bookings
     .sort((a: Booking, b: Booking) => a.date.getTime() - b.date.getTime())
+    .filter((booking) =>
+      historyOnly
+        ? booking.date.getTime() < today
+        : booking.date.getTime() >= today
+    )
     .filter((booking) => {
       if (!session?.data?.user.id) {
         return booking.date.getTime() >= today;
@@ -210,7 +216,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                 </label>
                 <label
                   htmlFor="action-modal"
-                  className="btn-error btn text-white"
+                  className="btn-error btn "
                   onClick={() => {
                     deleteBooking();
                   }}
@@ -321,20 +327,21 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
                               </Link>
                             </button>
                           )}
-                          {session.data.user.id === booking?.userId && (
-                            <label
-                              htmlFor="action-modal"
-                              onClick={() => void setBookingToDelete(booking)}
-                              className="btn-error btn-sm btn text-white"
-                            >
-                              {deleting.isWorking &&
-                              booking.id === deleting.bookingId ? (
-                                <BeatLoader size={10} color="white" />
-                              ) : (
-                                "Delete"
-                              )}
-                            </label>
-                          )}
+                          {session.data.user.id === booking?.userId &&
+                            !historyOnly && (
+                              <label
+                                htmlFor="action-modal"
+                                onClick={() => void setBookingToDelete(booking)}
+                                className="btn-error btn-sm btn text-white"
+                              >
+                                {deleting.isWorking &&
+                                booking.id === deleting.bookingId ? (
+                                  <BeatLoader size={10} color="white" />
+                                ) : (
+                                  "Delete"
+                                )}
+                              </label>
+                            )}
                         </div>
                       )}
                     </div>

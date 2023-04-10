@@ -17,7 +17,7 @@ const Created: NextPage = () => {
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
   }
-  // #2f2f2f"
+
   return (
     <div>
       <Header noBoxShadow />

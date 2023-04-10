@@ -88,8 +88,9 @@ const Booking: NextPage = () => {
   } as Booking;
 
   const today = new Date(new Date().setDate(new Date().getDate() - 1));
+
   const bookingDateFutureLimit = new Date(
-    new Date().setDate(new Date().getDate() + 21)
+    new Date().setDate(new Date().getDate() + 14)
   );
 
   const getBookableHours = () => {
@@ -188,6 +189,12 @@ const Booking: NextPage = () => {
                     ]}
                     onChange={(date: Date) => {
                       setDate(date);
+                      console.log(date.getHours(), "date.getHours()");
+
+                      if (date.getHours() < 9 || date.getHours() > 21) {
+                        date.setHours(9);
+                      }
+
                       setTime(
                         date.toLocaleTimeString("sv-SE", {
                           hour: "2-digit",
