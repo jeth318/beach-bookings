@@ -263,9 +263,9 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
             <div className="border-spacing card-compact card">
               <div
                 className={`card-body min-w-min flex-row justify-between text-primary-content ${
-                  joinedOnly || createdOnly
+                  joinedOnly
                     ? "bg-gradient-to-b from-[#007621a6] to-[#062d35d8]"
-                    : ""
+                    : createdOnly ? "bg-gradient-to-b from-[#02968f91] to-[#0d0754d8]" : ""
                 }`}
               >
                 <div>
