@@ -41,7 +41,7 @@ const Home: NextPage = () => {
           )}
         </div>
       ) : (
-        <main className="dark:bg-black">
+        <main className="h-screen dark:bg-black">
           <div className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
             <Bookings />
           </div>

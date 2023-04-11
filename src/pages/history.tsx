@@ -31,7 +31,7 @@ const History: NextPage = () => {
           </div>
         </div>
       ) : (
-        <main className="bg-slate-200 dark:bg-black">
+        <main className="h-screen bg-slate-200 dark:bg-black">
           <div className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#5c5e5f] to-[#2c2d2c]">
             <Bookings historyOnly />
           </div>
