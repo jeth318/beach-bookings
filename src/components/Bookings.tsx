@@ -210,7 +210,10 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
 
     return (
       <div className="smooth-render-in flex flex-row items-center self-center">
-        <div className="flex flex-col items-center justify-center">
+        <div
+          style={{ marginTop: "12rem" }}
+          className="flex flex-col items-center justify-center"
+        >
           <Image
             style={{ borderRadius: "50%" }}
             alt="frog"

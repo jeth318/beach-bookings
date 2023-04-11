@@ -24,7 +24,10 @@ const Joined: NextPage = () => {
       <SubHeader title="Joins" />
       {isInitialLoadingBookings ? (
         <div className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-          <div className="flex flex-col items-center justify-center">
+          <div
+            style={{ marginTop: "12rem" }}
+            className="flex flex-col items-center justify-center"
+          >
             <h2 className="pb-4 text-2xl text-white">Loading bookings</h2>
             <BeatLoader size={20} color="#36d7b7" />
           </div>
