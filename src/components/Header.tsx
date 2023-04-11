@@ -46,35 +46,35 @@ export const Header = ({ noBoxShadow }: Props) => {
               </label>
               <ul
                 tabIndex={0}
-                className="v dropdown-content menu rounded-box menu-compact mt-3 w-48 bg-base-100 p-2 shadow-md shadow-stone-900"
+                className="v dropdown-content menu rounded-box menu-compact mt-3 w-40 bg-base-100 p-2 shadow-md shadow-stone-900"
               >
                 <li>
-                  <Link href="/booking" className="p-1 text-lg">
+                  <Link href="/booking" className="tex p-1  text-xl">
                     <CustomIcon path="/svg/add-circle.svg" />
-                    Add booking
+                    New
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="p-1 text-lg">
+                  <Link href="/" className="p-1 text-xl">
                     <CustomIcon path="/svg/home.svg" />
-                    All
+                    Home
                   </Link>
                 </li>
                 <li>
-                  <Link className="p-1 text-lg" href="/joined">
+                  <Link className="p-1 text-xl" href="/joined">
                     <CustomIcon path="/svg/handshake.svg" />
-                    Joins
+                    Joined
                   </Link>
                 </li>
                 <li>
-                  <Link className="p-1 text-lg" href="/created">
-                    <CustomIcon path="/svg/bookings-white.svg" />
-                    My bookings
+                  <Link className="p-1 text-xl" href="/created">
+                    <CustomIcon path="/svg/crown.svg" width={17} />
+                    Booked
                   </Link>
                 </li>
                 <li>
-                  <Link className="p-1 text-lg" href="/history">
-                    <CustomIcon path="/svg/history.svg" width={15} />
+                  <Link className="p-1 text-xl" href="/history">
+                    <CustomIcon path="/svg/history.svg" width={17} />
                     History
                   </Link>
                 </li>
