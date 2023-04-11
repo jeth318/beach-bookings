@@ -142,7 +142,7 @@ export const Header = () => {
         </Link>
       </div>
       <div className="navbar-end">
-        {sessionData?.user?.id ? (
+        {sessionStatus === "authenticated" ? (
           <>
             <div className="smooth-render-in-slower navbar-center hidden lg:flex">
               <ul className="menu menu-horizontal px-5">
@@ -179,10 +179,7 @@ export const Header = () => {
               </ul>
             </div>
             <div className="dropdown dropdown-end z-50">
-              <label
-                tabIndex={0}
-                className="smooth-render-in-slower btn-ghost btn-circle avatar btn"
-              >
+              <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
                 <div className="w-9 rounded-full">
                   <Image
                     height={100}
