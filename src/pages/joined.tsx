@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
 import { api } from "~/utils/api";
-import { BeatLoader } from "react-spinners";
 import { SubHeader } from "~/components/SubHeader";
 
 const Joined: NextPage = () => {
@@ -18,11 +17,7 @@ const Joined: NextPage = () => {
   return (
     <div>
       <SubHeader title="Joins" />
-        <main className="">
-          <div className="min-w-sm flex min-w-fit flex-col">
-            <Bookings joinedOnly />
-          </div>
-        </main>
+      <Bookings joinedOnly />
     </div>
   );
 };

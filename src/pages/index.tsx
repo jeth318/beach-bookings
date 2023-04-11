@@ -4,13 +4,8 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 import { Header } from "~/components/Header";
 import { Bookings } from "~/components/Bookings";
-import { BeatLoader } from "react-spinners";
-import Image from "next/image";
 
 const Home: NextPage = () => {
-  const { isInitialLoading: isInitialLoadingBookings, data: bookings } =
-    api.booking.getAll.useQuery();
-
   return (
     <>
       <Head>
@@ -19,8 +14,8 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="dark:bg-black">
-        <div className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-          <Bookings />
+        <div className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[rgb(6,63,26)]">
+          <Bookings   />
         </div>
       </main>
     </>

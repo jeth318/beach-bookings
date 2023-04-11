@@ -6,6 +6,7 @@ import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import Image from "next/image";
 import { CustomIcon } from "./CustomIcon";
+import { useRouter } from "next/router";
 
 type Bookings = {
   data: Booking[];
@@ -118,10 +119,10 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
     bookingId: "",
   });
 
-  const bgColor = joinedOnly
-    ? "bg-gradient-to-b from-[#007621a6] to-[#062d35d8]"
+  const bgColorDark = joinedOnly
+    ? "bg-gradient-to-b from-[#007621a6] to-[#000000]"
     : createdOnly
-    ? "bg-gradient-to-b from-[#02968f91] to-[#0d0754d8]"
+    ? "bg-gradient-to-b from-[#02968f91] to-[#000000]"
     : historyOnly
     ? "bg-gradient-to-b from-[#5c5e5f] to-[#000000]"
     : "";
@@ -201,7 +202,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
     return (
       <div
         style={{ marginTop: "-64px" }}
-        className={`flex h-screen flex-col items-center justify-center bg-gradient-to-b ${bgColor}`}
+        className={`flex h-screen flex-col items-center justify-center ${bgColorDark}`}
       >
         <h2 className="pb-4 text-2xl text-white">Loading bookings</h2>
         <BeatLoader size={20} color="#36d7b7" />
@@ -219,7 +220,13 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
       : "No bookings found. Either we have to step it up and start playing and adding bookings, or else there is a bug somewhere in the code 🐸";
 
     return (
-      <div className="smooth-render-in flex flex-row items-center self-center">
+      <div
+        style={{
+          borderBottomLeftRadius: "50px",
+          borderBottomRightRadius: "50px",
+        }}
+        className={`smooth-render-in flex-row items-center justify-center self-center pt-28 ${bgColorDark}`}
+      >
         <div className="flex flex-col items-center justify-center">
           <Image
             style={{ borderRadius: "50%" }}
@@ -273,7 +280,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
           >
             <div className=" border-spacing card-compact card">
               <div
-                className={` card-body min-w-min flex-row justify-between text-primary-content ${bgColor}`}
+                className={`card-body min-w-min flex-row justify-between text-primary-content ${bgColorDark}`}
               >
                 <div className="container">
                   <div className="flex">

@@ -23,11 +23,7 @@ const Created: NextPage = () => {
   return (
     <div>
       <SubHeader title="My bookings" />
-      <main className="bg-slate-200 dark:bg-black">
-        <div className="min-w-sm flex min-w-fit flex-col">
-          <Bookings createdOnly />
-        </div>
-      </main>
+      <Bookings createdOnly />
     </div>
   );
 };

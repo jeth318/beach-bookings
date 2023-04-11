@@ -15,11 +15,7 @@ const History: NextPage = () => {
   return (
     <div>
       <SubHeader title="History" />
-      <main className="bg-slate-200 dark:bg-black">
-        <div className="min-w-sm flex min-w-fit flex-col ">
-          <Bookings historyOnly />
-        </div>
-      </main>
+      <Bookings historyOnly />
     </div>
   );
 };
