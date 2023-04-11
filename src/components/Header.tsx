@@ -3,15 +3,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { CustomIcon } from "./CustomIcon";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
-type Props = {
-  noBoxShadow?: boolean;
-  isInitialLoading?: boolean;
-};
-
-export const Header = ({ noBoxShadow }: Props) => {
+export const Header = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const avatar = sessionData?.user.image;
+  const router = useRouter();
+
+  const noBoxShadow = router.asPath !== "/";
+
+  console.log(router.asPath);
 
   const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
 
