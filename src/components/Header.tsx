@@ -125,7 +125,7 @@ export const Header = ({ noBoxShadow }: Props) => {
                 </li>
               </ul>
             </div>
-            <div className="dropdown-end dropdown z-50">
+            <div className="dropdown dropdown-end z-50">
               <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
                 <div className="w-9 rounded-full">
                   <Image

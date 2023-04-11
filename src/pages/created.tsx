@@ -33,7 +33,7 @@ const Created: NextPage = () => {
         </div>
       ) : (
         <main className="bg-slate-200 dark:bg-black">
-          <div className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+          <div className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#000000]">
             <Bookings createdOnly />
           </div>
         </main>
