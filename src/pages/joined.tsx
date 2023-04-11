@@ -30,7 +30,7 @@ const Joined: NextPage = () => {
           </div>
         </div>
       ) : (
-        <main className="h-screen bg-slate-200 dark:bg-black">
+        <main className="bg-slate-200 dark:bg-black">
           <div className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]">
             <Bookings joinedOnly />
           </div>
