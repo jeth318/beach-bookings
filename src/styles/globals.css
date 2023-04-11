@@ -29,11 +29,9 @@ body {
 }
 
 .smooth-render-out {
+  visibility: hidden;
   opacity: 0;
-  animation-name: fadeInOpacity;
-  animation-iteration-count: 1;
-  animation-timing-function: ease-out;
-  animation-duration: 1s;
+  transition: visibility 0s 400ms, opacity 400ms linear;
 }
 
 @keyframes fadeInOpacity {

@@ -1,13 +1,11 @@
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 
-import { Header } from "~/components/Header";
 
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
 import { api } from "~/utils/api";
 import { BeatLoader } from "react-spinners";
-import Image from "next/image";
 import { SubHeader } from "~/components/SubHeader";
 
 const Joined: NextPage = () => {
@@ -20,7 +18,6 @@ const Joined: NextPage = () => {
   }
   return (
     <div>
-      <Header noBoxShadow />
       <SubHeader title="Joins" />
       {isInitialLoadingBookings ? (
         <div className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">

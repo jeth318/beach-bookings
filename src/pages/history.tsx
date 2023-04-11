@@ -21,7 +21,6 @@ const History: NextPage = () => {
   }
   return (
     <div>
-      <Header noBoxShadow />
       <SubHeader title="History" />
       {isInitialLoadingBookings || !bookings?.length ? (
         <div className="flex h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">

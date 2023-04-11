@@ -170,12 +170,6 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
     }, 1000);
   };
 
-  const isUserInBooking = (booking: Booking) => {
-    return (
-      session?.data?.user.id && booking.players.includes(session?.data?.user.id)
-    );
-  };
-
   const bookingsByDate = bookings
     .sort((a: Booking, b: Booking) => a.date.getTime() - b.date.getTime())
     .filter((booking) =>
@@ -262,7 +256,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
             key={booking.id}
             className="bookings-wrapper smooth-render-in border-b border-zinc-400"
           >
-            <div className=" border-spacing card-compact card">
+            <div className=" border-spacing card card-compact">
               <div
                 className={` card-body min-w-min flex-row justify-between text-primary-content ${
                   joinedOnly

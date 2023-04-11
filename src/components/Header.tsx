@@ -2,15 +2,34 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { CustomIcon } from "./CustomIcon";
+import { useEffect, useState } from "react";
 
 type Props = {
   noBoxShadow?: boolean;
+  isInitialLoading?: boolean;
 };
 
 export const Header = ({ noBoxShadow }: Props) => {
   const { data: sessionData, status: sessionStatus } = useSession();
-
   const avatar = sessionData?.user.image;
+
+  const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    toggleDropdown(dropdownVisible);
+  }, [dropdownVisible]);
+
+  const toggleDropdown = (value: boolean) => {
+    const dropdownElement = document.getElementById("burger-dropdown");
+    const classList = dropdownElement?.classList;
+    const hasHiddenClass = classList?.contains("hidden");
+
+    if (value && hasHiddenClass) {
+      dropdownElement?.classList.remove("hidden");
+    } else if (!value && !hasHiddenClass) {
+      dropdownElement?.classList.add("hidden");
+    }
+  };
 
   return (
     <div
@@ -27,8 +46,20 @@ export const Header = ({ noBoxShadow }: Props) => {
             🏐 ßeach ßookings 🏖️
           </Link>
           {sessionStatus === "authenticated" && (
-            <div className="smooth-render-in-slower dropdown-start dropdown z-50 text-lg lg:hidden">
-              <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
+            <div
+              className={`dropdown z-50 text-lg lg:hidden ${
+                sessionStatus === "authenticated"
+                  ? "smooth-render-in-slower"
+                  : ""
+              }`}
+            >
+              <label
+                onClick={() => {
+                  setDropdownVisible(true);
+                }}
+                tabIndex={0}
+                className="btn-ghost btn-circle avatar btn"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
@@ -46,34 +77,55 @@ export const Header = ({ noBoxShadow }: Props) => {
               </label>
               <ul
                 tabIndex={0}
-                className="v dropdown-content menu rounded-box menu-compact mt-3 w-40 bg-base-100 p-2 shadow-md shadow-stone-900"
+                id="burger-dropdown"
+                className="dropdown-content menu rounded-box menu-compact mt-3 w-40 bg-base-100 p-2 shadow-md shadow-stone-900"
               >
                 <li>
-                  <Link href="/booking" className="tex p-1  text-xl">
+                  <Link
+                    href="/booking"
+                    className="tex p-1 text-xl"
+                    onClick={() => setDropdownVisible(false)}
+                  >
                     <CustomIcon path="/svg/add-circle.svg" />
                     New
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="p-1 text-xl">
+                  <Link
+                    href="/"
+                    className="p-1 text-xl"
+                    onClick={() => setDropdownVisible(false)}
+                  >
                     <CustomIcon path="/svg/home.svg" />
                     Home
                   </Link>
                 </li>
                 <li>
-                  <Link className="p-1 text-xl" href="/joined">
+                  <Link
+                    onClick={() => setDropdownVisible(false)}
+                    className="p-1 text-xl"
+                    href="/joined"
+                  >
                     <CustomIcon path="/svg/handshake.svg" />
                     Joined
                   </Link>
                 </li>
                 <li>
-                  <Link className="p-1 text-xl" href="/created">
+                  <Link
+                    onClick={() => setDropdownVisible(false)}
+                    className="p-1 text-xl"
+                    href="/created"
+                  >
                     <CustomIcon path="/svg/crown.svg" width={17} />
                     Booked
                   </Link>
                 </li>
                 <li>
-                  <Link className="p-1 text-xl" href="/history">
+                  <Link
+                    onClick={() => setDropdownVisible(false)}
+                    className="p-1 text-xl"
+                    href="/history"
+                  >
                     <CustomIcon path="/svg/history.svg" width={17} />
                     History
                   </Link>
@@ -83,7 +135,7 @@ export const Header = ({ noBoxShadow }: Props) => {
           )}
         </>
       </div>
-      <div className="navbar-center ">
+      <div className="navbar-center">
         <Link className="text-lg lg:hidden" href="/">
           🏐 ßeach ßookings 🏖️
         </Link>
