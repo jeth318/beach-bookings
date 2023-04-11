@@ -149,25 +149,25 @@ export const Header = () => {
                 <li>
                   <Link href="/booking" className="gap-1 p-2">
                     <CustomIcon path="/svg/add-circle.svg" />
-                    Add booking
+                    New
                   </Link>
                 </li>
                 <li>
                   <Link className="gap-2 p-2" href="/">
                     <CustomIcon path="/svg/home.svg" />
-                    All
+                    Home
                   </Link>
                 </li>
                 <li>
                   <Link className="gap-2 p-2" href="/joined">
                     <CustomIcon path="/svg/handshake.svg" />
-                    Joins
+                    Joined
                   </Link>
                 </li>
                 <li>
                   <Link className="gap-2 p-2" href="/created">
-                    <CustomIcon path="/svg/bookings-white.svg" />
-                    My bookings
+                    <CustomIcon path="/svg/crown.svg" />
+                    Booked
                   </Link>
                 </li>
                 <li>
@@ -179,7 +179,10 @@ export const Header = () => {
               </ul>
             </div>
             <div className="dropdown dropdown-end z-50">
-              <label tabIndex={0} className="btn-ghost btn-circle avatar btn">
+              <label
+                tabIndex={0}
+                className="smooth-render-in-slower btn-ghost btn-circle avatar btn"
+              >
                 <div className="w-9 rounded-full">
                   <Image
                     height={100}

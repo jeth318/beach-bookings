@@ -118,8 +118,17 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
     bookingId: "",
   });
 
+  const bgColor = joinedOnly
+    ? "bg-gradient-to-b from-[#007621a6] to-[#062d35d8]"
+    : createdOnly
+    ? "bg-gradient-to-b from-[#02968f91] to-[#0d0754d8]"
+    : historyOnly
+    ? "bg-gradient-to-b from-[#5c5e5f] to-[#000000]"
+    : "";
+
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
+
   const { data: users = [], isInitialLoading: isInitialLoadingUsers } =
     api.user.getAll.useQuery();
 
@@ -128,10 +137,6 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
     refetch: refetchBookings,
     isInitialLoading: isInitialLoadingBookings,
   } = api.booking.getAll.useQuery();
-
-  if (!bookings) {
-    return null;
-  }
 
   const deleteBooking = () => {
     if (!!bookingToDelete) {
@@ -171,7 +176,7 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
   };
 
   const bookingsByDate = bookings
-    .sort((a: Booking, b: Booking) => a.date.getTime() - b.date.getTime())
+    ?.sort((a: Booking, b: Booking) => a.date.getTime() - b.date.getTime())
     .filter((booking) =>
       historyOnly
         ? booking.date.getTime() < today
@@ -181,7 +186,6 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
       if (!session?.data?.user.id) {
         return booking.date.getTime() >= today;
       }
-
       if (joinedOnly) {
         return booking.players.includes(session.data.user.id);
       } else if (createdOnly) {
@@ -193,7 +197,19 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
       }
     });
 
-  if (!bookingsByDate.length) {
+  if (isInitialLoadingBookings) {
+    return (
+      <div
+        style={{ marginTop: "-64px" }}
+        className={`flex h-screen flex-col items-center justify-center bg-gradient-to-b ${bgColor}`}
+      >
+        <h2 className="pb-4 text-2xl text-white">Loading bookings</h2>
+        <BeatLoader size={20} color="#36d7b7" />
+      </div>
+    );
+  }
+
+  if (!isInitialLoadingBookings && !bookingsByDate?.length) {
     const frogText = joinedOnly
       ? "Ey, looking quite lonely. You'd better find a game to join 🐸"
       : createdOnly
@@ -249,22 +265,15 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
           </div>
         </div>
       </div>
-
-      {bookingsByDate.map((booking: Booking) => {
+      {bookingsByDate?.map((booking: Booking) => {
         return (
           <div
             key={booking.id}
             className="bookings-wrapper smooth-render-in border-b border-zinc-400"
           >
-            <div className=" border-spacing card card-compact">
+            <div className=" border-spacing card-compact card">
               <div
-                className={` card-body min-w-min flex-row justify-between text-primary-content ${
-                  joinedOnly
-                    ? "bg-gradient-to-b from-[#007621a6] to-[#062d35d8]"
-                    : createdOnly
-                    ? "bg-gradient-to-b from-[#02968f91] to-[#0d0754d8]"
-                    : ""
-                }`}
+                className={` card-body min-w-min flex-row justify-between text-primary-content ${bgColor}`}
               >
                 <div className="container">
                   <div className="flex">
