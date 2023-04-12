@@ -1,37 +1,13 @@
-import { type InferGetStaticPropsType } from "next";
-
 import Head from "next/head";
 
 import { api } from "~/utils/api";
 import { Bookings } from "~/components/Bookings";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 
-// eslint-disable-next-line @typescript-eslint/require-await
-/* 
 export async function getStaticProps() {
-  const helpers = createServerSideHelpers({
-    router: appRouter,
-    ctx: {
-      session: null,
-      prisma,
-    },
-    transformer: superjson, // optional - adds superjson serialization
-  });
-
-  // prefetch `post.byId`
-  await helpers.booking.getAll.prefetch();
-  return {
-    props: {
-      trpcState: helpers.dehydrate(),
-    },
-    revalidate: 1,
-  };
-}
-*/
-
-export async function getStaticProps() {
-  // prefetch `post.byId`
   await serverSideHelpers.booking.getAll.prefetch();
+  await serverSideHelpers.user.getAll.prefetch();
+
   return {
     props: {
       trpcState: serverSideHelpers.dehydrate(),

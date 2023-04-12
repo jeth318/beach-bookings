@@ -128,8 +128,6 @@ const Booking = () => {
         duration,
       });
     } else {
-      console.log("DAATE", formattedDate.replace(" ", "T"));
-
       createBooking.mutate({
         userId: sessionData?.user.id,
         date: new Date(formattedDate.replace(" ", "T")),
@@ -192,7 +190,6 @@ const Booking = () => {
                     ]}
                     onChange={(date: Date) => {
                       setDate(date);
-                      console.log(date.getHours(), "date.getHours()");
 
                       if (date.getHours() < 9 || date.getHours() > 21) {
                         date.setHours(9);
