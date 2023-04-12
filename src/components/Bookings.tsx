@@ -132,6 +132,14 @@ export const Bookings = ({
     : historyOnly
     ? "bg-gradient-to-b from-[#5c5e5f] to-[#000000]"
     : "";
+
+  const bgColorCardDark = joinedOnly
+    ? "bg-gradient-to-b from-[#004313ad] to-[#001900c7]"
+    : createdOnly
+    ? "bg-gradient-to-b from-[#02968f91] to-[#00292291]"
+    : historyOnly
+    ? "bg-gradient-to-b from-[#5c5e5f] to-[#313131]"
+    : "";
   const router = useRouter();
   const isMainPage = router.asPath === "/";
   const mainPageBgColor = "bg-gradient-to-b from-[#2c0168] to-[rgb(23,1,61)]";
@@ -266,7 +274,7 @@ export const Bookings = ({
       </div>
 
       {session.status !== "loading" ? (
-        <div className={isMainPage ? mainPageBgColor : ""}>
+        <div className={`${isMainPage ? mainPageBgColor : ""}`}>
           {bookingsByDate?.map((booking: Booking) => {
             return (
               <div
@@ -275,7 +283,7 @@ export const Bookings = ({
               >
                 <div className=" border-spacing card-compact card">
                   <div
-                    className={`card-body min-w-min flex-row justify-between text-primary-content ${bgColorDark}`}
+                    className={`card-body min-w-min flex-row justify-between text-primary-content ${bgColorCardDark}`}
                   >
                     <div className="container">
                       <div className="flex">
@@ -414,8 +422,9 @@ export const Bookings = ({
         </div>
       ) : (
         <div
-          style={{ minHeight: "600px" }}
-          className={`flex items-start justify-center ${
+          className={`${
+            isMainPage ? "bg-min-height-no-submenu" : "bg-min-height"
+          } flex items-start justify-center ${
             isMainPage ? mainPageBgColor : bgColorDark
           }`}
         >
