@@ -112,6 +112,7 @@ export const Bookings = ({
   historyOnly,
 }: Props) => {
   const session = useSession();
+  const sessionUserId = session?.data?.user?.id;
   const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
   const [joining, setIsJoining] = useState<BookingAction>({
     isWorking: false,
@@ -165,9 +166,9 @@ export const Bookings = ({
   };
 
   const joinGame = (booking: Booking) => {
-    if (session.data?.user.id) {
+    if (sessionUserId) {
       setIsJoining({ isWorking: true, bookingId: booking.id });
-      const updatedPlayers = [...booking.players, session.data.user.id];
+      const updatedPlayers = [...booking.players, sessionUserId];
       updateBooking.mutate({ ...booking, players: updatedPlayers });
       setTimeout(() => {
         void refetchBookings();
@@ -179,7 +180,7 @@ export const Bookings = ({
   const leaveGame = (booking: Booking) => {
     setLeaving({ isWorking: true, bookingId: booking.id });
     const updatedPlayers = booking.players.filter(
-      (player) => player !== session.data?.user.id
+      (player) => player !== sessionUserId
     );
 
     updateBooking.mutate({ ...booking, players: updatedPlayers });
@@ -197,13 +198,13 @@ export const Bookings = ({
         : booking.date.getTime() >= today
     )
     .filter((booking) => {
-      if (!session?.data?.user.id) {
+      if (!sessionUserId) {
         return booking.date.getTime() >= today;
       }
       if (joinedOnly) {
-        return booking.players.includes(session.data.user.id);
+        return booking.players.includes(sessionUserId);
       } else if (createdOnly) {
-        return booking.userId === session.data?.user.id;
+        return booking.userId === sessionUserId;
       } else if (historyOnly) {
         return booking.date.getTime() < today;
       } else {
@@ -347,9 +348,9 @@ export const Bookings = ({
                         {booking.players.length}/4
                       </div>
                       <br />
-                      {session.data?.user?.id && !historyOnly && (
+                      {sessionUserId && !historyOnly && (
                         <div className="btn-group btn-group-vertical flex">
-                          {booking.players.includes(session.data.user.id) && (
+                          {booking.players.includes(sessionUserId) && (
                             <button
                               onClick={() => leaveGame(booking)}
                               className="btn-warning btn-sm btn text-white"
@@ -362,7 +363,7 @@ export const Bookings = ({
                               )}
                             </button>
                           )}
-                          {!booking.players.includes(session.data.user.id) && (
+                          {!booking.players.includes(sessionUserId) && (
                             <button
                               onClick={() => joinGame(booking)}
                               className={`${
