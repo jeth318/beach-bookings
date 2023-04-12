@@ -1,20 +1,38 @@
-import { type NextPage } from "next";
+import { type InferGetStaticPropsType, type NextPage } from "next";
 import { useSession } from "next-auth/react";
-
-import { Header } from "~/components/Header";
 
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
 import { api } from "~/utils/api";
-import { BeatLoader } from "react-spinners";
-import Image from "next/image";
 import { SubHeader } from "~/components/SubHeader";
+import { serverSideHelpers } from "~/utils/staticPropsUtil";
 
-const Created: NextPage = () => {
-  const { isInitialLoading: isInitialLoadingBookings, data: bookings } =
-    api.booking.getAll.useQuery();
+export async function getStaticProps() {
+  await serverSideHelpers.booking.getAll.prefetch();
+  return {
+    props: {
+      trpcState: serverSideHelpers.dehydrate(),
+    },
+    revalidate: 1,
+  };
+}
+
+const Created: NextPage = (
+  props: InferGetStaticPropsType<typeof getStaticProps>
+) => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
+
+  const bookingsQuery = api.booking.getAll.useQuery(undefined, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  if (bookingsQuery.status !== "success") {
+    // won't happen since we're using `fallback: "blocking"`
+    return <>Loading...</>;
+  }
+  const { data: bookings } = bookingsQuery;
 
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
@@ -23,7 +41,7 @@ const Created: NextPage = () => {
   return (
     <div>
       <SubHeader title="My bookings" />
-      <Bookings createdOnly />
+      <Bookings bookings={bookings || []} createdOnly />
     </div>
   );
 };

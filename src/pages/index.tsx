@@ -1,11 +1,57 @@
-import { type NextPage } from "next";
+import { type InferGetStaticPropsType } from "next";
+
 import Head from "next/head";
 
 import { api } from "~/utils/api";
-import { Header } from "~/components/Header";
 import { Bookings } from "~/components/Bookings";
+import { serverSideHelpers } from "~/utils/staticPropsUtil";
 
-const Home: NextPage = () => {
+// eslint-disable-next-line @typescript-eslint/require-await
+/* 
+export async function getStaticProps() {
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    ctx: {
+      session: null,
+      prisma,
+    },
+    transformer: superjson, // optional - adds superjson serialization
+  });
+
+  // prefetch `post.byId`
+  await helpers.booking.getAll.prefetch();
+  return {
+    props: {
+      trpcState: helpers.dehydrate(),
+    },
+    revalidate: 1,
+  };
+}
+*/
+
+export async function getStaticProps() {
+  // prefetch `post.byId`
+  await serverSideHelpers.booking.getAll.prefetch();
+  return {
+    props: {
+      trpcState: serverSideHelpers.dehydrate(),
+    },
+    revalidate: 1,
+  };
+}
+
+const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+  console.log(props.trpcState.queries);
+  const bookingsQuery = api.booking.getAll.useQuery(undefined, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+  if (bookingsQuery.status !== "success") {
+    // won't happen since we're using `fallback: "blocking"`
+    return <>Loading...</>;
+  }
+  const { data } = bookingsQuery;
+
   return (
     <>
       <Head>
@@ -15,7 +61,7 @@ const Home: NextPage = () => {
       </Head>
       <main className="dark:bg-black">
         <div className="min-w-sm flex min-w-fit flex-col bg-gradient-to-b from-[#2e026d] to-[rgb(6,63,26)]">
-          <Bookings   />
+          <Bookings bookings={data} />
         </div>
       </main>
     </>

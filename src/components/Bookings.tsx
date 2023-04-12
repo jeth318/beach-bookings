@@ -96,6 +96,7 @@ type Props = {
   joinedOnly?: boolean;
   createdOnly?: boolean;
   historyOnly?: boolean;
+  bookings: Booking[];
 };
 
 type BookingAction = {
@@ -103,7 +104,12 @@ type BookingAction = {
   bookingId?: string;
 };
 
-export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
+export const Bookings = ({
+  bookings,
+  joinedOnly,
+  createdOnly,
+  historyOnly,
+}: Props) => {
   const session = useSession();
   const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
   const [joining, setIsJoining] = useState<BookingAction>({
@@ -133,12 +139,9 @@ export const Bookings = ({ joinedOnly, createdOnly, historyOnly }: Props) => {
   const { data: users = [], isInitialLoading: isInitialLoadingUsers } =
     api.user.getAll.useQuery();
 
-  const {
-    data: bookings,
-    refetch: refetchBookings,
-    isInitialLoading: isInitialLoadingBookings,
-  } = api.booking.getAll.useQuery();
+  const { refetch: refetchBookings } = api.booking.getAll.useQuery();
 
+  const isInitialLoadingBookings = false;
   const deleteBooking = () => {
     if (!!bookingToDelete) {
       setDeleting({ isWorking: true, bookingId: bookingToDelete.id });
