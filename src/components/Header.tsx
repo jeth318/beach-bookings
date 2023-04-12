@@ -12,8 +12,6 @@ export const Header = () => {
 
   const noBoxShadow = router.asPath !== "/";
 
-  console.log(router.asPath);
-
   const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
 
   useEffect(() => {

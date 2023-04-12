@@ -17,12 +17,9 @@ export async function getStaticProps() {
   };
 }
 
-const Joined: NextPage = (
-  props: InferGetStaticPropsType<typeof getStaticProps>
-) => {
+const Joined = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
-  console.log(props.trpcState.queries);
   const bookingsQuery = api.booking.getAll.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnWindowFocus: false,

@@ -17,12 +17,9 @@ export async function getStaticProps() {
   };
 }
 
-const History: NextPage = (
-  props: InferGetStaticPropsType<typeof getStaticProps>
-) => {
+const History = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
-  console.log(props.trpcState.queries);
   const bookingsQuery = api.booking.getAll.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -37,6 +34,7 @@ const History: NextPage = (
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
   }
+
   return (
     <div>
       <SubHeader title="History" />

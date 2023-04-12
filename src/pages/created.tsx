@@ -17,9 +17,7 @@ export async function getStaticProps() {
   };
 }
 
-const Created: NextPage = (
-  props: InferGetStaticPropsType<typeof getStaticProps>
-) => {
+const Created = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
 

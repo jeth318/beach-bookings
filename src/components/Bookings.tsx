@@ -96,7 +96,7 @@ type Props = {
   joinedOnly?: boolean;
   createdOnly?: boolean;
   historyOnly?: boolean;
-  bookings: Booking[];
+  bookings?: Booking[];
 };
 
 type BookingAction = {
@@ -141,7 +141,6 @@ export const Bookings = ({
 
   const { refetch: refetchBookings } = api.booking.getAll.useQuery();
 
-  const isInitialLoadingBookings = false;
   const deleteBooking = () => {
     if (!!bookingToDelete) {
       setDeleting({ isWorking: true, bookingId: bookingToDelete.id });
@@ -201,19 +200,7 @@ export const Bookings = ({
       }
     });
 
-  if (isInitialLoadingBookings) {
-    return (
-      <div
-        style={{ marginTop: "-64px" }}
-        className={`flex h-screen flex-col items-center justify-center ${bgColorDark}`}
-      >
-        <h2 className="pb-4 text-2xl text-white">Loading bookings</h2>
-        <BeatLoader size={20} color="#36d7b7" />
-      </div>
-    );
-  }
-
-  if (!isInitialLoadingBookings && !bookingsByDate?.length) {
+  if (!bookings?.length) {
     const frogText = joinedOnly
       ? "Ey, looking quite lonely. You'd better find a game to join 🐸"
       : createdOnly

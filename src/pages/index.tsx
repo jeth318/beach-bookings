@@ -40,8 +40,7 @@ export async function getStaticProps() {
   };
 }
 
-const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
-  console.log(props.trpcState.queries);
+const Home = () => {
   const bookingsQuery = api.booking.getAll.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnWindowFocus: false,

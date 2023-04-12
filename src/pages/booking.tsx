@@ -15,7 +15,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
 
-const Booking: NextPage = () => {
+const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const { isInitialLoading: isInitialLoadingUsers } =
     api.user.getAll.useQuery();
