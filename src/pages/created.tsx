@@ -38,7 +38,7 @@ const Created = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
   return (
     <div>
-      <SubHeader title="My bookings" />
+      <SubHeader title="Booked by me" />
       <Bookings bookings={bookings || []} createdOnly />
     </div>
   );

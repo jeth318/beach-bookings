@@ -86,7 +86,7 @@ export const Header = () => {
                     onClick={() => setDropdownVisible(false)}
                   >
                     <CustomIcon path="/svg/add-circle.svg" />
-                    New
+                    Add
                   </Link>
                 </li>
                 <li>
@@ -147,7 +147,7 @@ export const Header = () => {
                 <li>
                   <Link href="/booking" className="gap-1 p-2">
                     <CustomIcon path="/svg/add-circle.svg" />
-                    New
+                    Add
                   </Link>
                 </li>
                 <li>

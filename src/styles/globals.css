@@ -7,6 +7,14 @@ body {
   height: 100%;
 }
 
+.bg-min-height {
+  min-height: calc(100vh - 90px);
+}
+
+.bg-min-height-no-submenu {
+  min-height: calc(100vh - 64px);
+}
+
 .sub-header {
   margin-bottom: -10px;
 }
