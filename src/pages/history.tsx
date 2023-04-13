@@ -26,10 +26,6 @@ const History = () => {
     refetchOnWindowFocus: true,
   });
 
-  if (bookingsQuery.status !== "success") {
-    // won't happen since we're using `fallback: "blocking"`
-    return <>Loading...</>;
-  }
   const { data: bookings } = bookingsQuery;
 
   if (sessionStatus === "unauthenticated") {

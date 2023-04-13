@@ -38,18 +38,13 @@ export const Header = () => {
     >
       <div className="navbar-start">
         <>
-          <Link
-            className="smooth-render-in-slower hidden text-lg md:hidden lg:flex"
-            href="/"
-          >
+          <Link className="hidden text-lg md:hidden lg:flex" href="/">
             🏐 ßeach ßookings 🏖️
           </Link>
           {sessionStatus === "authenticated" && (
             <div
               className={`dropdown z-50 text-lg lg:hidden ${
-                sessionStatus === "authenticated"
-                  ? "smooth-render-in-slower"
-                  : ""
+                sessionStatus === "authenticated" ? "" : ""
               }`}
             >
               <label
@@ -142,7 +137,7 @@ export const Header = () => {
       <div className="navbar-end">
         {sessionStatus === "authenticated" ? (
           <>
-            <div className="smooth-render-in-slower navbar-center hidden lg:flex">
+            <div className="navbar-center hidden lg:flex">
               <ul className="menu menu-horizontal px-5">
                 <li>
                   <Link href="/booking" className="gap-1 p-2">
@@ -222,7 +217,7 @@ export const Header = () => {
           </>
         ) : (
           sessionStatus === "unauthenticated" && (
-            <div className="smooth-render-in-slower">
+            <div className="">
               <button
                 onClick={() => void signIn()}
                 className="btn-outline btn-sm btn self-end"

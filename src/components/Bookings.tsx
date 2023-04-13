@@ -369,30 +369,34 @@ export const Bookings = ({
                               className={`${
                                 booking.players.length < 4
                                   ? "btn-accent"
-                                  : "hidden"
+                                  : "btn-disabled"
                               } btn-sm btn text-white`}
                             >
                               {joining.isWorking &&
                               booking.id === joining.bookingId ? (
                                 <BeatLoader size={10} color="white" />
-                              ) : (
+                              ) : booking.players.length < 4 ? (
                                 "Join"
+                              ) : (
+                                "Full"
                               )}
                             </button>
                           )}
-                          {session?.data?.user?.id === booking?.userId && (
-                            <button className="btn-sm btn text-white">
-                              <Link
-                                href={{
-                                  pathname: "/booking",
-                                  query: { booking: booking.id },
-                                }}
-                              >
-                                Edit
-                              </Link>
-                            </button>
-                          )}
-                          {session?.data?.user?.id === booking?.userId &&
+                          {!isMainPage &&
+                            session?.data?.user?.id === booking?.userId && (
+                              <button className="btn-sm btn text-white">
+                                <Link
+                                  href={{
+                                    pathname: "/booking",
+                                    query: { booking: booking.id },
+                                  }}
+                                >
+                                  Edit
+                                </Link>
+                              </button>
+                            )}
+                          {!isMainPage &&
+                            sessionUserId === booking?.userId &&
                             !historyOnly && (
                               <label
                                 htmlFor="action-modal"

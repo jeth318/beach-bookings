@@ -1,4 +1,3 @@
-import { type InferGetStaticPropsType, type NextPage } from "next";
 import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/router";
@@ -49,7 +48,7 @@ const Created = () => {
 
   return (
     <div>
-      <SubHeader title="Booked by" />
+      <SubHeader title="Booked by me" />
       <Bookings bookings={bookings || []} createdOnly />
     </div>
   );
