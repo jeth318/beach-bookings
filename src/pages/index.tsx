@@ -3,6 +3,7 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 import { Bookings } from "~/components/Bookings";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
+import { useEffect, useState } from "react";
 
 export async function getStaticProps() {
   await serverSideHelpers.booking.getAll.prefetch();
@@ -17,6 +18,12 @@ export async function getStaticProps() {
 }
 
 const Home = () => {
+  // Fix for server/client render match
+  const [hydrated, setHydrated] = useState<boolean>(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
   const bookingsQuery = api.booking.getAll.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -26,6 +33,11 @@ const Home = () => {
     return <>Loading...</>;
   }
   const { data } = bookingsQuery;
+
+  if (!hydrated) {
+    // Returns null on first render, so the client and server match
+    return null;
+  }
 
   return (
     <>
