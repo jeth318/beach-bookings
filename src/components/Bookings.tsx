@@ -7,7 +7,6 @@ import { BeatLoader } from "react-spinners";
 import Image from "next/image";
 import { CustomIcon } from "./CustomIcon";
 import { useRouter } from "next/router";
-import { PageLoader } from "./PageLoader";
 import { CheckAvailability } from "./CheckAvailability";
 
 type Bookings = {
@@ -288,7 +287,7 @@ export const Bookings = ({
                   className={`card-body min-w-min flex-row justify-between text-primary-content`}
                 >
                   <div className="container">
-                    <div className="flex">
+                    <div className="flex flex-col justify-between">
                       <div>
                         <h2 className="card-title text-2xl">
                           {parseDate(booking)}
