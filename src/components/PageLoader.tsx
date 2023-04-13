@@ -1,7 +1,11 @@
 import { BeatLoader } from "react-spinners";
 
-type Props = { isMainPage: boolean; bgColor: string; mainBgColor: string };
-export const PageLoader = ({ isMainPage, bgColor, mainBgColor }: Props) => {
+type Props = { isMainPage?: boolean; bgColor?: string; mainBgColor?: string };
+export const PageLoader = ({
+  isMainPage,
+  bgColor = "",
+  mainBgColor = "",
+}: Props) => {
   return (
     <div
       className={`${

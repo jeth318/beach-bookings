@@ -212,7 +212,7 @@ export const Bookings = ({
       }
     });
 
-  if (!bookings?.length) {
+  if (!bookingsByDate?.length || (historyOnly && !bookings)) {
     const frogText = joinedOnly
       ? "Ey, looking quite lonely. You'd better find a game to join."
       : createdOnly
@@ -308,7 +308,11 @@ export const Bookings = ({
                                     style={{ marginTop: "-15" }}
                                     className="smooth-render-in flex flex-row items-center"
                                   >
-                                    {user.name}
+                                    {sessionUserId === user.id ? (
+                                      <strong>{user.name}</strong>
+                                    ) : (
+                                      user.name
+                                    )}
                                     {booking.userId === user.id ? (
                                       <div className="pl-2">
                                         <CustomIcon
@@ -328,25 +332,28 @@ export const Bookings = ({
                       </div>
                     </div>
                   </div>
-                  <div>
+                  <div className={`${historyOnly ? "items-center" : ""}`}>
                     <div className="flex flex-col justify-between">
                       <div className="self-start pb-4">
                         <div className="">{booking.duration} minutes</div>
                         <div>Court {booking.court}</div>
                       </div>
-                      <div
-                        className={`radial-progress self-end text-lg font-bold ${getProgressAccent(
-                          booking
-                        )}`}
-                        style={{
-                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                          // @ts-ignore
-                          "--value": booking.players.length * 25,
-                          "--thickness": "3px",
-                        }}
-                      >
-                        {booking.players.length}/4
-                      </div>
+                      {!historyOnly && (
+                        <div
+                          className={`radial-progress self-end text-lg font-bold ${getProgressAccent(
+                            booking
+                          )}`}
+                          style={{
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            "--value": booking.players.length * 25,
+                            "--thickness": "3px",
+                          }}
+                        >
+                          {booking.players.length}/4
+                        </div>
+                      )}
+
                       <br />
                       {sessionUserId && !historyOnly && (
                         <div className="btn-group btn-group-vertical flex">

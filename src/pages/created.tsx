@@ -6,6 +6,7 @@ import { Bookings } from "~/components/Bookings";
 import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
+import { PageLoader } from "~/components/PageLoader";
 
 export async function getStaticProps() {
   await serverSideHelpers.booking.getAll.prefetch();
@@ -36,9 +37,19 @@ const Created = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
     void router.push("/");
   }
 
+  if (sessionStatus === "loading") {
+    return (
+      <PageLoader
+        isMainPage={false}
+        mainBgColor={"mainPageBgColor"}
+        bgColor={"bgColorCardDark"}
+      />
+    );
+  }
+
   return (
     <div>
-      <SubHeader title="Booked by me" />
+      <SubHeader title="Booked by" />
       <Bookings bookings={bookings || []} createdOnly />
     </div>
   );
