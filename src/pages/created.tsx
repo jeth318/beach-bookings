@@ -42,7 +42,7 @@ const Created = () => {
       <PageLoader
         isMainPage={false}
         mainBgColor={"mainPageBgColor"}
-        bgColor={"bgColorCardDark"}
+        bgColor={"bg-gradient-to-b from-[#01797391] to-[#000000]"}
       />
     );
   }

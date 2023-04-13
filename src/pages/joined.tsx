@@ -41,7 +41,7 @@ const Joined = () => {
       <PageLoader
         isMainPage={false}
         mainBgColor={"mainPageBgColor"}
-        bgColor={"bgColorCardDark"}
+        bgColor={"bg-gradient-to-b from-[#005e1ba6] to-[#000000]"}
       />
     );
   }

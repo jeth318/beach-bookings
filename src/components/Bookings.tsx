@@ -133,18 +133,10 @@ export const Bookings = ({
     ? "bg-gradient-to-b from-[#02968f91] to-[#000000]"
     : historyOnly
     ? "bg-gradient-to-b from-[#5c5e5f] to-[#000000]"
-    : "";
+    : "bg-gradient-to-b from-[#2c0168] to-[rgb(23,1,61)]";
 
-  const bgColorCardDark = joinedOnly
-    ? "bg-gradient-to-b from-[#004313ad] to-[#001900c7]"
-    : createdOnly
-    ? "bg-gradient-to-b from-[#02968f91] to-[#00292291]"
-    : historyOnly
-    ? "bg-gradient-to-b from-[#5c5e5f] to-[#313131]"
-    : "";
   const router = useRouter();
   const isMainPage = router.asPath === "/";
-  const mainPageBgColor = "bg-gradient-to-b from-[#2c0168] to-[rgb(23,1,61)]";
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
 
@@ -232,9 +224,7 @@ export const Bookings = ({
       <div
         className={`${
           isMainPage ? "bg-min-height-no-submenu" : "bg-min-height"
-        } smooth-render-in flex-row items-center justify-center self-center pt-28 ${
-          isMainPage ? mainPageBgColor : bgColorDark
-        }`}
+        } smooth-render-in flex-row items-center justify-center self-center pt-28 ${bgColorDark}`}
       >
         <div className="flex flex-col items-center justify-center">
           <Image
@@ -282,7 +272,7 @@ export const Bookings = ({
         </div>
       </div>
 
-      <div className={`${isMainPage ? mainPageBgColor : ""}`}>
+      <div className={bgColorDark}>
         {bookingsByDate?.map((booking: Booking) => {
           return (
             <div
@@ -291,7 +281,7 @@ export const Bookings = ({
             >
               <div className=" border-spacing card-compact card">
                 <div
-                  className={`card-body min-w-min flex-row justify-between text-primary-content ${bgColorCardDark}`}
+                  className={`card-body min-w-min flex-row justify-between text-primary-content`}
                 >
                   <div className="container">
                     <div className="flex">
@@ -313,13 +303,9 @@ export const Bookings = ({
                                   <div
                                     key={user.id}
                                     style={{ marginTop: "-15" }}
-                                    className="smooth-render-in flex flex-row items-center"
+                                    className="smooth-render-in-slower flex flex-row items-center"
                                   >
-                                    {sessionUserId === user.id ? (
-                                      <strong>{user.name}</strong>
-                                    ) : (
-                                      user.name
-                                    )}
+                                    {user.name}
                                     {booking.userId === user.id ? (
                                       <div className="pl-2">
                                         <CustomIcon
@@ -362,8 +348,8 @@ export const Bookings = ({
                       )}
 
                       <br />
-                      {sessionUserId && !historyOnly && (
-                        <div className="btn-group btn-group-vertical flex">
+                      {sessionUserId && !historyOnly ? (
+                        <div className="smooth-render-in-slower btn-group btn-group-vertical flex">
                           {booking.players.includes(sessionUserId) && (
                             <button
                               onClick={() => leaveGame(booking)}
@@ -422,6 +408,8 @@ export const Bookings = ({
                               </label>
                             )}
                         </div>
+                      ) : (
+                        <div style={{ height: "32px" }}></div>
                       )}
                     </div>
                   </div>
