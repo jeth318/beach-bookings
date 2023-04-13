@@ -190,6 +190,10 @@ export const Bookings = ({
     }, 1000);
   };
 
+  const oldBookings = bookings?.filter(
+    (booking) => booking.date.getTime() < today
+  );
+
   const bookingsByDate = bookings
     ?.sort((a: Booking, b: Booking) => a.date.getTime() - b.date.getTime())
     .filter((booking) =>
@@ -212,7 +216,10 @@ export const Bookings = ({
       }
     });
 
-  if (!bookingsByDate?.length || (historyOnly && !bookings)) {
+  if (
+    (!oldBookings?.length && historyOnly) ||
+    (!bookingsByDate?.length && !historyOnly)
+  ) {
     const frogText = joinedOnly
       ? "Ey, looking quite lonely. You'd better find a game to join."
       : createdOnly

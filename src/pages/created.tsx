@@ -18,7 +18,7 @@ export async function getStaticProps() {
   };
 }
 
-const Created = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+const Created = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
 

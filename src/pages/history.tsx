@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
+import { PageLoader } from "~/components/PageLoader";
 import { SubHeader } from "~/components/SubHeader";
 import { api } from "~/utils/api";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
@@ -21,8 +22,8 @@ const History = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
   const bookingsQuery = api.booking.getAll.useQuery(undefined, {
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   if (bookingsQuery.status !== "success") {
@@ -34,6 +35,7 @@ const History = () => {
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
   }
+  console.log(bookings);
 
   return (
     <div>
