@@ -49,7 +49,9 @@ const Created = () => {
   return (
     <div>
       <SubHeader title="Booked by me" />
-      <Bookings bookings={bookings || []} createdOnly />
+      <main>
+        <Bookings bookings={bookings || []} createdOnly />
+      </main>
     </div>
   );
 };

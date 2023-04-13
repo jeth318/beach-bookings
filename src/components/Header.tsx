@@ -74,7 +74,7 @@ export const Header = () => {
                 id="burger-dropdown"
                 className="dropdown-content menu rounded-box menu-compact mt-3 w-40 bg-base-100 p-2 shadow-md shadow-stone-900"
               >
-                <li>
+                <li className="p-1">
                   <Link
                     href="/booking"
                     className="tex p-1 text-xl"
@@ -84,7 +84,7 @@ export const Header = () => {
                     Add
                   </Link>
                 </li>
-                <li>
+                <li className="p-1">
                   <Link
                     href="/"
                     className="p-1 text-xl"
@@ -94,7 +94,7 @@ export const Header = () => {
                     Home
                   </Link>
                 </li>
-                <li>
+                <li className="p-1">
                   <Link
                     onClick={() => setDropdownVisible(false)}
                     className="p-1 text-xl"
@@ -104,7 +104,7 @@ export const Header = () => {
                     Joined
                   </Link>
                 </li>
-                <li>
+                <li className="p-1">
                   <Link
                     onClick={() => setDropdownVisible(false)}
                     className="p-1 text-xl"
@@ -114,7 +114,7 @@ export const Header = () => {
                     Booked
                   </Link>
                 </li>
-                <li>
+                <li className="p-1">
                   <Link
                     onClick={() => setDropdownVisible(false)}
                     className="p-1 text-xl"
@@ -139,31 +139,31 @@ export const Header = () => {
           <>
             <div className="navbar-center hidden lg:flex">
               <ul className="menu menu-horizontal px-5">
-                <li>
+                <li className="p-1">
                   <Link href="/booking" className="gap-1 p-2">
                     <CustomIcon path="/svg/add-circle.svg" />
                     Add
                   </Link>
                 </li>
-                <li>
+                <li className="p-1">
                   <Link className="gap-2 p-2" href="/">
                     <CustomIcon path="/svg/home.svg" />
                     Home
                   </Link>
                 </li>
-                <li>
+                <li className="p-1">
                   <Link className="gap-2 p-2" href="/joined">
                     <CustomIcon path="/svg/handshake.svg" />
                     Joined
                   </Link>
                 </li>
-                <li>
+                <li className="p-1">
                   <Link className="gap-2 p-2" href="/created">
                     <CustomIcon path="/svg/crown.svg" />
                     Booked
                   </Link>
                 </li>
-                <li>
+                <li className="p-1">
                   <Link className="gap-2 p-2" href="/history">
                     <CustomIcon path="/svg/history.svg" width={15} />
                     History
@@ -186,7 +186,7 @@ export const Header = () => {
                 tabIndex={0}
                 className="dropdown-content menu rounded-box menu-compact z-50 mt-3 w-32 bg-base-100 p-2 shadow-md shadow-black"
               >
-                <li>
+                <li className="p-1">
                   <a
                     className="whitespace-nowrap p-1 text-lg"
                     onClick={() => void signOut()}

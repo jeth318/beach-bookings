@@ -8,6 +8,7 @@ import Image from "next/image";
 import { CustomIcon } from "./CustomIcon";
 import { useRouter } from "next/router";
 import { PageLoader } from "./PageLoader";
+import { CheckAvailability } from "./CheckAvailability";
 
 type Bookings = {
   data: Booking[];
@@ -213,7 +214,7 @@ export const Bookings = ({
     (!bookingsByDate?.length && !historyOnly)
   ) {
     const frogText = joinedOnly
-      ? "Ey, looking quite lonely. You'd better find a game to join."
+      ? "Ey, looking quite lonely. You'd better find a game to join. Or perhaps create a booking your self?"
       : createdOnly
       ? "You have no active bookings 🐸"
       : historyOnly
@@ -224,7 +225,7 @@ export const Bookings = ({
       <div
         className={`${
           isMainPage ? "bg-min-height-no-submenu" : "bg-min-height"
-        } smooth-render-in flex-row items-center justify-center self-center pt-28 ${bgColorDark}`}
+        } smooth-render-in flex-row items-center justify-center self-center pt-12 ${bgColorDark}`}
       >
         <div className="flex flex-col items-center justify-center">
           <Image
@@ -234,7 +235,10 @@ export const Bookings = ({
             width={210}
             height={210}
           />
-          <div className="p-4 text-center text-xl text-white">{frogText}</div>
+          <div className="flex flex-col justify-center p-4 text-center text-xl text-white">
+            <div className="pb-4">{frogText}</div>
+            {createdOnly && <CheckAvailability />}
+          </div>
         </div>
       </div>
     );
@@ -422,6 +426,7 @@ export const Bookings = ({
             </div>
           );
         })}
+        {createdOnly && <CheckAvailability />}
       </div>
     </div>
   );

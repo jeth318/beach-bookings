@@ -4,7 +4,13 @@
 
 html,
 body {
+  min-width: 340px !important;
   height: 100%;
+}
+
+main {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .bg-min-height {
