@@ -8,95 +8,17 @@ import Image from "next/image";
 import { CustomIcon } from "./CustomIcon";
 import { useRouter } from "next/router";
 import { CheckAvailability } from "./CheckAvailability";
+import { parseDate, parseTime, today } from "~/utils/time.util";
+import { getBgColor } from "~/utils/color.util";
+import { bookingsByDate, getProgressAccent } from "~/utils/booking.util";
+import { removeBookingText } from "~/utils/general.util";
+import { ArrogantFrog } from "./ArrogantFrog";
 
 type Bookings = {
   data: Booking[];
 };
-const today = new Date().getTime();
-
-const days = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednsday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-const parseTime = (booking: Booking) => {
-  const endDate = new Date(
-    booking.date.getTime() + booking.duration * 60 * 1000
-  );
-
-  const endHour =
-    endDate.getHours().toString().length === 1
-      ? `0${endDate.getHours()}`
-      : endDate.getHours();
-
-  const endMinutes =
-    endDate.getMinutes().toString().length === 1
-      ? `0${endDate.getMinutes()}`
-      : endDate.getMinutes();
-
-  const startHours =
-    booking.date.getHours().toString().length > 1
-      ? booking.date.getHours()
-      : `0${booking.date.getHours()}`;
-
-  const startMinutes =
-    booking.date.getMinutes().toString().length > 1
-      ? booking.date.getMinutes()
-      : `0${booking.date.getMinutes()}`;
-  return `${startHours}:${startMinutes} - ${endHour}:${endMinutes}`;
-};
-
-const getUsersInBooking = (users: User[], booking: Booking) => {
-  return users.filter((user) => booking.players.includes(user.id));
-};
-
-const parseDate = (booking: Booking) => {
-  const nameOfTheDay = days[booking.date.getDay()];
-  const dayOfTheMonth = booking.date.getDate();
-  const month = months[booking.date.getMonth()];
-  const str = `${dayOfTheMonth} ${month || ""} - ${nameOfTheDay || ""} `;
-  return str;
-};
-
-const getProgressAccent = (booking: Booking) => {
-  switch (booking?.players?.length) {
-    case 1:
-      return "text-error";
-    case 2:
-      return "text-warning";
-    case 3:
-      return "text-warning";
-    case 4:
-      return "text-success";
-    default:
-      return "text-error";
-  }
-};
 
 type Props = {
-  joinedOnly?: boolean;
-  createdOnly?: boolean;
-  historyOnly?: boolean;
   bookings?: Booking[];
 };
 
@@ -105,12 +27,12 @@ type BookingAction = {
   bookingId?: string;
 };
 
-export const Bookings = ({
-  bookings,
-  joinedOnly,
-  createdOnly,
-  historyOnly,
-}: Props) => {
+const getUsersInBooking = (users: User[], booking: Booking) => {
+  return users.filter((user) => booking.players.includes(user.id));
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const Bookings = ({ bookings }: Props) => {
   const session = useSession();
   const sessionUserId = session?.data?.user?.id;
   const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
@@ -127,15 +49,11 @@ export const Bookings = ({
     bookingId: "",
   });
 
-  const bgColorDark = joinedOnly
-    ? "bg-gradient-to-b from-[#007621a6] to-[#000000]"
-    : createdOnly
-    ? "bg-gradient-to-b from-[#02968f91] to-[#000000]"
-    : historyOnly
-    ? "bg-gradient-to-b from-[#5c5e5f] to-[#000000]"
-    : "bg-gradient-to-b from-[#2c0168] to-[rgb(23,1,61)]";
-
   const router = useRouter();
+
+  const historyOnly = router.asPath === "/history";
+  const createdOnly = router.asPath === "/created";
+
   const isMainPage = router.asPath === "/";
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
@@ -145,10 +63,10 @@ export const Bookings = ({
 
   const { refetch: refetchBookings } = api.booking.getAll.useQuery();
 
-  const deleteBooking = () => {
-    if (!!bookingToDelete) {
-      setDeleting({ isWorking: true, bookingId: bookingToDelete.id });
-      removeBooking.mutate({ id: bookingToDelete.id });
+  const deleteBooking = (booking: Booking | undefined) => {
+    if (!!booking) {
+      setDeleting({ isWorking: true, bookingId: booking.id });
+      removeBooking.mutate({ id: booking.id });
       setTimeout(() => {
         setBookingToDelete(undefined);
         void refetchBookings();
@@ -186,61 +104,19 @@ export const Bookings = ({
     (booking) => booking.date.getTime() < today
   );
 
-  const bookingsByDate = bookings
-    ?.sort((a: Booking, b: Booking) => a.date.getTime() - b.date.getTime())
-    .filter((booking) =>
-      historyOnly
-        ? booking.date.getTime() < today
-        : booking.date.getTime() >= today
-    )
-    .filter((booking) => {
-      if (!sessionUserId) {
-        return booking.date.getTime() >= today;
-      }
-      if (joinedOnly) {
-        return booking.players.includes(sessionUserId);
-      } else if (createdOnly) {
-        return booking.userId === sessionUserId;
-      } else if (historyOnly) {
-        return booking.date.getTime() < today;
-      } else {
-        return booking.date.getTime() >= today;
-      }
-    });
+  const bgColorDark = getBgColor(router.asPath);
+
+  const bookingsToShow = bookingsByDate({
+    bookings,
+    path: router.asPath,
+    sessionUserId,
+  });
 
   if (
     (!oldBookings?.length && historyOnly) ||
-    (!bookingsByDate?.length && !historyOnly)
+    (!bookingsToShow?.length && !historyOnly)
   ) {
-    const frogText = joinedOnly
-      ? "Ey, looking quite lonely. You'd better find a game to join. Or perhaps create a booking your self?"
-      : createdOnly
-      ? "You have no active bookings 🐸"
-      : historyOnly
-      ? "No old bookings yet..."
-      : "No bookings found. Either we have to step it up and start playing and adding bookings, or else there is a bug somewhere in the code 🐸";
-
-    return (
-      <div
-        className={`${
-          isMainPage ? "bg-min-height-no-submenu" : "bg-min-height"
-        } smooth-render-in flex-row items-center justify-center self-center pt-12 ${bgColorDark}`}
-      >
-        <div className="flex flex-col items-center justify-center">
-          <Image
-            style={{ borderRadius: "50%" }}
-            alt="frog"
-            src="/cig-frog.gif"
-            width={210}
-            height={210}
-          />
-          <div className="flex flex-col justify-center p-4 text-center text-xl text-white">
-            <div className="pb-4">{frogText}</div>
-            {createdOnly && <CheckAvailability />}
-          </div>
-        </div>
-      </div>
-    );
+    return <ArrogantFrog />;
   }
 
   return (
@@ -251,10 +127,7 @@ export const Bookings = ({
         <div className="modal modal-bottom  sm:modal-middle">
           <div className="modal-box">
             <h3 className="text-lg font-bold">Confirm deletion</h3>
-            <p className="py-4">
-              If you remove this booking, it will be gone forever. But hey, I am
-              not your mommy, you are in charge.
-            </p>
+            <p className="py-4">{removeBookingText}</p>
             <div className="modal-action">
               <div className="btn-group">
                 <label htmlFor="action-modal" className="btn ">
@@ -264,7 +137,7 @@ export const Bookings = ({
                   htmlFor="action-modal"
                   className="btn-error btn text-white"
                   onClick={() => {
-                    deleteBooking();
+                    deleteBooking(bookingToDelete);
                   }}
                 >
                   Delete
@@ -275,8 +148,8 @@ export const Bookings = ({
         </div>
       </div>
 
-      <div className={bgColorDark}>
-        {bookingsByDate?.map((booking: Booking) => {
+      <div className={`bg-gradient-to-b ${bgColorDark} bookings-container`}>
+        {bookingsToShow?.map((booking: Booking) => {
           return (
             <div
               key={booking.id}
@@ -291,7 +164,9 @@ export const Bookings = ({
                       <div>
                         <h2 className="card-title text-2xl">
                           {parseDate(booking)}
-                          {booking.players.length === 4 && " ✅"}
+                          {booking.players.length === 4 &&
+                            !historyOnly &&
+                            " ✅"}
                         </h2>
                         <div className="text-lg">{parseTime(booking)}</div>
                         <div className="self-start pt-4">

@@ -13,6 +13,9 @@ main {
   margin: 0 auto;
 }
 
+.bookings-container {
+  padding-top: 0.3rem;
+}
 .bg-min-height {
   min-height: calc(100vh - 90px);
 }

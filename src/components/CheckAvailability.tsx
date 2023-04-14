@@ -8,14 +8,14 @@ export const CheckAvailability = () => {
         <div className="pl-4">
           <a
             target="_blank"
-            className="btn-accent btn"
+            className="btn-info btn text-white"
             href="https://gbc.goactivebooking.com/book-service/27?facility=1"
           >
             Check availability
           </a>
         </div>
       </div>
-      <p className="pt-4 text-left text-sm">
+      <p className="pt-4 text-left text-sm text-slate-300">
         1. Go to GBC to make an actual booking.
         <br />
         2. Make sure to get the order confirmation email
