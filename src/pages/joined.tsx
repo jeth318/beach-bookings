@@ -49,7 +49,7 @@ const Joined = () => {
   return (
     <div>
       <SubHeader title="Joined" />
-      <Bookings bookings={bookings || []} joinedOnly />
+      <Bookings bookings={bookings || []} />
     </div>
   );
 };

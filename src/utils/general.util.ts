@@ -4,7 +4,9 @@ export const getFrogText = (path: string) => {
     const created = path === "/created";   
 
     if (joined) {
-        return "Ey, looking quite lonely. You'd better find a game to join. Or perhaps create a booking your self?";
+        return `
+        Ey, looking quite lonely.
+        You'd better find a game to join.`
     }
 
     if (created) {

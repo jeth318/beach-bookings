@@ -50,7 +50,7 @@ const Created = () => {
     <div>
       <SubHeader title="Booked by me" />
       <main>
-        <Bookings bookings={bookings || []} createdOnly />
+        <Bookings bookings={bookings || []} />
       </main>
     </div>
   );

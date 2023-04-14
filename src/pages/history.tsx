@@ -36,7 +36,7 @@ const History = () => {
   return (
     <div>
       <SubHeader title="History" />
-      <Bookings bookings={bookings || []} historyOnly />
+      <Bookings bookings={bookings || []} />
     </div>
   );
 };
