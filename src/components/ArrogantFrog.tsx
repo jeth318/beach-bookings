@@ -32,7 +32,7 @@ export const ArrogantFrog = () => {
             <div className="flex flex-col items-center">
               <div>
                 <Link className="btn-secondary btn text-white" href="/">
-                  Show bookings
+                  Join bookings
                 </Link>
               </div>
               <div className="divider"></div>
