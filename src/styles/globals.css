@@ -4,11 +4,16 @@
 
 html,
 body {
+<<<<<<< Updated upstream
   min-width: 370px !important;
+=======
+  min-width: 340px !important;
+>>>>>>> Stashed changes
   height: 100%;
 }
 
 main {
+<<<<<<< Updated upstream
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -16,6 +21,12 @@ main {
 .bookings-container {
   padding-top: 0.3rem;
 }
+=======
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+>>>>>>> Stashed changes
 .bg-min-height {
   min-height: calc(100vh - 90px);
 }

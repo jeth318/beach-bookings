@@ -52,6 +52,7 @@ const Booking = () => {
   } = api.booking.getAll.useQuery();
   const createBooking = api.booking.create.useMutation({});
   const updateBooking = api.booking.update.useMutation({});
+  const emailerMutation = api.emailer.sendEmail.useMutation();
 
   useEffect(() => {
     if (router.query.booking) {
@@ -113,6 +114,19 @@ const Booking = () => {
     return currentDate.getTime() < selectedDate.getTime();
   };
 
+  const testEmail = () => {
+    emailerMutation.mutate(
+      {
+        bookingId: bookingToEdit?.id || "",
+        players: bookingToEdit?.players || [],
+      },
+      {
+        onSuccess: () => {
+          console.log("MUTATION DONE EMAIL");
+        },
+      }
+    );
+  };
   const addBooking = () => {
     if (!validBooking) {
       return null;
@@ -153,6 +167,9 @@ const Booking = () => {
         title={router.query.booking ? "Change booking" : "Add booking"}
       />
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        <button className="btn-accent btn" onClick={() => testEmail()}>
+          Test email dispatch
+        </button>
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
             <h2 className="text-center text-2xl text-white">
