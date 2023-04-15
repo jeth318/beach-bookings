@@ -30,6 +30,10 @@ export const Header = () => {
     }
   };
 
+  const linkGBCAccount = () => {
+    
+  }
+
   return (
     <div
       className={`navbar sticky top-0 z-50  bg-white dark:bg-slate-900 ${
@@ -184,8 +188,22 @@ export const Header = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu rounded-box menu-compact z-50 mt-3 w-32 bg-base-100 p-2 shadow-md shadow-black"
+                className="w-38 dropdown-content menu rounded-box menu-compact z-50 mt-3 bg-base-100 p-2 shadow-md shadow-black"
               >
+                <li className="p-1">
+                  <a
+                    className="whitespace-nowrap p-1 text-lg"
+                    onClick={() => void linkGBCAccount()}
+                  >
+                    <Image
+                      src="/gbc-logo.png"
+                      alt="/gbc-logo.png"
+                      height={15}
+                      width={15}
+                    />
+                    GBC-link
+                  </a>
+                </li>
                 <li className="p-1">
                   <a
                     className="whitespace-nowrap p-1 text-lg"

@@ -18,6 +18,7 @@ export async function getStaticProps() {
 }
 
 const Home = () => {
+  const { refetch: refetchGbcAccount } = api.gbcProxy.getAll.useQuery();
   // Fix for server/client render match
   const [hydrated, setHydrated] = useState<boolean>(false);
   useEffect(() => {
@@ -47,6 +48,14 @@ const Home = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-w-sm flex min-w-fit flex-col">
+        <button
+          onClick={async () => {
+            refetchGbcAccount();
+          }}
+          className="btn-accent btn"
+        >
+          Link GBC
+        </button>
         <Bookings bookings={data} />
       </main>
     </>
