@@ -8,6 +8,9 @@ import crypto from "crypto";
 
 import { checkUser, generatePasswordHash } from "~/server/utils/server.util";
 
+const verificationToken = process.env.GBCPROXY_VERIFICATION_SECRET;
+
+
 export const gbcProxyRouter = createTRPCRouter({
   linkAccount: protectedProcedure.input(z.object({ email: z.string(), password: z.string()})).mutation(async ({ ctx, input }) => {
     if (!input?.email || !input?.password) {
@@ -20,13 +23,13 @@ export const gbcProxyRouter = createTRPCRouter({
       }
     })
 
-    /*if (gbcAccount?.id) {
+    if (gbcAccount?.id) {
       console.warn("GBC-account already linked");
       return {
         success: false,
         message: "GBC-account already linked"
       }
-    }*/
+    }
 
     const gbcAuthResponse = await fetch("http://localhost:3001/api/gbc-auth", {
       method: "POST",
@@ -71,21 +74,26 @@ export const gbcProxyRouter = createTRPCRouter({
     return gbcData;
 
   }),
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    
+  getGbcBookings: protectedProcedure.input(z.object({ accessToken: z.string().or(z.null()) })).query(async ({ ctx, input }) => {
     const gbcAccount = await ctx.prisma.gbcAccount.findUnique({
       where: {
         userId: ctx.session?.user.id
       }
     })
 
-    console.log({"ctx": ctx.session?.user?.id});
-      
-    
+    if (!input?.accessToken) {
+      return { success: false, data: [] };
+    }
+
+
+    if (!verificationToken) {
+      return { success: false, data: [] };
+    }
+
     const res = await fetch(`http://localhost:3001/api/bookings/${gbcAccount?.gbcUserId}`, {
       headers: {
         'x-verification-secret': process.env.GBCPROXY_VERIFICATION_SECRET,
-        'x-access-token': process.env.GBCPROXY_ACCESS_TOKEN
+        'x-access-token': input?.accessToken
       }
     });
 
@@ -93,12 +101,13 @@ export const gbcProxyRouter = createTRPCRouter({
     
     if (res.status === 200) {
       const data = await res.json();
-      return data;
+      const bookings: GbcBooking[] = data?.data; 
+      return { success: true, data: bookings?.data || [] };
     } 
-    return {};
+    return { success: false, data: [] };
   }),
   getForUser: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.gbcAccount.findMany({
+    return ctx.prisma.gbcAccount.findUnique({
       where: {
         userId: ctx.session.user.id
       }
@@ -116,10 +125,64 @@ export const gbcProxyRouter = createTRPCRouter({
     })
   }),
   delete: protectedProcedure.input(z.object({ id: z.string()})).mutation(({ ctx, input }) => {
-    return ctx.prisma.booking.delete({
+    return ctx.prisma.gbcAccount.delete({
       where: {
         id: input.id
       }
     })
   }),
 });
+
+type ServiceProduct = {
+  id: number;
+  name: string;
+};
+
+export type GbcBooking = {
+  id: number;
+  serviceProduct: ServiceProduct;
+  businessUnit: BusinessUnit;
+  customer: Customer;
+  duration: Duration;
+  order: Order;
+  isDebited: boolean;
+  price: Price;
+  shouldAutoRefundOnCancel: boolean;
+  selectedResource: SelectedResource;
+};
+
+type BusinessUnit = {
+  id: number;
+  name: string;
+  location: string;
+  companyNameForInvoice: string;
+};
+
+type Customer = {
+  id: number;
+  firstName: string;
+  lastName: string;
+};
+
+type Duration = {
+  start: string;
+  end: string;
+};
+
+type Order = {
+  id: number;
+  number: string;
+  externalId: null | string;
+  lastModified: string;
+};
+
+type Price = {
+  amount: number;
+  currency: string;
+};
+
+type SelectedResource = {
+  id: number;
+  name: string;
+  type: string;
+};

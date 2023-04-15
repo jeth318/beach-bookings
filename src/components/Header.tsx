@@ -30,9 +30,7 @@ export const Header = () => {
     }
   };
 
-  const linkGBCAccount = () => {
-    
-  }
+  const linkGBCAccount = () => {};
 
   return (
     <div
@@ -191,10 +189,7 @@ export const Header = () => {
                 className="w-38 dropdown-content menu rounded-box menu-compact z-50 mt-3 bg-base-100 p-2 shadow-md shadow-black"
               >
                 <li className="p-1">
-                  <a
-                    className="whitespace-nowrap p-1 text-lg"
-                    onClick={() => void linkGBCAccount()}
-                  >
+                  <Link className="whitespace-nowrap p-1 text-lg" href="/gbc">
                     <Image
                       src="/gbc-logo.png"
                       alt="/gbc-logo.png"
@@ -202,7 +197,7 @@ export const Header = () => {
                       width={15}
                     />
                     GBC-link
-                  </a>
+                  </Link>
                 </li>
                 <li className="p-1">
                   <a
