@@ -11,7 +11,8 @@ type BookingsByDateProps = {
 type EmailDispatchProps = {
   bookerName?: string;
   playerName?: string
-  bookings: Booking[]; 
+  bookings?: Booking[];
+  booking: Booking
   eventType: EventType;
   mutation: {
     mutate: ({ }: any, {}: any) => void;
@@ -29,7 +30,7 @@ export const getTimeWithZeroPadding = (hours: number, minutes: number)  => {
   return `${hoursPadded}:${minutesPadded}`;
 }
 
-export const emailDispatcher = ({ bookerName, playerName, bookings, mutation, eventType }: EmailDispatchProps) => {
+export const emailDispatcher = ({ bookerName, playerName, bookings, booking, mutation, eventType }: EmailDispatchProps) => {
   if (!bookings?.[0]) {
     return null;
   }
@@ -38,7 +39,8 @@ export const emailDispatcher = ({ bookerName, playerName, bookings, mutation, ev
     bookerName,
     playerName,
     eventType,
-    booking: bookings[0]
+    booking,
+    bookings
   }
   );
 

@@ -76,6 +76,7 @@ export const Bookings = ({ bookings }: Props) => {
           onSuccess: () => {
             emailDispatcher({
               bookerName: session.data?.user.name || "A player",
+              booking,
               bookings: bookings || [],
               eventType: "DELETE",
               mutation: emailerMutation,
@@ -104,6 +105,7 @@ export const Bookings = ({ bookings }: Props) => {
             emailDispatcher({
               playerName: session.data?.user.name || "A player",
               bookings: bookings || [],
+              booking,
               eventType: "JOIN",
               mutation: emailerMutation,
             });
@@ -128,6 +130,7 @@ export const Bookings = ({ bookings }: Props) => {
       {
         onSuccess: () => {
           emailDispatcher({
+            booking,
             playerName: session.data?.user.name || "A player",
             bookings: bookings || [],
             eventType: "LEAVE",

@@ -5,7 +5,8 @@ import { getEmailBody, getEmailIngress, getEmailTitle, getPreheader } from "~/ut
 type GetBookingCreatedEmailProps = {
     bookerName?: string;
     playerName?: string;
-    booking: Booking; 
+    booking: Booking;
+    bookings?: Booking[]
     eventType: EventType
 }
 
