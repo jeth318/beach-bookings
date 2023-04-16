@@ -4,20 +4,18 @@ import Link from "next/link";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
-import Image from "next/image";
 import { CustomIcon } from "./CustomIcon";
 import { useRouter } from "next/router";
-<<<<<<< Updated upstream
 import { CheckAvailability } from "./CheckAvailability";
 import { parseDate, parseTime, today } from "~/utils/time.util";
 import { getBgColor } from "~/utils/color.util";
-import { bookingsByDate, getProgressAccent } from "~/utils/booking.util";
+import {
+  bookingsByDate,
+  emailDispatcher,
+  getProgressAccent,
+} from "~/utils/booking.util";
 import { removeBookingText } from "~/utils/general.util";
 import { ArrogantFrog } from "./ArrogantFrog";
-=======
-import { PageLoader } from "./PageLoader";
-import { CheckAvailability } from "./CheckAvailability";
->>>>>>> Stashed changes
 
 type Bookings = {
   data: Booking[];
@@ -67,16 +65,29 @@ export const Bookings = ({ bookings }: Props) => {
     api.user.getAll.useQuery();
 
   const { refetch: refetchBookings } = api.booking.getAll.useQuery();
+  const emailerMutation = api.emailer.sendEmail.useMutation();
 
   const deleteBooking = (booking: Booking | undefined) => {
     if (!!booking) {
       setDeleting({ isWorking: true, bookingId: booking.id });
-      removeBooking.mutate({ id: booking.id });
-      setTimeout(() => {
-        setBookingToDelete(undefined);
-        void refetchBookings();
-        setDeleting({ isWorking: false, bookingId: undefined });
-      }, 1000);
+      removeBooking.mutate(
+        { id: booking.id },
+        {
+          onSuccess: () => {
+            emailDispatcher({
+              bookerName: session.data?.user.name || "A player",
+              bookings: bookings || [],
+              eventType: "DELETE",
+              mutation: emailerMutation,
+            });
+            setTimeout(() => {
+              setBookingToDelete(undefined);
+              void refetchBookings();
+              setDeleting({ isWorking: false, bookingId: undefined });
+            }, 1000);
+          },
+        }
+      );
     }
   };
 
@@ -84,11 +95,25 @@ export const Bookings = ({ bookings }: Props) => {
     if (sessionUserId) {
       setIsJoining({ isWorking: true, bookingId: booking.id });
       const updatedPlayers = [...booking.players, sessionUserId];
-      updateBooking.mutate({ ...booking, players: updatedPlayers });
-      setTimeout(() => {
-        void refetchBookings();
-        setIsJoining({ isWorking: false, bookingId: undefined });
-      }, 1000);
+      updateBooking.mutate(
+        { ...booking, players: updatedPlayers },
+        {
+          onSuccess: () => {
+            console.log("session.data?.user.name", session.data?.user.name);
+
+            emailDispatcher({
+              playerName: session.data?.user.name || "A player",
+              bookings: bookings || [],
+              eventType: "JOIN",
+              mutation: emailerMutation,
+            });
+            setTimeout(() => {
+              void refetchBookings();
+              setIsJoining({ isWorking: false, bookingId: undefined });
+            }, 1000);
+          },
+        }
+      );
     }
   };
 
@@ -98,11 +123,23 @@ export const Bookings = ({ bookings }: Props) => {
       (player) => player !== sessionUserId
     );
 
-    updateBooking.mutate({ ...booking, players: updatedPlayers });
-    setTimeout(() => {
-      void refetchBookings();
-      setLeaving({ isWorking: false, bookingId: undefined });
-    }, 1000);
+    updateBooking.mutate(
+      { ...booking, players: updatedPlayers },
+      {
+        onSuccess: () => {
+          emailDispatcher({
+            playerName: session.data?.user.name || "A player",
+            bookings: bookings || [],
+            eventType: "LEAVE",
+            mutation: emailerMutation,
+          });
+          setTimeout(() => {
+            void refetchBookings();
+            setLeaving({ isWorking: false, bookingId: undefined });
+          }, 1000);
+        },
+      }
+    );
   };
 
   const oldBookings = bookings?.filter(
@@ -121,39 +158,7 @@ export const Bookings = ({ bookings }: Props) => {
     (!oldBookings?.length && historyOnly) ||
     (!bookingsToShow?.length && !historyOnly)
   ) {
-<<<<<<< Updated upstream
     return <ArrogantFrog />;
-=======
-    const frogText = joinedOnly
-      ? "Ey, looking quite lonely. You'd better find a game to join. Or perhaps create a booking your self?"
-      : createdOnly
-      ? "You have no active bookings 🐸"
-      : historyOnly
-      ? "No old bookings yet..."
-      : "No bookings found. Either we have to step it up and start playing and adding bookings, or else there is a bug somewhere in the code 🐸";
-
-    return (
-      <div
-        className={`${
-          isMainPage ? "bg-min-height-no-submenu" : "bg-min-height"
-        } smooth-render-in flex-row items-center justify-center self-center pt-12 ${bgColorDark}`}
-      >
-        <div className="flex flex-col items-center justify-center">
-          <Image
-            style={{ borderRadius: "50%" }}
-            alt="frog"
-            src="/cig-frog.gif"
-            width={210}
-            height={210}
-          />
-          <div className="flex flex-col justify-center p-4 text-center text-xl text-white">
-            <div className="pb-4">{frogText}</div>
-            {createdOnly && <CheckAvailability />}
-          </div>
-        </div>
-      </div>
-    );
->>>>>>> Stashed changes
   }
 
   return (

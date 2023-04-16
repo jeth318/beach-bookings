@@ -1,8 +1,6 @@
-import { type NextPage } from "next";
 import Head from "next/head";
 import { useSession } from "next-auth/react";
 
-import { Header } from "~/components/Header";
 import { useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
@@ -14,6 +12,7 @@ import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
+import { type EventType, emailDispatcher } from "~/utils/booking.util";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -25,7 +24,7 @@ const Booking = () => {
   const [duration, setDuration] = useState<number>();
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
-
+  const [eventType, setEventType] = useState<EventType>("ADD");
   const setHours = (date: Date, hours: number) => {
     const updated = new Date(date);
     updated.setHours(hours);
@@ -62,7 +61,7 @@ const Booking = () => {
 
       if (!!booking && !bookingToEdit) {
         setBookingToEdit(booking);
-
+        setEventType("MODIFY");
         setDate(booking?.date);
         setTime(
           booking?.date.toLocaleTimeString("sv-SE", {
@@ -74,6 +73,7 @@ const Booking = () => {
         setDuration(booking?.duration);
       }
     } else {
+      setEventType("ADD");
       resetBooking();
     }
   }, [bookingToEdit, bookings, router.query.booking]);
@@ -115,18 +115,19 @@ const Booking = () => {
   };
 
   const testEmail = () => {
-    emailerMutation.mutate(
-      {
-        bookingId: bookingToEdit?.id || "",
-        players: bookingToEdit?.players || [],
-      },
-      {
-        onSuccess: () => {
-          console.log("MUTATION DONE EMAIL");
-        },
-      }
-    );
+    if (!sessionData?.user || !bookings?.length) {
+      return null;
+    }
+
+    sessionData.user;
+    emailDispatcher({
+      bookerName: sessionData?.user.name || "Somebody",
+      bookings,
+      eventType,
+      mutation: emailerMutation,
+    });
   };
+
   const addBooking = () => {
     if (!validBooking) {
       return null;
@@ -134,23 +135,52 @@ const Booking = () => {
     const formattedDate = date.toLocaleString("sv-SE");
 
     if (!!bookingToEdit) {
-      updateBooking.mutate({
-        id: bookingToEdit.id,
-        date: new Date(formattedDate.replace(" ", "T")),
-        court,
-        players: bookingToEdit.players,
-        duration,
-      });
+      console.log("UPDATING");
+
+      updateBooking.mutate(
+        {
+          id: bookingToEdit.id,
+          date: new Date(formattedDate.replace(" ", "T")),
+          court,
+          players: bookingToEdit.players,
+          duration,
+        },
+        {
+          onSuccess: () => {
+            emailDispatcher({
+              bookerName: sessionData.user.name || "Someone",
+              bookings: bookings || [],
+              eventType,
+              mutation: emailerMutation,
+            });
+            void refetchBookings().then(() => {
+              void router.push("/");
+            });
+          },
+        }
+      );
     } else {
-      createBooking.mutate({
-        userId: sessionData?.user.id,
-        date: new Date(formattedDate.replace(" ", "T")),
-        court,
-      });
+      createBooking.mutate(
+        {
+          userId: sessionData?.user.id,
+          date: new Date(formattedDate.replace(" ", "T")),
+          court,
+        },
+        {
+          onSuccess: () => {
+            emailDispatcher({
+              bookerName: sessionData.user.name || "Someone",
+              bookings: bookings || [],
+              eventType,
+              mutation: emailerMutation,
+            });
+            void refetchBookings().then(() => {
+              void router.push("/");
+            });
+          },
+        }
+      );
     }
-    void refetchBookings().then(() => {
-      void router.push("/");
-    });
   };
 
   const validBooking =

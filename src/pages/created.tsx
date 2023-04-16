@@ -50,11 +50,7 @@ const Created = () => {
     <div>
       <SubHeader title="Booked by me" />
       <main>
-<<<<<<< Updated upstream
         <Bookings bookings={bookings || []} />
-=======
-        <Bookings bookings={bookings || []} createdOnly />
->>>>>>> Stashed changes
       </main>
     </div>
   );

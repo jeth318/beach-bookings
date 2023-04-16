@@ -3,15 +3,24 @@ import {
     createTRPCRouter,
     protectedProcedure,
   } from "~/server/api/trpc";
-import { generateEmailContent, mailOptions, transporter } from "~/utils/nodemailer.util";
-  
+import { getEmailHeading } from "~/utils/general.util";
+import { mailOptions, transporter } from "~/utils/nodemailer.util";
+
+
   export const emailerRouter = createTRPCRouter({
-    sendEmail: protectedProcedure.input(z.object({ bookingId: z.string(), players: z.string().array() })).mutation(async ({ ctx, input }) => {
+    sendEmail: protectedProcedure.input(z.object({ eventType: z.string(), htmlString: z.string() })).mutation(async ({ ctx, input }) => {
+        console.log(process.cwd() + "/public/cig-frog-still.png");
+        const subject = getEmailHeading(input.eventType)
         try {
           await transporter.sendMail({
             ...mailOptions,
-            ...generateEmailContent({}),
-            subject: "Booking was updated",
+            html: input.htmlString,
+            subject,
+            attachments: [{
+                filename: 'cig-frog-still.png',
+                path: process.cwd() + "/public/cig-frog-still.png",
+                cid: 'unique@nodemailer.com' //same cid value as in the html img src
+            }],
           });
           return {
             success: true,

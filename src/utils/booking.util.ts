@@ -1,11 +1,60 @@
+import { NextAuth } from 'next-auth';
 import type Booking from "~/pages/booking";
 import { today } from "./time.util";
+import { type Booking, Session, User, type Booking } from '@prisma/client';
+import { getBookingCreatedEmail } from '~/email/bookingUpdated';
+import { UseTRPCMutationResult } from '@trpc/react-query/shared';
 
 type BookingsByDateProps = {
     bookings?: Booking[];
     path: string;
     sessionUserId?: string
 }
+
+type EmailDispatchProps = {
+  bookerName?: string;
+  playerName?: string
+  bookings: Booking[]; 
+  eventType: EventType;
+  mutation: any;
+}
+export type EventType = "ADD" | "MODIFY" | "DELETE" | "JOIN" | "LEAVE" | "CANCELED";
+
+function padZero(value: number) {
+  return (value < 10) ? `0${value}` : value;
+}
+
+export const getTimeWithZeroPadding = (hours: number | string, minutes: number | string)  => {
+  hours = padZero(hours);
+  minutes = padZero(minutes);
+  return `${hours}:${minutes}`;
+}
+
+export const emailDispatcher = ({ bookerName, playerName, bookings, mutation, eventType }: EmailDispatchProps) => {
+  if (!bookings?.[0]) {
+    return null;
+  }
+
+  const htmlString = getBookingCreatedEmail({
+    bookerName,
+    playerName,
+    eventType,
+    booking: bookings[0]
+  }
+  );
+
+  mutation.mutate(
+    {
+      eventType,
+      htmlString,
+    },
+    {
+      onSuccess: () => {
+        console.log("MUTATION DONE EMAIL");
+      },
+    }
+  );
+};
 
 export const bookingsByDate = ({ bookings, path, sessionUserId }: BookingsByDateProps): Booking[] | undefined => {
     const history = path === "/history";
