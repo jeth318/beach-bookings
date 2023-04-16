@@ -1,9 +1,6 @@
-import { NextAuth } from 'next-auth';
 import type Booking from "~/pages/booking";
 import { today } from "./time.util";
-import { type Booking, Session, User, type Booking } from '@prisma/client';
 import { getBookingCreatedEmail } from '~/email/bookingUpdated';
-import { UseTRPCMutationResult } from '@trpc/react-query/shared';
 
 type BookingsByDateProps = {
     bookings?: Booking[];
@@ -16,7 +13,9 @@ type EmailDispatchProps = {
   playerName?: string
   bookings: Booking[]; 
   eventType: EventType;
-  mutation: any;
+  mutation: {
+    mutate: ({ }: any, {}: any) => void;
+  };
 }
 export type EventType = "ADD" | "MODIFY" | "DELETE" | "JOIN" | "LEAVE" | "CANCELED";
 
@@ -24,10 +23,10 @@ function padZero(value: number) {
   return (value < 10) ? `0${value}` : value;
 }
 
-export const getTimeWithZeroPadding = (hours: number | string, minutes: number | string)  => {
-  hours = padZero(hours);
-  minutes = padZero(minutes);
-  return `${hours}:${minutes}`;
+export const getTimeWithZeroPadding = (hours: number, minutes: number)  => {
+  const hoursPadded = padZero(hours);
+  const minutesPadded = padZero(minutes);
+  return `${hoursPadded}:${minutesPadded}`;
 }
 
 export const emailDispatcher = ({ bookerName, playerName, bookings, mutation, eventType }: EmailDispatchProps) => {
@@ -43,6 +42,7 @@ export const emailDispatcher = ({ bookerName, playerName, bookings, mutation, ev
   }
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   mutation.mutate(
     {
       eventType,

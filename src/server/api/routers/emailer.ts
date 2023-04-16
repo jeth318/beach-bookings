@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { z } from "zod";
 import {
     createTRPCRouter,
@@ -12,6 +13,7 @@ import { mailOptions, transporter } from "~/utils/nodemailer.util";
         console.log(process.cwd() + "/public/cig-frog-still.png");
         const subject = getEmailHeading(input.eventType)
         try {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           await transporter.sendMail({
             ...mailOptions,
             html: input.htmlString,
@@ -28,7 +30,7 @@ import { mailOptions, transporter } from "~/utils/nodemailer.util";
           }
         } catch (err) {
           console.log(err);
-          return { success:false, message: err?.message };
+          return { success:false, message: "Error"};
         }
     }),
   });

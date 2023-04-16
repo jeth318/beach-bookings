@@ -12,7 +12,7 @@ type GetBookingCreatedEmailProps = {
 export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventType }: GetBookingCreatedEmailProps) => {
     const date = booking.date.toLocaleDateString("sv-SE");
     const time = getTimeWithZeroPadding(booking.date.getHours(), booking.date.getMinutes());
-    const emailContent = getEmailBody({ booking, playerName, bookerName, eventType })
+    const emailContent = getEmailBody({ playerName, bookerName, eventType })
     const title = getEmailTitle(eventType);
     const ingress = getEmailIngress({ bookerName, playerName, eventType, booking});
     const preheader = getPreheader(eventType);
