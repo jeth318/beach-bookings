@@ -7,6 +7,7 @@ import {
 import { getEmailHeading } from "~/utils/general.util";
 import { mailOptions, transporter } from "~/utils/nodemailer.util";
 
+const isRemote = process.cwd().includes("var/task");
 
   export const emailerRouter = createTRPCRouter({
     sendEmail: protectedProcedure.input(z.object({ eventType: z.string(), htmlString: z.string() })).mutation(async ({ ctx, input }) => {
@@ -20,7 +21,7 @@ import { mailOptions, transporter } from "~/utils/nodemailer.util";
             subject,
             attachments: [{
                 filename: 'cig-frog-still.png',
-                path: process.cwd() + "/public/cig-frog-still.png",
+                path: !isRemote ? process.cwd() : "" + "/public/cig-frog-still.png",
                 cid: 'unique@nodemailer.com' //same cid value as in the html img src
             }],
           });
