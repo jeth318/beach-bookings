@@ -197,9 +197,6 @@ const Booking = () => {
         title={router.query.booking ? "Change booking" : "Add booking"}
       />
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <button className="btn-accent btn" onClick={() => testEmail()}>
-          Test email dispatch
-        </button>
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
             <h2 className="text-center text-2xl text-white">
