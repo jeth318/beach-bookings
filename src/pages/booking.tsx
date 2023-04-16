@@ -114,20 +114,6 @@ const Booking = () => {
     return currentDate.getTime() < selectedDate.getTime();
   };
 
-  const testEmail = () => {
-    if (!sessionData?.user || !bookings?.length) {
-      return null;
-    }
-
-    sessionData.user;
-    emailDispatcher({
-      bookerName: sessionData?.user.name || "Somebody",
-      bookings,
-      eventType,
-      mutation: emailerMutation,
-    });
-  };
-
   const addBooking = () => {
     if (!validBooking) {
       return null;
@@ -135,8 +121,6 @@ const Booking = () => {
     const formattedDate = date.toLocaleString("sv-SE");
 
     if (!!bookingToEdit) {
-      console.log("UPDATING");
-
       updateBooking.mutate(
         {
           id: bookingToEdit.id,
@@ -148,6 +132,14 @@ const Booking = () => {
         {
           onSuccess: () => {
             emailDispatcher({
+              booking: {
+                id: bookingToEdit.id,
+                userId: sessionData.user.id,
+                date: new Date(formattedDate.replace(" ", "T")),
+                court,
+                players: bookingToEdit.players,
+                duration,
+              },
               bookerName: sessionData.user.name || "Someone",
               bookings: bookings || [],
               eventType,
@@ -169,6 +161,14 @@ const Booking = () => {
         {
           onSuccess: () => {
             emailDispatcher({
+              booking: {
+                id: "placeholderId",
+                userId: sessionData?.user.id,
+                date: new Date(formattedDate.replace(" ", "T")),
+                court,
+                duration,
+                players: [],
+              },
               bookerName: sessionData.user.name || "Someone",
               bookings: bookings || [],
               eventType,
