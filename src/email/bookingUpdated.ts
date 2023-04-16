@@ -434,7 +434,7 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
                                         <tr>
                                             <td>
                                                 <div class="body-container">
-                                                    <img class="cig-frog-image" src="cid:unique@nodemailer.com"
+                                                    <!-- <img class="cig-frog-image" src="cid:unique@nodemailer.com" -->
                                                         alt="cig-frog-still" width="150px" height="150px" />
                                                     <div style="padding-left: 15px;">
                                                         <h2 style="text-align: left; margin-bottom: 15px;">${title}</h2>

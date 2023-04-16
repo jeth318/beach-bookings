@@ -19,11 +19,11 @@ const isRemote = process.cwd().includes("var/task");
             ...mailOptions,
             html: input.htmlString,
             subject,
-            attachments: [{
+            /*attachments: [{
                 filename: 'cig-frog-still.png',
                 path: !isRemote ? process.cwd() : "" + "/public/cig-frog-still.png",
                 cid: 'unique@nodemailer.com' //same cid value as in the html img src
-            }],
+            }],*/
           });
           return {
             success: true,
