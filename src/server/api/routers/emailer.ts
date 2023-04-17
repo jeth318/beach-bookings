@@ -33,11 +33,11 @@ import { transporter } from "~/utils/nodemailer.util";
             ...getMailOptions({ sender, recipients: emailRecipients }),
             html: input.htmlString,
             subject,
-            /*attachments: [{
+            attachments: [{
                 filename: 'cig-frog-still.png',
                 path: process.cwd() + "/public/cig-frog-still.png",
                 cid: 'unique@nodemailer.com' //same cid value as in the html img src
-            }],*/
+            }],
           });
           return {
             success: true,

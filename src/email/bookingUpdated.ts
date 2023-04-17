@@ -1,5 +1,5 @@
 import { type Booking } from "@prisma/client";
-import { type EventType, getTimeWithZeroPadding } from "~/utils/booking.util";
+import { type EventType, getTimeWithZeroPadding, getProgressAccent } from "~/utils/booking.util";
 import { getEmailBody, getEmailIngress, getEmailTitle, getPreheader } from "~/utils/general.util";
 
 type GetBookingCreatedEmailProps = {
@@ -30,10 +30,8 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
         <div class="booking-info-item">
             <strong>⏱️ ${booking.duration} minutes</strong>
         </div>
-        <div class="booking-info-item">
-            <strong>📍 Court number ${booking.court || NaN}</strong>
-        </div>
     </div>`
+
 
     const style = `
     <style>
@@ -291,6 +289,7 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
 
     .booking-info-item {
         padding: 5px;
+        font-size: 1.2rem;
     }
 
     /* -------------------------------------
@@ -404,6 +403,35 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
             align-items: center;
         }
     }
+
+    /* CUSTOM STYLES */
+
+    .font-bold {
+        font-weight: 700;
+    }
+    .text-lg {
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+    }
+    .self-end {
+        align-self: flex-end;
+    }
+
+    .radial-progress {
+        position: relative;
+        display: inline-grid;
+        height: 5px;
+        width: 5px;
+        place-content: center;
+        border-radius: 9999px;
+        background-color: transparent;
+        vertical-align: middle;
+        box-sizing: content-box;
+        --value: 0;
+        --size: 5rem;
+        --thickness: 3px);
+    }
+
 </style>
     `;
 
@@ -435,19 +463,28 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
                                         <tr>
                                             <td>
                                                 <div class="body-container">
-                                                    <!-- <img class="cig-frog-image" src="cid:unique@nodemailer.com" 
-                                                        alt="cig-frog-still" width="150px" height="150px" /> -->
+                                                    <img class="cig-frog-image" src="cid:unique@nodemailer.com" 
+                                                        alt="cig-frog-still" width="150px" height="150px" />
                                                     <div style="padding-left: 15px;">
                                                         <h2 style="text-align: left; margin-bottom: 15px;">${title}</h2>
                                                             ${ingress}
                                                     </div>
     
-    
                                                 </div>
                                                 <hr />
                                                 ${emailContent}
+                                                <div style="display: flex; justify-content: space-between;">
                                                 ${bookingInformation}
                                                 <br>
+                                                    <div>
+                                                        <div
+                                                            style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                                            <div style="font-size: 1.5rem;">Players in party</div>
+                                                            <div style="font-size: 3rem;">${booking.players.length} of 4</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <br />
                                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0"
                                                     class="btn btn-primary">
                                                     <tbody>
@@ -458,7 +495,7 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
                                                                     <tbody>
                                                                         <tr>
                                                                             <td> <a href="https://beach.jtdev.se"
-                                                                                    target="_blank">Beach Bookings</a>
+                                                                                    target="_blank">Bookings</a>
                                                                             </td>
                                                                         </tr>
                                                                     </tbody>
@@ -484,14 +521,9 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td class="content-block">
-                                        <span class="apple-link">Company Inc, 3 Abbey Road, San Francisco CA 94102</span>
+                                        <span class="apple-link">Beach Bookings News</span>
                                         <br> Don't like these emails? <a
                                             href="http://i.imgur.com/CScmqnj.gif">Unsubscribe</a>.
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="content-block powered-by">
-                                        Powered by <a href="http://htmlemail.io">HTMLemail</a>.
                                     </td>
                                 </tr>
                             </table>

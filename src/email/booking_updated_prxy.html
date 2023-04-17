@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Beach Bookings</title>
+
     <style>
         /* -------------------------------------
           GLOBAL RESETS
@@ -257,6 +258,11 @@
             margin: 20px 0;
         }
 
+
+        .booking-info-item {
+            padding: 5px;
+        }
+
         /* -------------------------------------
           RESPONSIVE AND MOBILE FRIENDLY STYLES
       ------------------------------------- */
@@ -356,6 +362,8 @@
 
             .cig-frog-image {
                 border-radius: 50%;
+                height: 100px;
+                width: 100px;
                 box-shadow: 0px 2px 2px 2px slategray;
             }
 
@@ -363,28 +371,129 @@
                 display: flex;
                 justify-content: center;
                 flex-direction: row;
+                align-items: center;
             }
+        }
+
+        /* CUSTOM STYLES */
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+        }
+
+        .self-end {
+            align-self: flex-end;
+        }
+
+        .radial-progress {
+            position: relative;
+            display: inline-grid;
+            height: 5px;
+            width: 5px;
+            place-content: center;
+            border-radius: 9999px;
+            background-color: transparent;
+            vertical-align: middle;
+            box-sizing: content-box;
+            --value: 0;
+            --size: 5rem;
+            --thickness: 3px;
         }
     </style>
 </head>
 
 <body>
-    <script type="module">
-        import getBookingCreatedEmail from "../email/bookingUpdated.ts";
-        const user = {
-            name: "Jesper Thörnberg"
-        };
+    <span class="preheader">PREHEADER</span>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+        <tr>
+            <td>&nbsp;</td>
+            <td class="container">
+                <div class="content">
 
-        const booking = {
-            court: 5,
-            duration: 90,
-            players: [],
-            userId: "userId",
-            date: "2023-05-10T13:00"
-        }
-        const htmlString = getBookingCreatedEmail(user, booking)
-        console.log(getBookingCreatedEmail);
-    </script>
+                    <!-- START CENTERED WHITE CONTAINER -->
+                    <table role="presentation" class="main">
+
+                        <!-- START MAIN CONTENT AREA -->
+                        <tr>
+                            <td class="wrapper">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td>
+                                            <div class="body-container">
+                                                <!-- <img class="cig-frog-image" src="cid:unique@nodemailer.com" 
+                                                        alt="cig-frog-still" width="150px" height="150px" /> -->
+                                                <div style="padding-left: 15px;">
+                                                    <h2 style="text-align: left; margin-bottom: 15px;">TITLE</h2>
+                                                </div>
+
+
+                                            </div>
+                                            <hr />
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <div class="" style="--value:3; --thickness:3px;">3/4</div>
+                                                <div>
+                                                    <div
+                                                        style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                                        <div style="font-size: 1.5rem;">Joined players</div>
+                                                        <div style="font-size: 3rem;">2 of 4</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                                                class="btn btn-primary">
+                                                <tbody>
+                                                    <tr>
+                                                        <td align="left">
+                                                            <table role="presentation" border="0" cellpadding="0"
+                                                                cellspacing="0">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td> <a href="https://beach.jtdev.se"
+                                                                                target="_blank">Beach Bookings</a>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <p><i>Spike hard and do the monster block! <br> / The arrogant beach frog.
+                                                </i></p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- END MAIN CONTENT AREA -->
+                    </table>
+                    <!-- END CENTERED WHITE CONTAINER -->
+
+                    <!-- START FOOTER -->
+                    <div class="footer">
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td class="content-block">
+                                    <span class="apple-link">Beach Bookings News</span>
+                                    <br> Don't like these emails? <a
+                                        href="http://i.imgur.com/CScmqnj.gif">Unsubscribe</a>.
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!-- END FOOTER -->
+                </div>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
 </body>
 
 </html>
