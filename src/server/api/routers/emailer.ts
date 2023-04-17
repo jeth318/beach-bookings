@@ -9,6 +9,7 @@ const hardCodedEmailsForTesting = [
   "jesper.thornberg@me.com",
 ]
 
+import path from "path";
 import { z } from "zod";
 import {
     createTRPCRouter,
@@ -35,7 +36,7 @@ import { transporter } from "~/utils/nodemailer.util";
             subject,
             attachments: [{
                 filename: 'cig-frog-still.png',
-                path: "./cig-frog-still.png",
+                path: path.join(process.cwd(), 'public'),
                 cid: 'unique@nodemailer.com' //same cid value as in the html img src
             }],
           });
