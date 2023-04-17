@@ -49,6 +49,9 @@ const Booking = () => {
     refetch: refetchBookings,
     isInitialLoading: isInitialLoadingBookings,
   } = api.booking.getAll.useQuery();
+
+  const { data: users } = api.user.getAll.useQuery();
+
   const createBooking = api.booking.create.useMutation({});
   const updateBooking = api.booking.update.useMutation({});
   const emailerMutation = api.emailer.sendEmail.useMutation();
@@ -118,9 +121,15 @@ const Booking = () => {
     if (!validBooking) {
       return null;
     }
+
     const formattedDate = date.toLocaleString("sv-SE");
 
     if (!!bookingToEdit) {
+      const recipients = users
+        ?.filter((user) => bookingToEdit.players.includes(user.id))
+        .filter((user) => !!user.email)
+        .filter((user) => user.id !== sessionData.user.id)
+        .map((user) => user.email) as string[];
       updateBooking.mutate(
         {
           id: bookingToEdit.id,
@@ -143,6 +152,7 @@ const Booking = () => {
               bookerName: sessionData.user.name || "Someone",
               bookings: bookings || [],
               eventType,
+              recipients,
               mutation: emailerMutation,
             });
             void refetchBookings().then(() => {
@@ -152,6 +162,10 @@ const Booking = () => {
         }
       );
     } else {
+      const recipients = users
+        ?.filter((user) => !!user.email)
+        .filter((user) => user.id !== sessionData.user.id)
+        .map((user) => user.email) as string[];
       createBooking.mutate(
         {
           userId: sessionData?.user.id,
@@ -169,6 +183,7 @@ const Booking = () => {
                 duration,
                 players: [],
               },
+              recipients,
               bookerName: sessionData.user.name || "Someone",
               bookings: bookings || [],
               eventType,

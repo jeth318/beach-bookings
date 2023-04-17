@@ -14,6 +14,7 @@ type EmailDispatchProps = {
   bookings?: Booking[];
   booking: Booking
   eventType: EventType;
+  recipients?: string[];
   mutation: {
     mutate: ({ }: any, {}: any) => void;
   };
@@ -30,7 +31,7 @@ export const getTimeWithZeroPadding = (hours: number, minutes: number)  => {
   return `${hoursPadded}:${minutesPadded}`;
 }
 
-export const emailDispatcher = ({ bookerName, playerName, bookings, booking, mutation, eventType }: EmailDispatchProps) => {
+export const emailDispatcher = ({ bookerName, recipients, playerName, bookings, booking, mutation, eventType }: EmailDispatchProps) => {
   if (!bookings?.[0]) {
     return null;
   }
@@ -47,6 +48,7 @@ export const emailDispatcher = ({ bookerName, playerName, bookings, booking, mut
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   mutation.mutate(
     {
+      recipients,
       eventType,
       htmlString,
     },
