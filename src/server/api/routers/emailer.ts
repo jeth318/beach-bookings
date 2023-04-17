@@ -35,7 +35,7 @@ import { transporter } from "~/utils/nodemailer.util";
             subject,
             attachments: [{
                 filename: 'cig-frog-still.png',
-                path: process.cwd() + "/public/cig-frog-still.png",
+                path: "./cig-frog-still.png",
                 cid: 'unique@nodemailer.com' //same cid value as in the html img src
             }],
           });
