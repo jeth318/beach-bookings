@@ -13,6 +13,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
+import { getBgColor } from "~/utils/color.util";
+import { getEmailRecipiants } from "~/utils/general.util";
+
+const hej = getBgColor("/");
+
+console.log(hej);
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -125,11 +131,28 @@ const Booking = () => {
     const formattedDate = date.toLocaleString("sv-SE");
 
     if (!!bookingToEdit) {
+      const er = getEmailRecipiants({
+        users: [],
+        booking: bookingToEdit,
+        sessionUserId: sessionData.user.id,
+        eventType: "MODIFY",
+      });
+
+      /*
       const recipients = users
         ?.filter((user) => bookingToEdit.players.includes(user.id))
         .filter((user) => !!user.email)
         .filter((user) => user.id !== sessionData.user.id)
         .map((user) => user.email) as string[];
+        */
+
+      /*const er = getEmailRecipiants({
+        users: users || [],
+        booking: bookingToEdit,
+        sessionUserId: sessionData.user.id,
+        eventType: "MODIFY",
+      });*/
+
       updateBooking.mutate(
         {
           id: bookingToEdit.id,
@@ -152,7 +175,7 @@ const Booking = () => {
               bookerName: sessionData.user.name || "Someone",
               bookings: bookings || [],
               eventType,
-              recipients,
+              recipients: er,
               mutation: emailerMutation,
             });
             void refetchBookings().then(() => {

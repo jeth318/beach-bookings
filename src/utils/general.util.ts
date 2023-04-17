@@ -1,5 +1,38 @@
-import { type Booking } from "@prisma/client";
+import { type User, type Booking } from "@prisma/client";
 import { type EventType, getTimeWithZeroPadding } from "./booking.util";
+
+type EmailRecipientsProps = {
+    sessionUserId: string;
+    eventType: EventType;
+    booking: Booking;
+    users: User[];
+  }
+  
+  type MailOptions = {
+    sender?: string;
+    recipients: string[]
+  }
+  
+  export const getMailOptions = ({ sender, recipients }: MailOptions) =>  {
+    return {
+      from: sender || "",
+      to: recipients,
+    } 
+  };
+
+export const getEmailRecipiants = ({ users, booking, sessionUserId, eventType }: EmailRecipientsProps) => {
+    if (eventType === "ADD") {
+      return users
+      .filter((user) => user.id !== sessionUserId)
+      .map((user) => user.email)
+      .filter((email) => !!email) as string[];
+    }
+    return users
+    .filter((user) => booking.players.includes(user.id))
+    .filter((user) => !!user.email)
+    .filter((user) => user.id !== sessionUserId)
+    .map((user) => user.email) as string[];
+  }
 
 export const getEmailTitle = (eventType: EventType) => {
     switch(eventType) {

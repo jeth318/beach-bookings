@@ -54,7 +54,7 @@ export const emailDispatcher = ({ bookerName, recipients, playerName, bookings, 
     },
     {
       onSuccess: () => {
-        console.log("MUTATION DONE EMAIL");
+        console.log(`Email sent to ${recipients?.toString() || ""}`);
       },
     }
   );

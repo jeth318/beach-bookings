@@ -56,6 +56,7 @@ const getEmailRecipiants = ({
   }
   return users
     .filter((user) => user.id !== sessionUserId)
+    .filter((user) => booking.players.includes(user.id))
     .map((user) => user.email)
     .filter((email) => !!email) as string[];
 };
@@ -100,7 +101,7 @@ export const Bookings = ({ bookings }: Props) => {
         .filter((user) => !!user.email)
         .filter((user) => user.id !== sessionUserId)
         .map((user) => user.email) as string[];
-        
+
       setDeleting({ isWorking: true, bookingId: booking.id });
       removeBooking.mutate(
         { id: booking.id },
@@ -142,8 +143,6 @@ export const Bookings = ({ bookings }: Props) => {
         { ...booking, players: updatedPlayers },
         {
           onSuccess: () => {
-            console.log("BONDW");
-
             emailDispatcher({
               recipients,
               playerName: session.data?.user.name || "A player",
@@ -169,6 +168,13 @@ export const Bookings = ({ bookings }: Props) => {
       .filter((user) => user.id !== sessionUserId)
       .map((user) => user.email) as string[];
 
+    const er = getEmailRecipiants({
+      users,
+      booking,
+      sessionUserId: session.data?.user.id || "",
+      eventType: "LEAVE",
+    });
+
     setLeaving({ isWorking: true, bookingId: booking.id });
     const updatedPlayers = booking.players.filter(
       (player) => player !== sessionUserId
@@ -179,7 +185,7 @@ export const Bookings = ({ bookings }: Props) => {
       {
         onSuccess: () => {
           emailDispatcher({
-            recipients,
+            recipients: er,
             booking,
             playerName: session.data?.user.name || "A player",
             bookings: bookings || [],
