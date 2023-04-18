@@ -37,17 +37,17 @@ export const getEmailRecipiants = ({ users, booking, sessionUserId, eventType }:
 export const getEmailTitle = (eventType: EventType) => {
     switch(eventType) {
         case "ADD":
-            return "New booking added";
+            return "New booking added 🟢";
         case "MODIFY":
-            return "Booking changed";
+            return "Booking changed 🟠";
         case "DELETE":
-            return "Booking removed"
+            return "Booking removed 🔴"
         case "JOIN":
-            return "A player joined the party!"
+            return "A player joined the party! 🎉"
         case "LEAVE":
-            return "A player left the party!"
+            return "A player left the party! 😿"
         default:
-            return "Got some updates for you."
+            return "Got some updates for you ℹ️"
     }
 }
 
@@ -55,12 +55,12 @@ export const getPreheader = (eventType: EventType) => {
     switch(eventType) {
         case "ADD":
         case "JOIN":
-            return "Great news! 🥳";
+            return "Great news 🥳";
         case "MODIFY":
-            return "Got some news!";
+            return "Got some news";
         case "DELETE":
         case "LEAVE":
-            return "Sad news! 😿"
+            return "Sad news 😿"
         default:
             return "Yo beach player!"
     }   
@@ -102,15 +102,15 @@ export const getPrettyTime = (booking: Booking) => getTimeWithZeroPadding(bookin
 export const getEmailIngress = ({ eventType, booking, playerName, bookerName }:  GetEmailBodyProps) => {
     switch(eventType) {
         case "ADD":
-            return `${bookerName || "A player"} added a new booking scheduled for <strong>${getPrettyDate(booking)} (${getPrettyTime(booking)})</strong>. Let's get a full squad!`
+            return `${bookerName || "A player"} added a brand new booking. Let's get a full squad!`
         case "MODIFY":
-            return `${bookerName || "A player"} updated a booking that you are listed in</strong>.`
+            return `${bookerName || "A player"} updated a booking you are in</strong>.`
         case "DELETE":
-            return  `${bookerName || "The booker"} just removed a booking that you are listed in. The booking was scheduled for <strong>${getPrettyDate(booking)} (${getPrettyTime(booking)})</strong> `;
+            return  `${bookerName || "The booker"} just removed a booking you are in. Sad story!`;
         case "JOIN":
-            return `${playerName || "A player"} joined the party scheduled for <strong>${getPrettyDate(booking)} (${getPrettyTime(booking)})</strong>. Game on!`
+            return `${playerName || "A player"} joined your party and looks eager to play. Game on!`
         case "LEAVE":
-            return `${playerName || "A player"} left a party you are listed in. The party is scheduled for <strong>${getPrettyDate(booking)} (${getPrettyTime(booking)})</strong>. Sad, yes yes. But hey, try to find a replacement!`
+            return `${playerName || "A player"} left a party you are in. The party is scheduled for <strong>${getPrettyDate(booking)} (${getPrettyTime(booking)})</strong>. Sad, yes yes. But hey, try to find a replacement!`
         default:
             return "Yo beach player!"
     }
