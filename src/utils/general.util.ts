@@ -106,11 +106,13 @@ export const getEmailIngress = ({ eventType, booking, playerName, bookerName }: 
         case "MODIFY":
             return `${bookerName || "A player"} updated a booking you are in</strong>.`
         case "DELETE":
-            return  `${bookerName || "The booker"} just removed a booking you are in. Sad story!`;
+            return  `${bookerName || "The booker"} just removed a booking where you were signed up. Sad story!`;
         case "JOIN":
-            return `${playerName || "A player"} joined your party and looks eager to play. Game on!`
+            return `${playerName || "A player"} joined your party and looks eager to play.`
         case "LEAVE":
-            return `${playerName || "A player"} left a party you are in. The party is scheduled for <strong>${getPrettyDate(booking)} (${getPrettyTime(booking)})</strong>. Sad, yes yes. But hey, try to find a replacement!`
+            return `${playerName || "A player"} left your party. It's time to find a replacement if you haven't already!`
+        case "KICK":
+            return `${playerName || "A player"} was kindly and respectully kicked from your party by the booking owner. No questions asked, we are still friends.`
         default:
             return "Yo beach player!"
     }
@@ -127,6 +129,7 @@ export const getEmailHeading = (eventType: string) => {
         case "JOIN":
             return `Reinforcements incoming!`;
         case "LEAVE":
+        case "KICK":
             return `We lost a pro.`
         default:
             return "Yo beach player."   
