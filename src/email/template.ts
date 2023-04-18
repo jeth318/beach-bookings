@@ -52,9 +52,9 @@ export const buildHtmlTemplate = ({
             ${
               mutatedBooking?.date &&
               mutatedBooking?.date.getDate() !== originalBooking.date.getDate()
-                ? `<strong>📅 ${date}</strong> <s>${originalBooking.date.toLocaleDateString(
+                ? `<strong>📅 ${date}</strong> <s class="orange"><i>${originalBooking.date.toLocaleDateString(
                     "sv-SE"
-                  )}</s>`
+                  )}</i></s>`
                 : `📅 ${date}`
             }
         </div>
@@ -63,10 +63,10 @@ export const buildHtmlTemplate = ({
             ${
               mutatedBooking?.date &&
               mutatedBooking?.date.getTime() !== originalBooking.date.getTime()
-                ? `<strong>⏳ ${time}</strong> <s>${getTimeWithZeroPadding(
+                ? `<strong>⏳ ${time}</strong> <s class="orange"><i>${getTimeWithZeroPadding(
                     originalBooking.date.getHours(),
                     originalBooking.date.getMinutes()
-                  )}</s>`
+                  )}</s></i>`
                 : `⏳ ${time}`
             }
         </div>
@@ -75,7 +75,7 @@ export const buildHtmlTemplate = ({
             ${
               mutatedBooking?.duration &&
               mutatedBooking?.duration !== originalBooking.duration
-                ? ` <strong>⏱️ ${booking.duration} minutes</strong><s>${originalBooking.duration}</s>`
+                ? ` <strong>⏱️ ${booking.duration} <s class="orange"><i>${originalBooking.duration}</i></s> minutes</strong>`
                 : `⏱️ ${booking.duration} minutes`
             }
         </div>
@@ -87,7 +87,7 @@ export const buildHtmlTemplate = ({
 <div>
     <div
         style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <div style="font-size: 1.3rem;">Players in party</div>
+        <div>Players in party</div>
         <div style="font-size: 3rem;">${players} of 4</div>
     </div>
 </div>
@@ -350,7 +350,11 @@ export const buildHtmlTemplate = ({
 
     .booking-info-item {
         padding: 5px;
-        font-size: 1.5rem;
+        font-size: 18px;
+    }
+
+    .orange {
+        color: orange;
     }
 
     /* -------------------------------------
@@ -498,10 +502,10 @@ export const buildHtmlTemplate = ({
                                                 <div class="body-container">
                                                     <!-- <img class="cig-frog-image" src="cid:unique@nodemailer.com" 
                                                         alt="cig-frog-still" width="150px" height="150px" /> -->
-                                                        <div style="height: 150px; width: 150px;"></div>
+                                                      <!--  <div style="height: 150px; width: 150px;"></div> -->
                                                 
                                                     <div style="padding-left: 15px;">
-                                                        <h2 style="text-align: left; margin-bottom: 15px;">${title}</h2>
+                                                        <h2 style="text-align: center; margin-bottom: 15px;">${title}</h2>
                                                             ${ingress}
                                                     </div>
     
