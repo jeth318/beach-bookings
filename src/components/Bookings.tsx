@@ -10,6 +10,7 @@ import { CheckAvailability } from "./CheckAvailability";
 import { parseDate, parseTime, today } from "~/utils/time.util";
 import { getBgColor } from "~/utils/color.util";
 import {
+  type EventType,
   bookingsByDate,
   emailDispatcher,
   getProgressAccent,
@@ -32,6 +33,32 @@ type BookingAction = {
 
 const getUsersInBooking = (users: User[], booking: Booking) => {
   return users.filter((user) => booking.players.includes(user.id));
+};
+
+type EmailRecipientsProps = {
+  sessionUserId: string;
+  eventType: EventType;
+  booking: Booking;
+  users: User[];
+};
+
+const getEmailRecipiants = ({
+  users,
+  booking,
+  sessionUserId,
+  eventType,
+}: EmailRecipientsProps) => {
+  if (eventType === "ADD") {
+    return users
+      .filter((user) => user.id !== sessionUserId)
+      .map((user) => user.email)
+      .filter((email) => !!email) as string[];
+  }
+  return users
+    .filter((user) => user.id !== sessionUserId)
+    .filter((user) => booking.players.includes(user.id))
+    .map((user) => user.email)
+    .filter((email) => !!email) as string[];
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -69,13 +96,22 @@ export const Bookings = ({ bookings }: Props) => {
 
   const deleteBooking = (booking: Booking | undefined) => {
     if (!!booking) {
+      const recipients = users
+        .filter((user) => booking.players.includes(user.id))
+        .filter((user) => !!user.email)
+        .filter((user) => user.id !== sessionUserId)
+        .map((user) => user.email) as string[];
+
       setDeleting({ isWorking: true, bookingId: booking.id });
       removeBooking.mutate(
         { id: booking.id },
         {
-          onSuccess: () => {
+          onSuccess: (mutatedBooking: Booking) => {
             emailDispatcher({
+              recipients,
               bookerName: session.data?.user.name || "A player",
+              originalBooking: booking,
+              mutatedBooking,
               bookings: bookings || [],
               eventType: "DELETE",
               mutation: emailerMutation,
@@ -91,19 +127,29 @@ export const Bookings = ({ bookings }: Props) => {
     }
   };
 
-  const joinGame = (booking: Booking) => {
+  const joinGame = (booking: Booking, users: User[]) => {
+    const recipients = users
+      .filter((user) => booking.players.includes(user.id))
+      .filter((user) => !!user.email)
+      .filter((user) => user.id !== sessionUserId)
+      .map((user) => user.email) as string[];
+
+    console.log(recipients);
+
     if (sessionUserId) {
       setIsJoining({ isWorking: true, bookingId: booking.id });
       const updatedPlayers = [...booking.players, sessionUserId];
+
       updateBooking.mutate(
         { ...booking, players: updatedPlayers },
         {
-          onSuccess: () => {
-            console.log("session.data?.user.name", session.data?.user.name);
-
+          onSuccess: (mutatedBooking: Booking) => {
             emailDispatcher({
+              recipients,
               playerName: session.data?.user.name || "A player",
               bookings: bookings || [],
+              originalBooking: booking,
+              mutatedBooking,
               eventType: "JOIN",
               mutation: emailerMutation,
             });
@@ -118,6 +164,13 @@ export const Bookings = ({ bookings }: Props) => {
   };
 
   const leaveGame = (booking: Booking) => {
+    const recipients = getEmailRecipiants({
+      users,
+      booking,
+      sessionUserId: session.data?.user.id || "",
+      eventType: "LEAVE",
+    });
+
     setLeaving({ isWorking: true, bookingId: booking.id });
     const updatedPlayers = booking.players.filter(
       (player) => player !== sessionUserId
@@ -126,8 +179,11 @@ export const Bookings = ({ bookings }: Props) => {
     updateBooking.mutate(
       { ...booking, players: updatedPlayers },
       {
-        onSuccess: () => {
+        onSuccess: (mutatedBooking: Booking) => {
           emailDispatcher({
+            recipients,
+            originalBooking: booking,
+            mutatedBooking,
             playerName: session.data?.user.name || "A player",
             bookings: bookings || [],
             eventType: "LEAVE",
@@ -285,7 +341,7 @@ export const Bookings = ({ bookings }: Props) => {
                           )}
                           {!booking.players.includes(sessionUserId) && (
                             <button
-                              onClick={() => joinGame(booking)}
+                              onClick={() => joinGame(booking, users)}
                               className={`${
                                 booking.players.length < 4
                                   ? "btn-accent"

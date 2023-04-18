@@ -1,40 +1,100 @@
 import { type Booking } from "@prisma/client";
 import { type EventType, getTimeWithZeroPadding } from "~/utils/booking.util";
-import { getEmailBody, getEmailIngress, getEmailTitle, getPreheader } from "~/utils/general.util";
+import {
+  getEmailBody,
+  getEmailIngress,
+  getEmailTitle,
+  getPreheader,
+} from "~/utils/general.util";
 
-type GetBookingCreatedEmailProps = {
-    bookerName?: string;
-    playerName?: string;
-    booking: Booking; 
-    eventType: EventType
-}
+type BuildHtmlTemplateProps = {
+  bookerName?: string;
+  playerName?: string;
+  originalBooking: Booking;
+  mutatedBooking?: Booking;
+  bookings?: Booking[];
+  eventType: EventType;
+};
 
-export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventType }: GetBookingCreatedEmailProps) => {
-    const date = booking.date.toLocaleDateString("sv-SE");
-    const time = getTimeWithZeroPadding(booking.date.getHours(), booking.date.getMinutes());
-    const emailContent = getEmailBody({ playerName, bookerName, eventType })
-    const title = getEmailTitle(eventType);
-    const ingress = getEmailIngress({ bookerName, playerName, eventType, booking});
-    const preheader = getPreheader(eventType);
+export const buildHtmlTemplate = ({
+  bookerName,
+  playerName,
+  originalBooking,
+  mutatedBooking,
+  eventType,
+}: BuildHtmlTemplateProps) => {
+  const booking = mutatedBooking || originalBooking;
+  const players = booking.players.length;
+  const preheader = getPreheader(eventType);
+  const date = booking.date.toLocaleDateString("sv-SE");
+  const time = getTimeWithZeroPadding(
+    booking.date.getHours(),
+    booking.date.getMinutes()
+  );
 
+  console.log({
+    muteDate: mutatedBooking?.date,
+    orgigDate: originalBooking.date,
+  });
 
-    const bookingInformation = `
+  const title = getEmailTitle(eventType);
+  const ingress = getEmailIngress({
+    bookerName,
+    playerName,
+    eventType,
+    booking,
+  });
+  const emailContent = getEmailBody({ playerName, bookerName, eventType });
+
+  const bookingInformation = `
     <div style="display: flex; justify-content: center; flex-direction: column;">
         <div class="booking-info-item">
-            <strong>🗓️ ${date}</strong>
+            ${
+              mutatedBooking?.date &&
+              mutatedBooking?.date.getDate() !== originalBooking.date.getDate()
+                ? `<strong>📅 ${date}</strong> <s class="orange"><i>${originalBooking.date.toLocaleDateString(
+                    "sv-SE"
+                  )}</i></s>`
+                : `📅 ${date}`
+            }
         </div>
         <div class="booking-info-item">
-            <strong>⏳ ${time}</strong>
+            
+            ${
+              mutatedBooking?.date &&
+              mutatedBooking?.date.getTime() !== originalBooking.date.getTime()
+                ? `<strong>⏳ ${time}</strong> <s class="orange"><i>${getTimeWithZeroPadding(
+                    originalBooking.date.getHours(),
+                    originalBooking.date.getMinutes()
+                  )}</s></i>`
+                : `⏳ ${time}`
+            }
         </div>
         <div class="booking-info-item">
-            <strong>⏱️ ${booking.duration} minutes</strong>
+           
+            ${
+              mutatedBooking?.duration &&
+              mutatedBooking?.duration !== originalBooking.duration
+                ? ` <strong>⏱️ ${booking.duration} <s class="orange"><i>${originalBooking.duration}</i></s> minutes</strong>`
+                : `⏱️ ${booking.duration} minutes`
+            }
         </div>
-        <div class="booking-info-item">
-            <strong>📍 Court number ${booking.court || NaN}</strong>
-        </div>
-    </div>`
+    </div>`;
 
-    const style = `
+  const playersInParty =
+    eventType !== "DELETE"
+      ? `
+<div>
+    <div
+        style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div>Players in party</div>
+        <div style="font-size: 3rem;">${players} of 4</div>
+    </div>
+</div>
+`
+      : "";
+
+  const style = `
     <style>
     /* -------------------------------------
       GLOBAL RESETS
@@ -290,6 +350,11 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
 
     .booking-info-item {
         padding: 5px;
+        font-size: 18px;
+    }
+
+    .orange {
+        color: orange;
     }
 
     /* -------------------------------------
@@ -403,10 +468,11 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
             align-items: center;
         }
     }
+
 </style>
     `;
 
-    return `<!doctype html>
+  return `<!doctype html>
     <html>
 
     <head>
@@ -436,17 +502,22 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
                                                 <div class="body-container">
                                                     <!-- <img class="cig-frog-image" src="cid:unique@nodemailer.com" 
                                                         alt="cig-frog-still" width="150px" height="150px" /> -->
+                                                      <!--  <div style="height: 150px; width: 150px;"></div> -->
+                                                
                                                     <div style="padding-left: 15px;">
-                                                        <h2 style="text-align: left; margin-bottom: 15px;">${title}</h2>
+                                                        <h2 style="text-align: center; margin-bottom: 15px;">${title}</h2>
                                                             ${ingress}
                                                     </div>
-    
     
                                                 </div>
                                                 <hr />
                                                 ${emailContent}
+                                                <div style="display: flex; justify-content: space-between;">
                                                 ${bookingInformation}
                                                 <br>
+                                                ${playersInParty}
+                                                </div>
+                                                <br />
                                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0"
                                                     class="btn btn-primary">
                                                     <tbody>
@@ -457,7 +528,7 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
                                                                     <tbody>
                                                                         <tr>
                                                                             <td> <a href="https://beach.jtdev.se"
-                                                                                    target="_blank">Beach Bookings</a>
+                                                                                    target="_blank">Bookings</a>
                                                                             </td>
                                                                         </tr>
                                                                     </tbody>
@@ -483,14 +554,9 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td class="content-block">
-                                        <span class="apple-link">Company Inc, 3 Abbey Road, San Francisco CA 94102</span>
+                                        <span class="apple-link">Beach Bookings News</span>
                                         <br> Don't like these emails? <a
                                             href="http://i.imgur.com/CScmqnj.gif">Unsubscribe</a>.
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="content-block powered-by">
-                                        Powered by <a href="http://htmlemail.io">HTMLemail</a>.
                                     </td>
                                 </tr>
                             </table>
@@ -504,4 +570,4 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
         </table>
     </body>
     </html>`;
-}
+};

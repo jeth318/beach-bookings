@@ -13,6 +13,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
+import { getBgColor } from "~/utils/color.util";
+import { getEmailRecipiants } from "~/utils/general.util";
+
+const hej = getBgColor("/");
+
+console.log(hej);
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -49,6 +55,9 @@ const Booking = () => {
     refetch: refetchBookings,
     isInitialLoading: isInitialLoadingBookings,
   } = api.booking.getAll.useQuery();
+
+  const { data: users } = api.user.getAll.useQuery();
+
   const createBooking = api.booking.create.useMutation({});
   const updateBooking = api.booking.update.useMutation({});
   const emailerMutation = api.emailer.sendEmail.useMutation();
@@ -114,28 +123,20 @@ const Booking = () => {
     return currentDate.getTime() < selectedDate.getTime();
   };
 
-  const testEmail = () => {
-    if (!sessionData?.user || !bookings?.length) {
-      return null;
-    }
-
-    sessionData.user;
-    emailDispatcher({
-      bookerName: sessionData?.user.name || "Somebody",
-      bookings,
-      eventType,
-      mutation: emailerMutation,
-    });
-  };
-
   const addBooking = () => {
     if (!validBooking) {
       return null;
     }
+
     const formattedDate = date.toLocaleString("sv-SE");
 
     if (!!bookingToEdit) {
-      console.log("UPDATING");
+      const recipients = getEmailRecipiants({
+        users: [],
+        booking: bookingToEdit,
+        sessionUserId: sessionData.user.id,
+        eventType: "MODIFY",
+      });
 
       updateBooking.mutate(
         {
@@ -146,11 +147,15 @@ const Booking = () => {
           duration,
         },
         {
-          onSuccess: () => {
+          onSuccess: (mutatedBooking: Booking) => {
+            console.log({ mutatedBooking, bookingToEdit });
             emailDispatcher({
+              originalBooking: bookingToEdit,
+              mutatedBooking,
               bookerName: sessionData.user.name || "Someone",
               bookings: bookings || [],
               eventType,
+              recipients,
               mutation: emailerMutation,
             });
             void refetchBookings().then(() => {
@@ -160,6 +165,11 @@ const Booking = () => {
         }
       );
     } else {
+      const recipients = users
+        ?.filter((user) => !!user.email)
+        .filter((user) => user.id !== sessionData.user.id)
+        .map((user) => user.email) as string[];
+
       createBooking.mutate(
         {
           userId: sessionData?.user.id,
@@ -169,6 +179,15 @@ const Booking = () => {
         {
           onSuccess: () => {
             emailDispatcher({
+              originalBooking: {
+                id: "placeholderId",
+                userId: sessionData?.user.id,
+                date: new Date(formattedDate.replace(" ", "T")),
+                court,
+                duration,
+                players: [],
+              },
+              recipients,
               bookerName: sessionData.user.name || "Someone",
               bookings: bookings || [],
               eventType,

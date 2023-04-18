@@ -1,5 +1,38 @@
-import { type Booking } from "@prisma/client";
+import { type User, type Booking } from "@prisma/client";
 import { type EventType, getTimeWithZeroPadding } from "./booking.util";
+
+type EmailRecipientsProps = {
+    sessionUserId: string;
+    eventType: EventType;
+    booking: Booking;
+    users: User[];
+  }
+  
+  type MailOptions = {
+    sender?: string;
+    recipients: string[]
+  }
+  
+  export const getMailOptions = ({ sender, recipients }: MailOptions) =>  {
+    return {
+      from: sender || "",
+      to: recipients,
+    } 
+  };
+
+export const getEmailRecipiants = ({ users, booking, sessionUserId, eventType }: EmailRecipientsProps) => {
+    if (eventType === "ADD") {
+      return users
+      .filter((user) => user.id !== sessionUserId)
+      .map((user) => user.email)
+      .filter((email) => !!email) as string[];
+    }
+    return users
+    .filter((user) => booking.players.includes(user.id))
+    .filter((user) => !!user.email)
+    .filter((user) => user.id !== sessionUserId)
+    .map((user) => user.email) as string[];
+  }
 
 export const getEmailTitle = (eventType: EventType) => {
     switch(eventType) {
@@ -12,7 +45,7 @@ export const getEmailTitle = (eventType: EventType) => {
         case "JOIN":
             return "A player joined the party!"
         case "LEAVE":
-            return "A player left the party!!"
+            return "A player left the party!"
         default:
             return "Got some updates for you."
     }
@@ -22,12 +55,12 @@ export const getPreheader = (eventType: EventType) => {
     switch(eventType) {
         case "ADD":
         case "JOIN":
-            return "Arrogant frog comes with great news! 🥳";
+            return "Great news! 🥳";
         case "MODIFY":
-            return "Arrogant frog has some news!";
+            return "Got some news!";
         case "DELETE":
         case "LEAVE":
-            return "Arrogant frog comes with sad news! 😿"
+            return "Sad news! 😿"
         default:
             return "Yo beach player!"
     }   
@@ -86,15 +119,15 @@ export const getEmailIngress = ({ eventType, booking, playerName, bookerName }: 
 export const getEmailHeading = (eventType: string) => {
     switch(eventType) {
         case "ADD":
-            return `New booking added`;
+            return `An oppertunity to play!`;
         case "MODIFY":
-            return "Booking changed";
+            return "Sometimes stuff changes.";
         case "DELETE":
-            return `Booking removed`;
+            return `Game over`;
         case "JOIN":
-            return `A player joined the party`;
+            return `Reinforcements incoming!`;
         case "LEAVE":
-            return `A player left the party`
+            return `We lost a pro.`
         default:
             return "Yo beach player."   
     }
