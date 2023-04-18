@@ -190,7 +190,7 @@ const Booking = () => {
               recipients,
               bookerName: sessionData.user.name || "Someone",
               bookings: bookings || [],
-              eventType,
+              eventType: "ADD",
               mutation: emailerMutation,
             });
             void refetchBookings().then(() => {

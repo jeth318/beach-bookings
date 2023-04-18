@@ -32,6 +32,21 @@ export const buildHtmlTemplate = ({
     booking.date.getMinutes()
   );
 
+  const showDateUpdated =
+    eventType !== "ADD" &&
+    mutatedBooking?.date &&
+    mutatedBooking?.date.getDate() !== originalBooking.date.getDate();
+
+  const showTimeUpdated =
+    (eventType !== "ADD" &&
+      mutatedBooking?.date.getHours() !== originalBooking.date.getHours()) ||
+    (eventType !== "ADD" &&
+      mutatedBooking?.date.getMinutes() !== originalBooking?.date.getMinutes());
+
+  const showDurationUpdated =
+    mutatedBooking?.duration &&
+    mutatedBooking?.duration !== originalBooking.duration;
+
   console.log({
     muteDate: mutatedBooking?.date,
     orgigDate: originalBooking.date,
@@ -50,8 +65,7 @@ export const buildHtmlTemplate = ({
     <div style="display: flex; justify-content: center; flex-direction: column;">
         <div class="booking-info-item">
             ${
-              mutatedBooking?.date &&
-              mutatedBooking?.date.getDate() !== originalBooking.date.getDate()
+              showDateUpdated
                 ? `<strong>📅 ${date}</strong> <s class="orange"><i>${originalBooking.date.toLocaleDateString(
                     "sv-SE"
                   )}</i></s>`
@@ -59,13 +73,8 @@ export const buildHtmlTemplate = ({
             }
         </div>
         <div class="booking-info-item">
-            
             ${
-              (mutatedBooking?.date &&
-                mutatedBooking?.date.getHours() !==
-                  originalBooking.date.getHours()) ||
-              mutatedBooking?.date.getMinutes() !==
-                originalBooking?.date.getMinutes()
+              showTimeUpdated
                 ? `<strong>⏳ ${time}</strong> <s class="orange"><i>${getTimeWithZeroPadding(
                     originalBooking.date.getHours(),
                     originalBooking.date.getMinutes()
@@ -73,11 +82,9 @@ export const buildHtmlTemplate = ({
                 : `⏳ ${time}`
             }
         </div>
-        <div class="booking-info-item">
-           
+        <div class="booking-info-item">    
             ${
-              mutatedBooking?.duration &&
-              mutatedBooking?.duration !== originalBooking.duration
+              showDurationUpdated
                 ? ` <strong>⏱️ ${booking.duration} <s class="orange"><i>${originalBooking.duration}</i></s> minutes</strong>`
                 : `⏱️ ${booking.duration} minutes`
             }
@@ -91,7 +98,7 @@ export const buildHtmlTemplate = ({
     <div
         style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
         <div>Players in party</div>
-        <div style="font-size: 3rem;">${players} of 4</div>
+        <div style="font-size: 2.3rem;">${players} of 4</div>
     </div>
 </div>
 `
