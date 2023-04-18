@@ -52,10 +52,10 @@ export const buildHtmlTemplate = ({
             ${
               mutatedBooking?.date &&
               mutatedBooking?.date.getDate() !== originalBooking.date.getDate()
-                ? `<strong>🗓️ ${date}</strong> <s>${originalBooking.date.toLocaleDateString(
+                ? `<strong>📅 ${date}</strong> <s>${originalBooking.date.toLocaleDateString(
                     "sv-SE"
                   )}</s>`
-                : date
+                : `📅 ${date}`
             }
         </div>
         <div class="booking-info-item">
@@ -67,7 +67,7 @@ export const buildHtmlTemplate = ({
                     originalBooking.date.getHours(),
                     originalBooking.date.getMinutes()
                   )}</s>`
-                : time
+                : `⏳ ${time}`
             }
         </div>
         <div class="booking-info-item">
@@ -76,7 +76,7 @@ export const buildHtmlTemplate = ({
               mutatedBooking?.duration &&
               mutatedBooking?.duration !== originalBooking.duration
                 ? ` <strong>⏱️ ${booking.duration} minutes</strong><s>${originalBooking.duration}</s>`
-                : `${booking.duration} minutes`
+                : `⏱️ ${booking.duration} minutes`
             }
         </div>
     </div>`;
@@ -87,7 +87,7 @@ export const buildHtmlTemplate = ({
 <div>
     <div
         style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <div style="font-size: 1.5rem;">Players in party</div>
+        <div style="font-size: 1.3rem;">Players in party</div>
         <div style="font-size: 3rem;">${players} of 4</div>
     </div>
 </div>
