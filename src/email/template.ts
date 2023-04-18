@@ -61,8 +61,11 @@ export const buildHtmlTemplate = ({
         <div class="booking-info-item">
             
             ${
-              mutatedBooking?.date &&
-              mutatedBooking?.date.getTime() !== originalBooking.date.getTime()
+              (mutatedBooking?.date &&
+                mutatedBooking?.date.getHours() !==
+                  originalBooking.date.getHours()) ||
+              mutatedBooking?.date.getMinutes() !==
+                originalBooking?.date.getMinutes()
                 ? `<strong>⏳ ${time}</strong> <s class="orange"><i>${getTimeWithZeroPadding(
                     originalBooking.date.getHours(),
                     originalBooking.date.getMinutes()
