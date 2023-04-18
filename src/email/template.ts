@@ -1,39 +1,100 @@
 import { type Booking } from "@prisma/client";
-import { type EventType, getTimeWithZeroPadding, getProgressAccent } from "~/utils/booking.util";
-import { getEmailBody, getEmailIngress, getEmailTitle, getPreheader } from "~/utils/general.util";
+import { type EventType, getTimeWithZeroPadding } from "~/utils/booking.util";
+import {
+  getEmailBody,
+  getEmailIngress,
+  getEmailTitle,
+  getPreheader,
+} from "~/utils/general.util";
 
-type GetBookingCreatedEmailProps = {
-    bookerName?: string;
-    playerName?: string;
-    booking: Booking;
-    bookings?: Booking[]
-    eventType: EventType
-}
+type BuildHtmlTemplateProps = {
+  bookerName?: string;
+  playerName?: string;
+  originalBooking: Booking;
+  mutatedBooking?: Booking;
+  bookings?: Booking[];
+  eventType: EventType;
+};
 
-export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventType }: GetBookingCreatedEmailProps) => {
-    const date = booking.date.toLocaleDateString("sv-SE");
-    const time = getTimeWithZeroPadding(booking.date.getHours(), booking.date.getMinutes());
-    const emailContent = getEmailBody({ playerName, bookerName, eventType })
-    const title = getEmailTitle(eventType);
-    const ingress = getEmailIngress({ bookerName, playerName, eventType, booking});
-    const preheader = getPreheader(eventType);
+export const buildHtmlTemplate = ({
+  bookerName,
+  playerName,
+  originalBooking,
+  mutatedBooking,
+  eventType,
+}: BuildHtmlTemplateProps) => {
+  const booking = mutatedBooking || originalBooking;
+  const players = booking.players.length;
+  const preheader = getPreheader(eventType);
+  const date = booking.date.toLocaleDateString("sv-SE");
+  const time = getTimeWithZeroPadding(
+    booking.date.getHours(),
+    booking.date.getMinutes()
+  );
 
+  console.log({
+    muteDate: mutatedBooking?.date,
+    orgigDate: originalBooking.date,
+  });
 
-    const bookingInformation = `
+  const title = getEmailTitle(eventType);
+  const ingress = getEmailIngress({
+    bookerName,
+    playerName,
+    eventType,
+    booking,
+  });
+  const emailContent = getEmailBody({ playerName, bookerName, eventType });
+
+  const bookingInformation = `
     <div style="display: flex; justify-content: center; flex-direction: column;">
         <div class="booking-info-item">
-            <strong>🗓️ ${date}</strong>
+            ${
+              mutatedBooking?.date &&
+              mutatedBooking?.date.getDate() !== originalBooking.date.getDate()
+                ? `<strong>🗓️ ${date}</strong> <s>${originalBooking.date.toLocaleDateString(
+                    "sv-SE"
+                  )}</s>`
+                : date
+            }
         </div>
         <div class="booking-info-item">
-            <strong>⏳ ${time}</strong>
+            
+            ${
+              mutatedBooking?.date &&
+              mutatedBooking?.date.getTime() !== originalBooking.date.getTime()
+                ? `<strong>⏳ ${time}</strong> <s>${getTimeWithZeroPadding(
+                    originalBooking.date.getHours(),
+                    originalBooking.date.getMinutes()
+                  )}</s>`
+                : time
+            }
         </div>
         <div class="booking-info-item">
-            <strong>⏱️ ${booking.duration} minutes</strong>
+           
+            ${
+              mutatedBooking?.duration &&
+              mutatedBooking?.duration !== originalBooking.duration
+                ? ` <strong>⏱️ ${booking.duration} minutes</strong><s>${originalBooking.duration}</s>`
+                : `${booking.duration} minutes`
+            }
         </div>
-    </div>`
+    </div>`;
 
+  const playersInParty =
+    eventType !== "DELETE"
+      ? `
+<div>
+    <div
+        style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div style="font-size: 1.5rem;">Players in party</div>
+        <div style="font-size: 3rem;">${players} of 4</div>
+    </div>
+</div>
+`
+      : "";
 
-    const style = `
+  const style = `
     <style>
     /* -------------------------------------
       GLOBAL RESETS
@@ -289,7 +350,7 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
 
     .booking-info-item {
         padding: 5px;
-        font-size: 1.2rem;
+        font-size: 1.5rem;
     }
 
     /* -------------------------------------
@@ -404,38 +465,10 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
         }
     }
 
-    /* CUSTOM STYLES */
-
-    .font-bold {
-        font-weight: 700;
-    }
-    .text-lg {
-        font-size: 1.125rem;
-        line-height: 1.75rem;
-    }
-    .self-end {
-        align-self: flex-end;
-    }
-
-    .radial-progress {
-        position: relative;
-        display: inline-grid;
-        height: 5px;
-        width: 5px;
-        place-content: center;
-        border-radius: 9999px;
-        background-color: transparent;
-        vertical-align: middle;
-        box-sizing: content-box;
-        --value: 0;
-        --size: 5rem;
-        --thickness: 3px);
-    }
-
 </style>
     `;
 
-    return `<!doctype html>
+  return `<!doctype html>
     <html>
 
     <head>
@@ -478,13 +511,7 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
                                                 <div style="display: flex; justify-content: space-between;">
                                                 ${bookingInformation}
                                                 <br>
-                                                    <div>
-                                                        <div
-                                                            style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                                            <div style="font-size: 1.5rem;">Players in party</div>
-                                                            <div style="font-size: 3rem;">${booking.players.length} of 4</div>
-                                                        </div>
-                                                    </div>
+                                                ${playersInParty}
                                                 </div>
                                                 <br />
                                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0"
@@ -539,4 +566,4 @@ export const getBookingCreatedEmail = ({bookerName, playerName, booking, eventTy
         </table>
     </body>
     </html>`;
-}
+};

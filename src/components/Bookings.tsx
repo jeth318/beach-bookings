@@ -106,11 +106,12 @@ export const Bookings = ({ bookings }: Props) => {
       removeBooking.mutate(
         { id: booking.id },
         {
-          onSuccess: () => {
+          onSuccess: (mutatedBooking: Booking) => {
             emailDispatcher({
               recipients,
               bookerName: session.data?.user.name || "A player",
-              booking,
+              originalBooking: booking,
+              mutatedBooking,
               bookings: bookings || [],
               eventType: "DELETE",
               mutation: emailerMutation,
@@ -142,12 +143,13 @@ export const Bookings = ({ bookings }: Props) => {
       updateBooking.mutate(
         { ...booking, players: updatedPlayers },
         {
-          onSuccess: () => {
+          onSuccess: (mutatedBooking: Booking) => {
             emailDispatcher({
               recipients,
               playerName: session.data?.user.name || "A player",
               bookings: bookings || [],
-              booking,
+              originalBooking: booking,
+              mutatedBooking,
               eventType: "JOIN",
               mutation: emailerMutation,
             });
@@ -162,13 +164,7 @@ export const Bookings = ({ bookings }: Props) => {
   };
 
   const leaveGame = (booking: Booking) => {
-    const recipients = users
-      .filter((user) => booking.players.includes(user.id))
-      .filter((user) => !!user.email)
-      .filter((user) => user.id !== sessionUserId)
-      .map((user) => user.email) as string[];
-
-    const er = getEmailRecipiants({
+    const recipients = getEmailRecipiants({
       users,
       booking,
       sessionUserId: session.data?.user.id || "",
@@ -183,10 +179,11 @@ export const Bookings = ({ bookings }: Props) => {
     updateBooking.mutate(
       { ...booking, players: updatedPlayers },
       {
-        onSuccess: () => {
+        onSuccess: (mutatedBooking: Booking) => {
           emailDispatcher({
-            recipients: er,
-            booking,
+            recipients,
+            originalBooking: booking,
+            mutatedBooking,
             playerName: session.data?.user.name || "A player",
             bookings: bookings || [],
             eventType: "LEAVE",

@@ -131,27 +131,12 @@ const Booking = () => {
     const formattedDate = date.toLocaleString("sv-SE");
 
     if (!!bookingToEdit) {
-      const er = getEmailRecipiants({
+      const recipients = getEmailRecipiants({
         users: [],
         booking: bookingToEdit,
         sessionUserId: sessionData.user.id,
         eventType: "MODIFY",
       });
-
-      /*
-      const recipients = users
-        ?.filter((user) => bookingToEdit.players.includes(user.id))
-        .filter((user) => !!user.email)
-        .filter((user) => user.id !== sessionData.user.id)
-        .map((user) => user.email) as string[];
-        */
-
-      /*const er = getEmailRecipiants({
-        users: users || [],
-        booking: bookingToEdit,
-        sessionUserId: sessionData.user.id,
-        eventType: "MODIFY",
-      });*/
 
       updateBooking.mutate(
         {
@@ -162,20 +147,15 @@ const Booking = () => {
           duration,
         },
         {
-          onSuccess: () => {
+          onSuccess: (mutatedBooking: Booking) => {
+            console.log({ mutatedBooking, bookingToEdit });
             emailDispatcher({
-              booking: {
-                id: bookingToEdit.id,
-                userId: sessionData.user.id,
-                date: new Date(formattedDate.replace(" ", "T")),
-                court,
-                players: bookingToEdit.players,
-                duration,
-              },
+              originalBooking: bookingToEdit,
+              mutatedBooking,
               bookerName: sessionData.user.name || "Someone",
               bookings: bookings || [],
               eventType,
-              recipients: er,
+              recipients,
               mutation: emailerMutation,
             });
             void refetchBookings().then(() => {
@@ -189,6 +169,7 @@ const Booking = () => {
         ?.filter((user) => !!user.email)
         .filter((user) => user.id !== sessionData.user.id)
         .map((user) => user.email) as string[];
+
       createBooking.mutate(
         {
           userId: sessionData?.user.id,
@@ -198,7 +179,7 @@ const Booking = () => {
         {
           onSuccess: () => {
             emailDispatcher({
-              booking: {
+              originalBooking: {
                 id: "placeholderId",
                 userId: sessionData?.user.id,
                 date: new Date(formattedDate.replace(" ", "T")),

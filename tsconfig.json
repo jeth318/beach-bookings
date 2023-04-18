@@ -28,6 +28,6 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs"
-  ],
+, "src/email/stylesheet.css"  ],
   "exclude": ["node_modules"]
 }
