@@ -562,7 +562,7 @@ export const buildHtmlTemplate = ({
                                     <td class="content-block">
                                         <span class="apple-link">Beach Bookings News</span>
                                         <br> Don't like these emails? <a
-                                            href="http://i.imgur.com/CScmqnj.gif">Unsubscribe</a>.
+                                            href="https://beach.jtdev.se/settings">Unsubscribe</a>.
                                     </td>
                                 </tr>
                             </table>
