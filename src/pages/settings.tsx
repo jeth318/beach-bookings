@@ -31,7 +31,6 @@ const Settings = () => {
     // won't happen since we're using `fallback: "blocking"`
     return <>Loading...</>;
   }
-  const { data: bookings } = bookingsQuery;
 
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
@@ -42,7 +41,7 @@ const Settings = () => {
       <PageLoader
         isMainPage={false}
         mainBgColor={"mainPageBgColor"}
-        bgColor={"bg-gradient-to-b from-[#005e1ba6] to-[#000000]"}
+        bgColor={"bg-gradient-to-b from-[#01797391] to-[#000000]"}
       />
     );
   }

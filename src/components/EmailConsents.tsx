@@ -1,7 +1,5 @@
-import { type Booking, type User } from "@prisma/client";
-import Image from "next/image";
 import { useEffect, useState } from "react";
-import { BeatLoader } from "react-spinners";
+import { BeatLoader, SkewLoader } from "react-spinners";
 import { api } from "~/utils/api";
 import { Toast } from "./Toast";
 import { CustomIcon } from "./CustomIcon";
@@ -18,26 +16,32 @@ export const EmailConsents = () => {
     "KICK",
   ] as const;
 
+  const [internalConsentState, setInternalConsentState] = useState<string[]>(
+    []
+  );
+
   type Consent = (typeof consentList)[number];
   const allConsents = [...consentList] as Consent[];
 
   const [emailConsents, setEmailConsents] = useState<Consent[]>();
+
   const [toastMessage, setToastMessage] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingAll, setIsLoadingAll] = useState<boolean>(false);
+  const [consentToUpdate, setConsentToUpdate] = useState<number>();
 
   const session = useSession();
-
   const emailConsentsMutation = api.user.updateEmailConsents.useMutation();
   const {
     data: user,
     refetch: refetchUser,
     isInitialLoading: isInitialLodaingUser,
-    isRefetching: isRefetchingUser,
   } = api.user.get.useQuery();
 
   useEffect(() => {
     if (emailConsents === undefined) {
       setEmailConsents(user?.emailConsents as Consent[]);
+      setInternalConsentState(user?.emailConsents || []);
     }
   }, [emailConsents, session?.data?.user.id, user?.emailConsents]);
 
@@ -82,7 +86,7 @@ export const EmailConsents = () => {
   const getConsentIcon = (consent: EventType) => {
     switch (consent) {
       case "ADD":
-        return "booking-added.svg";
+        return `booking-added.svg`;
       case "DELETE":
         return "booking-removed.svg";
       case "MODIFY":
@@ -98,8 +102,38 @@ export const EmailConsents = () => {
     }
   };
 
-  const updateConsent = (consentToUpdate: Consent) => {
-    setIsLoading(true);
+  const toggleAll = (value: boolean) => {
+    console.log("TOGGLE ALL");
+
+    setIsLoadingAll(true);
+    setInternalConsentState(value ? allConsents : []);
+    mutateConsents(value ? allConsents : []);
+  };
+
+  const updateConsent = (consentToUpdate: Consent, index: number) => {
+    index && setIsLoading(true);
+    setConsentToUpdate(index);
+    console.log({ consentToUpdate });
+    console.log({ internalConsentState });
+    console.log({ isLoadingAll });
+
+    if (internalConsentState.indexOf(consentToUpdate) > -1) {
+      console.log(
+        "Existing! New internal state",
+        internalConsentState.filter((c) => c !== consentToUpdate)
+      );
+
+      setInternalConsentState(
+        internalConsentState.filter((c) => c !== consentToUpdate)
+      );
+    } else {
+      console.log("Not existing! New internal state", [
+        ...internalConsentState,
+        consentToUpdate,
+      ]);
+      setInternalConsentState([...internalConsentState, consentToUpdate]);
+    }
+
     let updatedConsents = emailConsents;
     if (emailConsents?.includes(consentToUpdate)) {
       updatedConsents = emailConsents.filter(
@@ -119,10 +153,14 @@ export const EmailConsents = () => {
         },
         {
           onSuccess: () => {
-            renderToast(`Email consents were saved.`);
-            setIsLoading(false);
+            renderToast(`Email preferences saved.`);
             setEmailConsents(emailConsents);
             void refetchUser();
+          },
+          onSettled: () => {
+            setIsLoading(false);
+            setIsLoadingAll(false);
+            setConsentToUpdate(undefined);
           },
         }
       );
@@ -137,16 +175,29 @@ export const EmailConsents = () => {
           <strong>Select e-mail notifications 📥</strong>
         </div>
       </div>
-      {!user ||
-      emailConsents === undefined ||
-      isInitialLodaingUser ||
-      isInitialLodaingUser ? (
+      <div className="flex items-center justify-center pb-4">
+        <button className="btn-sm btn" onClick={() => toggleAll(true)}>
+          All! 🍭
+        </button>
+        <BeatLoader
+          className="pl-3 pr-3"
+          style={{
+            visibility: !isLoadingAll ? "hidden" : "inherit",
+          }}
+          size={10}
+          color="white"
+        />
+        <button className="btn-sm btn" onClick={() => toggleAll(false)}>
+          None ✋
+        </button>
+      </div>
+      {!user || emailConsents === undefined || isInitialLodaingUser ? (
         <div className="flex justify-center">
           <BeatLoader size={20} color="#36d7b7" />
         </div>
       ) : (
         session.status === "authenticated" &&
-        allConsents?.map((consent) => {
+        allConsents?.map((consent, index) => {
           return (
             <div
               key={consent}
@@ -186,16 +237,23 @@ export const EmailConsents = () => {
                   </div>
                 </div>
               </div>
-              <div className="self-center pr-2" style={{ textAlign: "center" }}>
-                <label>
-                  <input
-                    type="checkbox"
-                    disabled={isLoading}
-                    className={`toggle-success toggle`}
-                    onChange={() => updateConsent(consent)}
-                    checked={emailConsents.includes(consent)}
-                  />
-                </label>
+              <div className="flex items-center">
+                {consentToUpdate === index && (
+                  <BeatLoader size={10} color="purple" />
+                )}
+                <div
+                  className="self-center pl-2 pr-2"
+                  style={{ textAlign: "center" }}
+                >
+                  <label>
+                    <input
+                      type="checkbox"
+                      className={`toggle-success toggle toggle-lg`}
+                      onChange={() => updateConsent(consent, index)}
+                      checked={internalConsentState.indexOf(consent) > -1}
+                    />
+                  </label>
+                </div>
               </div>
             </div>
           );
