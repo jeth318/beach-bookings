@@ -1,7 +1,6 @@
 import { type Booking } from "@prisma/client";
 import { type EventType, getTimeWithZeroPadding } from "~/utils/booking.util";
 import {
-  getEmailBody,
   getEmailIngress,
   getEmailTitle,
   getPreheader,
@@ -24,7 +23,7 @@ export const buildHtmlTemplate = ({
   eventType,
 }: BuildHtmlTemplateProps) => {
   const booking = mutatedBooking || originalBooking;
-  const players = booking.players.length;
+  const players = eventType === "ADD" ? 1 : booking.players.length;
   const preheader = getPreheader(eventType);
   const date = booking.date.toLocaleDateString("sv-SE");
   const time = getTimeWithZeroPadding(
@@ -57,9 +56,7 @@ export const buildHtmlTemplate = ({
     bookerName,
     playerName,
     eventType,
-    booking,
   });
-  const emailContent = getEmailBody({ playerName, bookerName, eventType });
 
   const bookingInformation = `
     <div style="display: flex; justify-content: center; flex-direction: column;">
@@ -521,7 +518,6 @@ export const buildHtmlTemplate = ({
     
                                                 </div>
                                                 <hr />
-                                                ${emailContent}
                                                 <div style="display: flex; justify-content: space-between;">
                                                 ${bookingInformation}
                                                 <br>

@@ -10,12 +10,11 @@ import { CheckAvailability } from "./CheckAvailability";
 import { parseDate, parseTime, today } from "~/utils/time.util";
 import { getBgColor } from "~/utils/color.util";
 import {
-  type EventType,
   bookingsByDate,
   emailDispatcher,
   getProgressAccent,
 } from "~/utils/booking.util";
-import { removeBookingText } from "~/utils/general.util";
+import { getEmailRecipiants, removeBookingText } from "~/utils/general.util";
 import { ArrogantFrog } from "./ArrogantFrog";
 
 type Bookings = {
@@ -35,37 +34,12 @@ const getUsersInBooking = (users: User[], booking: Booking) => {
   return users.filter((user) => booking.players.includes(user.id));
 };
 
-type EmailRecipientsProps = {
-  sessionUserId: string;
-  eventType: EventType;
-  booking: Booking;
-  users: User[];
-};
-
-const getEmailRecipiants = ({
-  users,
-  booking,
-  sessionUserId,
-  eventType,
-}: EmailRecipientsProps) => {
-  if (eventType === "ADD") {
-    return users
-      .filter((user) => user.id !== sessionUserId)
-      .map((user) => user.email)
-      .filter((email) => !!email) as string[];
-  }
-  return users
-    .filter((user) => user.id !== sessionUserId)
-    .filter((user) => booking.players.includes(user.id))
-    .map((user) => user.email)
-    .filter((email) => !!email) as string[];
-};
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Bookings = ({ bookings }: Props) => {
   const session = useSession();
   const sessionUserId = session?.data?.user?.id;
   const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
+
   const [joining, setIsJoining] = useState<BookingAction>({
     isWorking: false,
     bookingId: "",
@@ -134,7 +108,7 @@ export const Bookings = ({ bookings }: Props) => {
       .filter((user) => user.id !== sessionUserId)
       .map((user) => user.email) as string[];
 
-    console.log(recipients);
+    console.log("joinGame", recipients);
 
     if (sessionUserId) {
       setIsJoining({ isWorking: true, bookingId: booking.id });
@@ -164,12 +138,15 @@ export const Bookings = ({ bookings }: Props) => {
   };
 
   const leaveGame = (booking: Booking) => {
+    const eventType = "LEAVE";
     const recipients = getEmailRecipiants({
       users,
       booking,
       sessionUserId: session.data?.user.id || "",
-      eventType: "LEAVE",
+      eventType,
     });
+
+    console.log("LEAVE", recipients);
 
     setLeaving({ isWorking: true, bookingId: booking.id });
     const updatedPlayers = booking.players.filter(
@@ -181,13 +158,13 @@ export const Bookings = ({ bookings }: Props) => {
       {
         onSuccess: (mutatedBooking: Booking) => {
           emailDispatcher({
+            eventType,
             recipients,
-            originalBooking: booking,
             mutatedBooking,
-            playerName: session.data?.user.name || "A player",
             bookings: bookings || [],
-            eventType: "LEAVE",
+            originalBooking: booking,
             mutation: emailerMutation,
+            playerName: session.data?.user.name || "A player",
           });
           setTimeout(() => {
             void refetchBookings();
@@ -210,10 +187,11 @@ export const Bookings = ({ bookings }: Props) => {
     sessionUserId,
   });
 
-  if (
+  const showArrogantFrog =
     (!oldBookings?.length && historyOnly) ||
-    (!bookingsToShow?.length && !historyOnly)
-  ) {
+    (!bookingsToShow?.length && !historyOnly);
+
+  if (showArrogantFrog) {
     return <ArrogantFrog />;
   }
 
