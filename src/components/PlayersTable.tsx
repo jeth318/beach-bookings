@@ -5,6 +5,9 @@ import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
 import { Toast } from "./Toast";
 import { CustomIcon } from "./CustomIcon";
+import { getEmailRecipiants } from "~/utils/general.util";
+import { emailDispatcher } from "~/utils/booking.util";
+import { useSession } from "next-auth/react";
 
 type Props = {
   booking: Booking;
@@ -14,10 +17,15 @@ export const PlayersTable = ({ booking }: Props) => {
   const [playersInBooking, setPlayersInBooking] = useState<User[]>();
   const [toastMessage, setToastMessage] = useState<string>();
 
+  const session = useSession();
+
   const {
     refetch: refetchBookings,
     isInitialLoading: isInitialLodaingBookings,
   } = api.booking.getAll.useQuery();
+
+  const emailerMutation = api.emailer.sendEmail.useMutation();
+
   const updateBooking = api.booking.update.useMutation();
   const { data: users, isInitialLoading: isInitialLodaingUsers } =
     api.user.getAll.useQuery();
@@ -37,16 +45,33 @@ export const PlayersTable = ({ booking }: Props) => {
   };
 
   const removePlayer = (playerId: string) => {
+    const recipients = getEmailRecipiants({
+      booking,
+      users: users || [],
+      sessionUserId: "",
+      eventType: "KICK",
+    });
+
+    console.log("kickRecipioants: ", recipients);
+
     void updateBooking.mutate(
       {
         ...booking,
         players: booking.players.filter((id) => id !== playerId),
       },
       {
-        onSuccess: () => {
+        onSuccess: (mutatedBooking: Booking) => {
           setPlayersInBooking(
             playersInBooking?.filter((player) => player.id !== playerId)
           );
+          /* emailDispatcher({
+            recipients,
+            playerName: session.data?.user.id || "A player",
+            originalBooking: booking,
+            mutatedBooking,
+            eventType: "KICK",
+            mutation: emailerMutation,
+          }); */
           renderToast(`Player was removed from the booking.`);
           void refetchBookings();
         },

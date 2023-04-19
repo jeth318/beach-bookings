@@ -130,9 +130,13 @@ export const EmailConsents = () => {
   };
 
   return (
-    <div className="settings-container">
+    <div className="settings-container bg-gradient-to-b from-[#01797391] to-[#000000] p-1">
       {toastMessage && <Toast body={toastMessage} />}
-
+      <div className="flex flex-col justify-center text-center">
+        <div className="pb-5 pt-2 text-xl text-white">
+          <strong>Select e-mail notifications 📥</strong>
+        </div>
+      </div>
       {!user ||
       emailConsents === undefined ||
       isInitialLodaingUser ||

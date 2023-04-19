@@ -13,12 +13,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
-import { getBgColor } from "~/utils/color.util";
 import { getEmailRecipiants } from "~/utils/general.util";
-
-const hej = getBgColor("/");
-
-console.log(hej);
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -132,11 +127,13 @@ const Booking = () => {
 
     if (!!bookingToEdit) {
       const recipients = getEmailRecipiants({
-        users: [],
+        users: users || [],
         booking: bookingToEdit,
         sessionUserId: sessionData.user.id,
         eventType: "MODIFY",
       });
+
+      console.log("modify recipients:", recipients);
 
       updateBooking.mutate(
         {
@@ -165,10 +162,21 @@ const Booking = () => {
         }
       );
     } else {
-      const recipients = users
-        ?.filter((user) => !!user.email)
-        .filter((user) => user.id !== sessionData.user.id)
-        .map((user) => user.email) as string[];
+      const recipients = getEmailRecipiants({
+        users: users || [],
+        booking: {
+          id: "placeholderId",
+          userId: sessionData?.user.id,
+          date: new Date(formattedDate.replace(" ", "T")),
+          court,
+          duration,
+          players: [],
+        },
+        sessionUserId: sessionData.user.id,
+        eventType: "ADD",
+      });
+
+      console.log("add recipients", recipients);
 
       createBooking.mutate(
         {

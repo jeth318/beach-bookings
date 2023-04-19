@@ -56,6 +56,7 @@ export const getEmailTitle = (eventType: EventType) => {
       return "Booking removed 🔴";
     case "JOIN":
       return "A player joined the party! 🎉";
+    case "KICK":
     case "LEAVE":
       return "A player left the party! 😿";
     default:

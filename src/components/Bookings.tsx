@@ -70,11 +70,14 @@ export const Bookings = ({ bookings }: Props) => {
 
   const deleteBooking = (booking: Booking | undefined) => {
     if (!!booking) {
-      const recipients = users
-        .filter((user) => booking.players.includes(user.id))
-        .filter((user) => !!user.email)
-        .filter((user) => user.id !== sessionUserId)
-        .map((user) => user.email) as string[];
+      const recipients = getEmailRecipiants({
+        users,
+        booking,
+        sessionUserId: session.data?.user.id || "",
+        eventType: "DELETE",
+      });
+
+      console.log("deleteGame recipients:", recipients);
 
       setDeleting({ isWorking: true, bookingId: booking.id });
       removeBooking.mutate(
@@ -102,13 +105,14 @@ export const Bookings = ({ bookings }: Props) => {
   };
 
   const joinGame = (booking: Booking, users: User[]) => {
-    const recipients = users
-      .filter((user) => booking.players.includes(user.id))
-      .filter((user) => !!user.email)
-      .filter((user) => user.id !== sessionUserId)
-      .map((user) => user.email) as string[];
+    const recipients = getEmailRecipiants({
+      users,
+      booking,
+      sessionUserId: session.data?.user.id || "",
+      eventType: "JOIN",
+    });
 
-    console.log("joinGame", recipients);
+    console.log("joinGame recipients", recipients);
 
     if (sessionUserId) {
       setIsJoining({ isWorking: true, bookingId: booking.id });
@@ -146,7 +150,7 @@ export const Bookings = ({ bookings }: Props) => {
       eventType,
     });
 
-    console.log("LEAVE", recipients);
+    console.log("leaveGame recipients:", recipients);
 
     setLeaving({ isWorking: true, bookingId: booking.id });
     const updatedPlayers = booking.players.filter(

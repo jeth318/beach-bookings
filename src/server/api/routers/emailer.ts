@@ -9,7 +9,6 @@ const hardCodedEmailsForTesting = [
   // "jesper.thornberg@me.com",
 ];
 
-import path from "path";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { getEmailHeading, getMailOptions } from "~/utils/general.util";
@@ -36,7 +35,7 @@ export const emailerRouter = createTRPCRouter({
       try {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         await transporter.sendMail({
-          ...getMailOptions({ sender, recipients: emailRecipients }),
+          ...getMailOptions({ sender, recipients: input.recipients }),
           html: input.htmlString,
           subject,
           /*attachments: [{
