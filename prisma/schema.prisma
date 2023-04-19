@@ -50,7 +50,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     bookings      Booking[]
-    emailConsents String[]  @default(["ADD", "REMOVE", "LEAVE", "JOIN", "KICK", "MODIFY"])
+    emailConsents String[]  @default(["ADD", "DELETE", "LEAVE", "JOIN", "KICK", "MODIFY"])
 }
 
 model VerificationToken {
