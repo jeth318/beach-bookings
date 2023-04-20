@@ -10,11 +10,16 @@ import { CheckAvailability } from "./CheckAvailability";
 import { parseDate, parseTime, today } from "~/utils/time.util";
 import { getBgColor } from "~/utils/color.util";
 import {
+  type EventType,
   bookingsByDate,
   emailDispatcher,
   getProgressAccent,
 } from "~/utils/booking.util";
-import { getEmailRecipients, removeBookingText } from "~/utils/general.util";
+import {
+  getEmailRecipients,
+  getUsersInBooking,
+  removeBookingText,
+} from "~/utils/general.util";
 import { ArrogantFrog } from "./ArrogantFrog";
 import ActionModal from "./ActionModal";
 
@@ -31,13 +36,17 @@ type BookingAction = {
   bookingId?: string;
 };
 
-const getUsersInBooking = (users: User[], booking: Booking) => {
-  return users.filter((user) => booking.players.includes(user.id));
-};
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Bookings = ({ bookings }: Props) => {
   const session = useSession();
+  const router = useRouter();
+  const isMainPage = router.asPath === "/";
+  const removeBooking = api.booking.delete.useMutation();
+  const updateBooking = api.booking.update.useMutation();
+
+  const historyOnly = router.asPath === "/history";
+  const createdOnly = router.asPath === "/created";
+
   const sessionUserId = session?.data?.user?.id;
   const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
 
@@ -54,105 +63,74 @@ export const Bookings = ({ bookings }: Props) => {
     bookingId: "",
   });
 
-  const router = useRouter();
-
-  const historyOnly = router.asPath === "/history";
-  const createdOnly = router.asPath === "/created";
-
-  const isMainPage = router.asPath === "/";
-  const removeBooking = api.booking.delete.useMutation();
-  const updateBooking = api.booking.update.useMutation();
-
   const { data: users = [], isInitialLoading: isInitialLoadingUsers } =
     api.user.getAll.useQuery();
 
   const { refetch: refetchBookings } = api.booking.getAll.useQuery();
   const emailerMutation = api.emailer.sendEmail.useMutation();
 
+  const handleMutationSuccess = (
+    mutatedBooking: Booking,
+    booking: Booking,
+    eventType: EventType
+  ) => {
+    const recipients = getEmailRecipients({
+      users,
+      booking,
+      sessionUserId: sessionUserId || "",
+      eventType,
+    });
+
+    emailDispatcher({
+      recipients,
+      bookerName: session.data?.user.name || "A player",
+      originalBooking: booking,
+      mutatedBooking,
+      bookings: bookings || [],
+      eventType,
+      mutation: emailerMutation,
+    });
+
+    void refetchBookings().then(() => {
+      setDeleting({ isWorking: false, bookingId: undefined });
+      setLeaving({ isWorking: false, bookingId: undefined });
+      setIsJoining({ isWorking: false, bookingId: undefined });
+    });
+  };
+
   const deleteBooking = (booking: Booking | undefined) => {
     if (!!booking) {
-      const recipients = getEmailRecipients({
-        users,
-        booking,
-        sessionUserId: session.data?.user.id || "",
-        eventType: "DELETE",
-      });
-
-      console.log("deleteGame recipients:", recipients);
-
       setDeleting({ isWorking: true, bookingId: booking.id });
       removeBooking.mutate(
         { id: booking.id },
         {
           onSuccess: (mutatedBooking: Booking) => {
-            emailDispatcher({
-              recipients,
-              bookerName: session.data?.user.name || "A player",
-              originalBooking: booking,
-              mutatedBooking,
-              bookings: bookings || [],
-              eventType: "DELETE",
-              mutation: emailerMutation,
-            });
-            setTimeout(() => {
-              setBookingToDelete(undefined);
-              void refetchBookings();
-              setDeleting({ isWorking: false, bookingId: undefined });
-            }, 1000);
+            handleMutationSuccess(mutatedBooking, booking, "DELETE");
           },
         }
       );
     }
   };
 
-  const joinGame = (booking: Booking, users: User[]) => {
-    const recipients = getEmailRecipients({
-      users,
-      booking,
-      sessionUserId: session.data?.user.id || "",
-      eventType: "JOIN",
-    });
-
-    console.log("joinGame recipients", recipients);
-
-    if (sessionUserId) {
-      setIsJoining({ isWorking: true, bookingId: booking.id });
-      const updatedPlayers = [...booking.players, sessionUserId];
-
-      updateBooking.mutate(
-        { ...booking, players: updatedPlayers },
-        {
-          onSuccess: (mutatedBooking: Booking) => {
-            emailDispatcher({
-              recipients,
-              playerName: session.data?.user.name || "A player",
-              bookings: bookings || [],
-              originalBooking: booking,
-              mutatedBooking,
-              eventType: "JOIN",
-              mutation: emailerMutation,
-            });
-            setTimeout(() => {
-              void refetchBookings();
-              setIsJoining({ isWorking: false, bookingId: undefined });
-            }, 1000);
-          },
-        }
-      );
+  const joinGame = (booking: Booking) => {
+    if (!sessionUserId) {
+      return null;
     }
+    setIsJoining({ isWorking: true, bookingId: booking.id });
+    const updatedPlayers = [...booking.players, sessionUserId];
+    updateBooking.mutate(
+      { ...booking, players: updatedPlayers },
+      {
+        onSuccess: (mutatedBooking: Booking) =>
+          handleMutationSuccess(mutatedBooking, booking, "JOIN"),
+      }
+    );
   };
 
   const leaveGame = (booking: Booking) => {
-    const eventType = "LEAVE";
-    const recipients = getEmailRecipients({
-      users,
-      booking,
-      sessionUserId: session.data?.user.id || "",
-      eventType,
-    });
-
-    console.log("leaveGame recipients:", recipients);
-
+    if (!sessionUserId) {
+      return null;
+    }
     setLeaving({ isWorking: true, bookingId: booking.id });
     const updatedPlayers = booking.players.filter(
       (player) => player !== sessionUserId
@@ -162,19 +140,7 @@ export const Bookings = ({ bookings }: Props) => {
       { ...booking, players: updatedPlayers },
       {
         onSuccess: (mutatedBooking: Booking) => {
-          emailDispatcher({
-            eventType,
-            recipients,
-            mutatedBooking,
-            bookings: bookings || [],
-            originalBooking: booking,
-            mutation: emailerMutation,
-            playerName: session.data?.user.name || "A player",
-          });
-          setTimeout(() => {
-            void refetchBookings();
-            setLeaving({ isWorking: false, bookingId: undefined });
-          }, 1000);
+          handleMutationSuccess(mutatedBooking, booking, "LEAVE");
         },
       }
     );
@@ -217,53 +183,49 @@ export const Bookings = ({ bookings }: Props) => {
           return (
             <div
               key={booking.id}
-              className="bookings-wrapper smooth-render-in border-b border-zinc-400"
+              className="smooth-render-in border-b border-zinc-400 last:border-b-0"
             >
-              <div className=" border-spacing card-compact card">
+              <div className="card-compact card">
                 <div
-                  className={`card-body min-w-min flex-row justify-between text-primary-content`}
+                  className={`card-body flex-row justify-between text-primary-content`}
                 >
-                  <div className="container">
-                    <div className="flex flex-col justify-between">
-                      <div>
-                        <h2 className="card-title text-2xl">
-                          {parseDate(booking)}
-                          {booking.players.length === 4 &&
-                            !historyOnly &&
-                            " ✅"}
-                        </h2>
-                        <div className="text-lg">{parseTime(booking)}</div>
-                        <div className="self-start pt-4">
-                          {isInitialLoadingUsers ? (
-                            <div className="flex justify-start">
-                              <BeatLoader size={10} color="#36d7b7" />
-                            </div>
-                          ) : (
-                            getUsersInBooking(users, booking).map(
-                              (user: User) => {
-                                return (
-                                  <div
-                                    key={user.id}
-                                    style={{ marginTop: "-15" }}
-                                    className="smooth-render-in-slower flex flex-row items-center"
-                                  >
-                                    {user.name}
-                                    {booking.userId === user.id ? (
-                                      <div className="pl-2">
-                                        <CustomIcon
-                                          path="/svg/crown.svg"
-                                          width={17}
-                                        />
-                                      </div>
-                                    ) : (
-                                      ""
-                                    )}
-                                  </div>
-                                );
-                              }
-                            )
-                          )}
-                        </div>
+                  <div className="flex flex-col justify-between">
+                    <div>
+                      <h2 className="card-title text-2xl">
+                        {parseDate(booking)}
+                        {booking.players.length === 4 && !historyOnly && " ✅"}
+                      </h2>
+                      <div className="text-lg">{parseTime(booking)}</div>
+                      <div className="self-start pt-4">
+                        {isInitialLoadingUsers ? (
+                          <div className="flex justify-start">
+                            <BeatLoader size={10} color="#36d7b7" />
+                          </div>
+                        ) : (
+                          getUsersInBooking(users, booking).map(
+                            (user: User) => {
+                              return (
+                                <div
+                                  key={user.id}
+                                  style={{ marginTop: "-15" }}
+                                  className="smooth-render-in-slower flex flex-row items-center"
+                                >
+                                  {user.name}
+                                  {booking.userId === user.id ? (
+                                    <div className="pl-2">
+                                      <CustomIcon
+                                        path="/svg/crown.svg"
+                                        width={17}
+                                      />
+                                    </div>
+                                  ) : (
+                                    ""
+                                  )}
+                                </div>
+                              );
+                            }
+                          )
+                        )}
                       </div>
                     </div>
                   </div>
@@ -307,7 +269,7 @@ export const Bookings = ({ bookings }: Props) => {
                           )}
                           {!booking.players.includes(sessionUserId) && (
                             <button
-                              onClick={() => joinGame(booking, users)}
+                              onClick={() => joinGame(booking)}
                               className={`${
                                 booking.players.length < 4
                                   ? "btn-accent"
