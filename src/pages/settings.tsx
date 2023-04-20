@@ -8,6 +8,7 @@ import { SubHeader } from "~/components/SubHeader";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { PageLoader } from "~/components/PageLoader";
 import { EmailConsents } from "~/components/EmailConsents";
+import Head from "next/head";
 
 export async function getStaticProps() {
   await serverSideHelpers.booking.getAll.prefetch();
@@ -47,10 +48,20 @@ const Settings = () => {
   }
 
   return (
-    <div>
-      <SubHeader title="Settings" />
-      <EmailConsents />
-    </div>
+    <>
+      <Head>
+        <title>Beach bookings</title>
+        <meta
+          name="description"
+          content="Beach bookings makes party's happen"
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <main className="min-w-sm flex min-w-fit flex-col">
+        <SubHeader title="Settings" />
+        <EmailConsents />
+      </main>
+    </>
   );
 };
 
