@@ -8,6 +8,7 @@ import { CustomIcon } from "./CustomIcon";
 import { getEmailRecipients } from "~/utils/general.util";
 import { emailDispatcher } from "~/utils/booking.util";
 import { useSession } from "next-auth/react";
+import ActionModal from "./ActionModal";
 
 type Props = {
   booking: Booking;
@@ -80,39 +81,16 @@ export const PlayersTable = ({ booking }: Props) => {
   return (
     <div>
       {toastMessage && <Toast body={toastMessage} />}
-      <input
-        type="checkbox"
-        id="action-modal-player-remove"
-        className="modal-toggle"
+      <ActionModal
+        callback={removePlayer}
+        data={playerToRemove}
+        tagRef="player-remove"
+        title="Confirm kick 🦵👋"
+        body="If you remove this player from this booking, he or she will have to
+        re-join them selfs."
+        confirmButtonText="Remove player"
+        cancelButtonText="Cancel"
       />
-      <div className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box">
-          <h3 className="text-lg font-bold">Confirm kick 🦵👋</h3>
-          <p className="py-4">
-            If you remove this player from this booking, he or she will have to
-            re-join them selfes.
-          </p>
-          <div className="modal-action">
-            <div className="btn-group">
-              <label
-                htmlFor="action-modal-player-remove"
-                className="btn text-white"
-              >
-                Cancel
-              </label>
-              <label
-                htmlFor="action-modal-player-remove"
-                className="btn-error btn text-white"
-                onClick={() => {
-                  !!playerToRemove && removePlayer(playerToRemove);
-                }}
-              >
-                Remove player
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {!playersInBooking ||
       isInitialLodaingBookings ||

@@ -16,6 +16,7 @@ import {
 } from "~/utils/booking.util";
 import { getEmailRecipients, removeBookingText } from "~/utils/general.util";
 import { ArrogantFrog } from "./ArrogantFrog";
+import ActionModal from "./ActionModal";
 
 type Bookings = {
   data: Booking[];
@@ -201,32 +202,15 @@ export const Bookings = ({ bookings }: Props) => {
 
   return (
     <div>
-      <div>
-        {/* Put this part before </body> tag */}
-        <input type="checkbox" id="action-modal" className="modal-toggle" />
-        <div className="modal modal-bottom  sm:modal-middle">
-          <div className="modal-box">
-            <h3 className="text-lg font-bold">Confirm deletion</h3>
-            <p className="py-4">{removeBookingText}</p>
-            <div className="modal-action">
-              <div className="btn-group">
-                <label htmlFor="action-modal" className="btn ">
-                  Cancel
-                </label>
-                <label
-                  htmlFor="action-modal"
-                  className="btn-error btn text-white"
-                  onClick={() => {
-                    deleteBooking(bookingToDelete);
-                  }}
-                >
-                  Delete
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ActionModal
+        callback={deleteBooking}
+        data={bookingToDelete}
+        tagRef="delete-booking"
+        title="Confirm deletion"
+        body={removeBookingText}
+        confirmButtonText="Delete"
+        cancelButtonText="Cancel"
+      />
 
       <div className={`bg-gradient-to-b ${bgColorDark} bookings-container`}>
         {bookingsToShow?.map((booking: Booking) => {
@@ -357,7 +341,7 @@ export const Bookings = ({ bookings }: Props) => {
                             sessionUserId === booking?.userId &&
                             !historyOnly && (
                               <label
-                                htmlFor="action-modal"
+                                htmlFor="action-modal-delete-booking"
                                 onClick={() => void setBookingToDelete(booking)}
                                 className="btn-error btn-sm btn text-white"
                               >
