@@ -14,7 +14,7 @@ import {
   emailDispatcher,
   getProgressAccent,
 } from "~/utils/booking.util";
-import { getEmailRecipiants, removeBookingText } from "~/utils/general.util";
+import { getEmailRecipients, removeBookingText } from "~/utils/general.util";
 import { ArrogantFrog } from "./ArrogantFrog";
 
 type Bookings = {
@@ -70,7 +70,7 @@ export const Bookings = ({ bookings }: Props) => {
 
   const deleteBooking = (booking: Booking | undefined) => {
     if (!!booking) {
-      const recipients = getEmailRecipiants({
+      const recipients = getEmailRecipients({
         users,
         booking,
         sessionUserId: session.data?.user.id || "",
@@ -105,7 +105,7 @@ export const Bookings = ({ bookings }: Props) => {
   };
 
   const joinGame = (booking: Booking, users: User[]) => {
-    const recipients = getEmailRecipiants({
+    const recipients = getEmailRecipients({
       users,
       booking,
       sessionUserId: session.data?.user.id || "",
@@ -143,7 +143,7 @@ export const Bookings = ({ bookings }: Props) => {
 
   const leaveGame = (booking: Booking) => {
     const eventType = "LEAVE";
-    const recipients = getEmailRecipiants({
+    const recipients = getEmailRecipients({
       users,
       booking,
       sessionUserId: session.data?.user.id || "",

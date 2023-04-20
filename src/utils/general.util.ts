@@ -21,7 +21,7 @@ export const getMailOptions = ({ sender, recipients }: MailOptions) => {
   };
 };
 
-export const getEmailRecipiants = ({
+export const getEmailRecipients = ({
   users,
   booking,
   sessionUserId,

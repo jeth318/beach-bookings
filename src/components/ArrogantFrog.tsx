@@ -15,19 +15,18 @@ export const ArrogantFrog = () => {
     <div
       className={`bg-min-height${
         main ? "-no-submenu" : ""
-      } smooth-render-in flex-row items-center justify-center self-center bg-gradient-to-b pt-12 ${bgColor}`}
+      } smooth-render-in bg-gradient-to-b pt-12 ${bgColor}`}
     >
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center">
         <Image
-          style={{ borderRadius: "50%" }}
-          alt="frog"
+          className="rounded-full"
+          alt="arrogant-frog"
           src="/cig-frog.gif"
           width={210}
           height={210}
         />
-        <div className="flex flex-col justify-center p-4 text-center text-xl text-white">
+        <div className="p-4 text-center text-xl text-white">
           <div className="pb-4">{getFrogText(router.asPath)}</div>
-          {created && <CheckAvailability />}
           {joined && (
             <div className="flex flex-col items-center">
               <div>
@@ -39,9 +38,9 @@ export const ArrogantFrog = () => {
               <div className="text-sm">
                 Or perhaps create a booking your self?
               </div>
-              <CheckAvailability />
             </div>
           )}
+          {(created || joined) && <CheckAvailability />}
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
-import { getEmailRecipiants } from "~/utils/general.util";
+import { getEmailRecipients } from "~/utils/general.util";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -126,7 +126,7 @@ const Booking = () => {
     const formattedDate = date.toLocaleString("sv-SE");
 
     if (!!bookingToEdit) {
-      const recipients = getEmailRecipiants({
+      const recipients = getEmailRecipients({
         users: users || [],
         booking: bookingToEdit,
         sessionUserId: sessionData.user.id,
@@ -162,7 +162,7 @@ const Booking = () => {
         }
       );
     } else {
-      const recipients = getEmailRecipiants({
+      const recipients = getEmailRecipients({
         users: users || [],
         booking: {
           id: "placeholderId",
