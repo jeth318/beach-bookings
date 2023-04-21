@@ -14,6 +14,7 @@ import {
   bookingsByDate,
   emailDispatcher,
   getProgressAccent,
+  isOngoingGame,
 } from "~/utils/booking.util";
 import {
   getEmailRecipients,
@@ -189,7 +190,14 @@ export const Bookings = ({ bookings }: Props) => {
                 <div
                   className={`card-body flex-row justify-between text-primary-content`}
                 >
-                  <div className="flex flex-col justify-between">
+                  <div className="flex flex-col">
+                    {isOngoingGame(booking) && (
+                      <div className="pb-1 text-lg">
+                        <span className="badge-primary badge badge-lg animate-pulse self-start text-white">
+                          Ongoing
+                        </span>
+                      </div>
+                    )}
                     <div>
                       <h2 className="card-title text-2xl">
                         {parseDate(booking)}

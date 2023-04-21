@@ -1,4 +1,4 @@
-import type Booking from "~/pages/booking";
+import { type Booking } from "@prisma/client";
 import { today } from "./time.util";
 import { buildHtmlTemplate } from "~/email/template";
 
@@ -20,6 +20,13 @@ type EmailDispatchProps = {
     mutate: ({}: any, {}: any) => void;
   };
 };
+
+export const isOngoingGame = (booking: Booking) => {
+  const start = booking.date.getTime();
+  const end = getBookingEndDate(booking);
+  return today > start && today < end;
+};
+
 export type EventType =
   | "ADD"
   | "MODIFY"
@@ -32,6 +39,9 @@ export type EventType =
 function padZero(value: number) {
   return value < 10 ? `0${value}` : value;
 }
+
+export const getBookingEndDate = (booking: Booking) =>
+  new Date(booking.date.getTime() + booking.duration * 60 * 1000).getTime();
 
 export const getTimeWithZeroPadding = (hours: number, minutes: number) => {
   const hoursPadded = padZero(hours);
@@ -85,28 +95,29 @@ export const bookingsByDate = ({
   const history = path === "/history";
   const joined = path === "/joined";
   const created = path === "/created";
-
   return bookings
     ?.sort((a: Booking, b: Booking) =>
       history
         ? b.date.getTime() - a.date.getTime()
         : a.date.getTime() - b.date.getTime()
     )
-    .filter((booking) =>
-      history ? booking.date.getTime() < today : booking.date.getTime() >= today
-    )
     .filter((booking) => {
+      const bookingEnd = getBookingEndDate(booking);
+      return history ? bookingEnd < today : bookingEnd >= today;
+    })
+    .filter((booking) => {
+      const bookingEnd = getBookingEndDate(booking);
       if (!sessionUserId) {
-        return booking.date.getTime() >= today;
+        return bookingEnd >= today;
       }
       if (joined) {
         return booking.players.includes(sessionUserId);
       } else if (created) {
         return booking.userId === sessionUserId;
       } else if (history) {
-        return booking.date.getTime() < today;
+        return bookingEnd < today;
       } else {
-        return booking.date.getTime() >= today;
+        return bookingEnd >= today;
       }
     });
 };
