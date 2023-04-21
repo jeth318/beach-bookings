@@ -14,6 +14,53 @@ type MailOptions = {
   recipients: string[];
 };
 
+export type DropdownItem = {
+  text: string;
+  href: string;
+  icon: string;
+};
+
+export const userMenuItems = [
+  {
+    text: "Settings",
+    href: "/settings",
+    icon: "settings.svg",
+  },
+  {
+    text: "Settings",
+    href: "/",
+    icon: "logout.svg",
+  },
+];
+
+export const menuItems: DropdownItem[] = [
+  {
+    text: "Add",
+    href: "/booking",
+    icon: "add-circle.svg",
+  },
+  {
+    text: "Home",
+    href: "/",
+    icon: "home.svg",
+  },
+  {
+    text: "Joined",
+    href: "/joined",
+    icon: "handshake.svg",
+  },
+  {
+    text: "Booked",
+    href: "/created",
+    icon: "crown.svg",
+  },
+  {
+    text: "History",
+    href: "/history",
+    icon: "history.svg",
+  },
+];
+
 export const getUsersInBooking = (users: User[], booking: Booking) => {
   return users.filter((user) => booking.players.includes(user.id));
 };

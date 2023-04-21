@@ -87,7 +87,11 @@ export const bookingsByDate = ({
   const created = path === "/created";
 
   return bookings
-    ?.sort((a: Booking, b: Booking) => a.date.getTime() - b.date.getTime())
+    ?.sort((a: Booking, b: Booking) =>
+      history
+        ? b.date.getTime() - a.date.getTime()
+        : a.date.getTime() - b.date.getTime()
+    )
     .filter((booking) =>
       history ? booking.date.getTime() < today : booking.date.getTime() >= today
     )

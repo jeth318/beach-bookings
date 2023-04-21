@@ -14,7 +14,7 @@ main {
 }
 
 .bookings-container {
-  padding-top: 0.5rem;
+  padding-top: 1rem;
 }
 
 .settings-container {
@@ -50,9 +50,18 @@ main {
 }
 
 .smooth-render-out {
-  visibility: hidden;
   opacity: 0;
-  transition: visibility 0s 400ms, opacity 400ms linear;
+  animation-name: fadeOutOpacity;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-out;
+  animation-duration: 200ms;
+}
+
+#test {
+  width: 100vh;
+  padding: 2em 0;
+  background: #c14545;
+  visibility: hidden;
 }
 
 @keyframes fadeInOpacity {

@@ -131,7 +131,7 @@ export const EmailConsents = () => {
             <div
               key={consent}
               style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
-              className="smooth-render-in-slower flex flex-row justify-between bg-slate-200 p-2 dark:bg-slate-800"
+              className="smooth-render-in flex flex-row justify-between bg-slate-200 p-2 dark:bg-slate-800"
             >
               <div className="flex items-center space-x-2">
                 <div className="avatar">

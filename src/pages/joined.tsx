@@ -47,10 +47,10 @@ const Joined = () => {
   }
 
   return (
-    <div>
+    <main className="min-w-sm flex min-w-fit flex-col">
       <SubHeader title="Joined" />
       <Bookings bookings={bookings || []} />
-    </div>
+    </main>
   );
 };
 
