@@ -6,6 +6,7 @@ import {
 } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
@@ -53,6 +54,10 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.GITHUB_CLIENT_SECRET,
     }),
     GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+    }),
+    FacebookProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
