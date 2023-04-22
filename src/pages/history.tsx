@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
+import { SharedHead } from "~/components/SharedHead";
 import { SubHeader } from "~/components/SubHeader";
 import { api } from "~/utils/api";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
@@ -32,10 +33,13 @@ const History = () => {
   }
 
   return (
-    <div>
-      <SubHeader title="History" />
-      <Bookings bookings={bookings || []} />
-    </div>
+    <>
+      <SharedHead />
+      <main>
+        <SubHeader title="History" />
+        <Bookings bookings={bookings || []} />
+      </main>
+    </>
   );
 };
 

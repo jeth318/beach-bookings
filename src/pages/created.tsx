@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { PageLoader } from "~/components/PageLoader";
+import { SharedHead } from "~/components/SharedHead";
 
 export async function getStaticProps() {
   await serverSideHelpers.booking.getAll.prefetch();
@@ -47,12 +48,13 @@ const Created = () => {
   }
 
   return (
-    <div>
+    <>
+      <SharedHead />
       <main className="min-w-sm flex min-w-fit flex-col">
         <SubHeader title="Booked by me" />
         <Bookings bookings={bookings || []} />
       </main>
-    </div>
+    </>
   );
 };
 

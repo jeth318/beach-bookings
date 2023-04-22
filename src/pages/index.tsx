@@ -4,6 +4,7 @@ import { api } from "~/utils/api";
 import { Bookings } from "~/components/Bookings";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { useEffect, useState } from "react";
+import { SharedHead } from "~/components/SharedHead";
 
 export async function getStaticProps() {
   await serverSideHelpers.booking.getAll.prefetch();
@@ -41,11 +42,7 @@ const Home = () => {
 
   return (
     <>
-      <Head>
-        <title>Beach bookings</title>
-        <meta name="description" content="Beach bookings makes party's happen" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <SharedHead />
       <main className="min-w-sm flex min-w-fit flex-col">
         <Bookings bookings={data} />
       </main>

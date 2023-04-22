@@ -33,8 +33,9 @@ export const Header = () => {
     >
       <div className="navbar-start">
         <>
+          <div className="hidden pr-2 text-lg md:hidden lg:flex"></div>
           <Link className="hidden text-lg md:hidden lg:flex" href="/">
-            🏐 ßeach ßookings 🏖️
+            ßeach ßookings 🏖️
           </Link>
           {sessionStatus === "authenticated" && (
             <div
@@ -91,7 +92,7 @@ export const Header = () => {
       </div>
       <div className="navbar-center">
         <Link className="text-lg lg:hidden" href="/">
-          🏐 ßeach ßookings 🏖️
+          ßeach ßookings 🏖️
         </Link>
       </div>
       <div className="navbar-end">
