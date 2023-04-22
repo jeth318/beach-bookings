@@ -4,7 +4,6 @@ import Link from "next/link";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
-import { CustomIcon } from "./CustomIcon";
 import { useRouter } from "next/router";
 import { CheckAvailability } from "./CheckAvailability";
 import { parseDate, parseTime, today } from "~/utils/time.util";
@@ -24,6 +23,7 @@ import {
 import { ArrogantFrog } from "./ArrogantFrog";
 import ActionModal from "./ActionModal";
 import { Player } from "./Player";
+import { OngoingGame } from "./OngoingGame";
 
 type Bookings = {
   data: Booking[];
@@ -192,13 +192,7 @@ export const Bookings = ({ bookings }: Props) => {
                   className={`card-body flex-row justify-between text-primary-content`}
                 >
                   <div className="flex flex-col">
-                    {isOngoingGame(booking) && (
-                      <div className="pb-1 text-lg">
-                        <span className="badge-primary badge badge-lg animate-pulse self-start text-white">
-                          Ongoing
-                        </span>
-                      </div>
-                    )}
+                    {isOngoingGame(booking) && <OngoingGame />}
                     <div>
                       <h2 className="card-title text-2xl">
                         {parseDate(booking)}
