@@ -33,13 +33,10 @@ const History = () => {
   }
 
   return (
-    <>
-      <SharedHead />
-      <main>
-        <SubHeader title="History" />
-        <Bookings bookings={bookings || []} />
-      </main>
-    </>
+    <main className="min-w-sm flex min-w-fit flex-col">
+      <SubHeader title="History" />
+      <Bookings bookings={bookings || []} />
+    </main>
   );
 };
 

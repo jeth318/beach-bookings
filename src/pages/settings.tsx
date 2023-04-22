@@ -48,13 +48,10 @@ const Settings = () => {
   }
 
   return (
-    <>
-      <SharedHead />
-      <main className="min-w-sm flex min-w-fit flex-col">
-        <SubHeader title="Settings" />
-        <EmailConsents />
-      </main>
-    </>
+    <main className="min-w-sm flex min-w-fit flex-col">
+      <SubHeader title="Settings" />
+      <EmailConsents />
+    </main>
   );
 };
 

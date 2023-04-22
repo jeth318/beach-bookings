@@ -48,13 +48,10 @@ const Created = () => {
   }
 
   return (
-    <>
-      <SharedHead />
-      <main className="min-w-sm flex min-w-fit flex-col">
-        <SubHeader title="Booked by me" />
-        <Bookings bookings={bookings || []} />
-      </main>
-    </>
+    <main className="min-w-sm flex min-w-fit flex-col">
+      <SubHeader title="Booked by me" />
+      <Bookings bookings={bookings || []} />
+    </main>
   );
 };
 

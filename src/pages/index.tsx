@@ -41,12 +41,9 @@ const Home = () => {
   }
 
   return (
-    <>
-      <SharedHead />
-      <main className="min-w-sm flex min-w-fit flex-col">
-        <Bookings bookings={data} />
-      </main>
-    </>
+    <main className="min-w-sm flex min-w-fit flex-col">
+      <Bookings bookings={data} />
+    </main>
   );
 };
 
