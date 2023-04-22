@@ -2,17 +2,8 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { CustomIcon } from "./CustomIcon";
 import { useRouter } from "next/router";
-import {
-  menuItems,
-  userMenuItems,
-  type DropdownItem,
-} from "~/utils/general.util";
-import {
-  BeatLoader,
-  BounceLoader,
-  MoonLoader,
-  RingLoader,
-} from "react-spinners";
+import { menuItems, type DropdownItem } from "~/utils/general.util";
+import { CircleLoader } from "react-spinners";
 
 export const Header = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -106,7 +97,7 @@ export const Header = () => {
       <div className="navbar-end">
         {sessionStatus === "loading" && (
           <div className="pr-2">
-            <BounceLoader color="purple" size={36} />
+            <CircleLoader color="purple" size={36} />
           </div>
         )}
         {sessionStatus === "authenticated" ? (

@@ -24,7 +24,7 @@ export const consentList = [
   "KICK",
 ] as const;
 
-export const getUsersInBooking = (users: User[], booking: Booking) => {
+export const getUsersByBooking = (users: User[], booking: Booking) => {
   return users.filter((user) => booking.players.includes(user.id));
 };
 

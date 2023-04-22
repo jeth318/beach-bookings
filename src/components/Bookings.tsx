@@ -18,11 +18,12 @@ import {
 } from "~/utils/booking.util";
 import {
   getEmailRecipients,
-  getUsersInBooking,
+  getUsersByBooking,
   removeBookingText,
 } from "~/utils/general.util";
 import { ArrogantFrog } from "./ArrogantFrog";
 import ActionModal from "./ActionModal";
+import { Player } from "./Player";
 
 type Bookings = {
   data: Booking[];
@@ -210,28 +211,14 @@ export const Bookings = ({ bookings }: Props) => {
                             <BeatLoader size={10} color="#36d7b7" />
                           </div>
                         ) : (
-                          getUsersInBooking(users, booking).map(
-                            (user: User) => {
-                              return (
-                                <div
-                                  key={user.id}
-                                  style={{ marginTop: "-15" }}
-                                  className="smooth-render-in-slower flex flex-row items-center"
-                                >
-                                  {user.name}
-                                  {booking.userId === user.id ? (
-                                    <div className="pl-2">
-                                      <CustomIcon
-                                        path="/svg/crown.svg"
-                                        width={17}
-                                      />
-                                    </div>
-                                  ) : (
-                                    ""
-                                  )}
-                                </div>
-                              );
-                            }
+                          getUsersByBooking(users, booking).map(
+                            (user: User) => (
+                              <Player
+                                key={user.id}
+                                user={user}
+                                booking={booking}
+                              />
+                            )
                           )
                         )}
                       </div>

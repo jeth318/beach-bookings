@@ -32,7 +32,7 @@ export default function ActionModal({
           <div className="modal-action">
             <div className="btn-group">
               <label htmlFor={`action-modal-${tagRef}`} className="btn ">
-                Cancel
+                {cancelButtonText || "Cancel"}
               </label>
               <label
                 htmlFor={`action-modal-${tagRef}`}
@@ -41,7 +41,7 @@ export default function ActionModal({
                   callback(data);
                 }}
               >
-                {confirmButtonText}
+                {confirmButtonText || "Confirm"}
               </label>
             </div>
           </div>
