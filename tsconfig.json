@@ -28,6 +28,6 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs"
-, "src/email/stylesheet.css"  ],
+, "src/email/stylesheet.css", "src/pages/api/cron/cron.tss"  ],
   "exclude": ["node_modules"]
 }
