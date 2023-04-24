@@ -1,8 +1,9 @@
-import { type Booking } from "@prisma/client";
+import { type Association, type Booking } from "@prisma/client";
 import { today } from "./time.util";
 import { buildHtmlTemplate } from "~/email/template";
 
 type BookingsByDateProps = {
+  associations: Association[];
   bookings?: Booking[];
   path: string;
   sessionUserId?: string;
@@ -88,6 +89,7 @@ export const emailDispatcher = ({
 };
 
 export const bookingsByDate = ({
+  associations,
   bookings,
   path,
   sessionUserId,
@@ -95,12 +97,22 @@ export const bookingsByDate = ({
   const history = path === "/history";
   const joined = path === "/joined";
   const created = path === "/created";
+  console.log(associations);
+  if (!sessionUserId) {
+    return [];
+  }
+
   return bookings
     ?.sort((a: Booking, b: Booking) =>
       history
         ? b.date.getTime() - a.date.getTime()
         : a.date.getTime() - b.date.getTime()
     )
+    .filter((booking) => {
+      return booking.associationId
+        ? associations.find((item) => item.id === booking.associationId)?.name
+        : true;
+    })
     .filter((booking) => {
       const bookingEnd = getBookingEndDate(booking);
       return history ? bookingEnd < today : bookingEnd >= today;

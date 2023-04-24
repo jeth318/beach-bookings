@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { useSession } from "next-auth/react";
 
 import { useEffect, useState } from "react";
@@ -14,7 +13,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
-import { SharedHead } from "~/components/SharedHead";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -23,6 +21,7 @@ const Booking = () => {
   const router = useRouter();
   const [bookingToEdit, setBookingToEdit] = useState<Booking>();
   const [court, setCourt] = useState<number | null>();
+  const [association, setAssociation] = useState<string | null>();
   const [duration, setDuration] = useState<number>();
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
@@ -53,6 +52,7 @@ const Booking = () => {
   } = api.booking.getAll.useQuery();
 
   const { data: users } = api.user.getAll.useQuery();
+  const { data: userAssociations } = api.association.getForUser.useQuery();
 
   const createBooking = api.booking.create.useMutation({});
   const updateBooking = api.booking.update.useMutation({});
@@ -65,9 +65,12 @@ const Booking = () => {
       ) as Booking;
 
       if (!!booking && !bookingToEdit) {
+        console.log({ bookingToEdit });
+
         setBookingToEdit(booking);
         setEventType("MODIFY");
         setDate(booking?.date);
+        setAssociation(booking.associationId);
         setTime(
           booking?.date.toLocaleTimeString("sv-SE", {
             hour: "2-digit",
@@ -134,7 +137,7 @@ const Booking = () => {
         eventType: "MODIFY",
       });
 
-      console.log("modify recipients:", recipients);
+      console.log("update booking:", bookingToEdit);
 
       updateBooking.mutate(
         {
@@ -143,6 +146,7 @@ const Booking = () => {
           court,
           players: bookingToEdit.players,
           duration,
+          association: association || bookingToEdit.associationId,
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
@@ -167,6 +171,9 @@ const Booking = () => {
         users: users || [],
         booking: {
           id: "placeholderId",
+          associationId: association || null,
+          facilityId: null,
+          private: true,
           userId: sessionData?.user.id,
           date: new Date(formattedDate.replace(" ", "T")),
           court,
@@ -184,12 +191,16 @@ const Booking = () => {
           userId: sessionData?.user.id,
           date: new Date(formattedDate.replace(" ", "T")),
           court,
+          associationId: association || null,
         },
         {
           onSuccess: () => {
             emailDispatcher({
               originalBooking: {
                 id: "placeholderId",
+                associationId: association || null,
+                facilityId: null,
+                private: true,
                 userId: sessionData?.user.id,
                 date: new Date(formattedDate.replace(" ", "T")),
                 court,
@@ -235,7 +246,7 @@ const Booking = () => {
                     When are you playing?
                   </span>
                 </label>
-                <div className="custom-datepicker-wrapper">
+                <div className="custom-datepicker-wrapper pb-6">
                   <DatePicker
                     popperPlacement="top"
                     id="booking-date-picker"
@@ -271,6 +282,39 @@ const Booking = () => {
                     }}
                   />
                 </div>
+                <label className="label">
+                  <span className="label-text text-white">
+                    With what group?
+                  </span>
+                </label>
+                <label className="input-group">
+                  <span>Association</span>
+                  <select
+                    className="select-bordered select"
+                    onChange={(val) => {
+                      const selected =
+                        val.target.options[val.target.selectedIndex];
+                      const associationId = selected?.dataset["associationId"];
+                      setAssociation(associationId);
+                    }}
+                    value={
+                      userAssociations?.find((a) => a.id === association)
+                        ?.name || "Pick court"
+                    }
+                  >
+                    <option disabled>Pick group</option>
+                    {userAssociations?.map((association) => {
+                      return (
+                        <option
+                          key={association.id}
+                          data-association-id={association.id}
+                        >
+                          {association.name}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </label>
                 <label className="label">
                   <span className="label-text text-white">For how long?</span>
                 </label>

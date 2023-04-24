@@ -42,15 +42,17 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String        @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?       @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
     bookings      Booking[]
-    emailConsents String[]  @default(["ADD", "DELETE", "LEAVE", "JOIN", "KICK", "MODIFY"])
+    emailConsents String[]      @default(["ADD", "DELETE", "LEAVE", "JOIN", "KICK", "MODIFY"])
+    Association   Association[]
+    Facility      Facility[]
 }
 
 model VerificationToken {
@@ -62,11 +64,42 @@ model VerificationToken {
 }
 
 model Booking {
-    id       String   @id
-    players  String[]
-    date     DateTime
-    duration Int      @default(90)
-    court    Int?
-    creator  User     @relation(fields: [userId], references: [id])
-    userId   String
+    id            String       @id
+    players       String[]
+    date          DateTime
+    duration      Int          @default(90)
+    court         Int?
+    facility      Facility?    @relation(fields: [facilityId], references: [id])
+    association   Association? @relation(fields: [associationId], references: [id])
+    creator       User         @relation(fields: [userId], references: [id])
+    userId        String
+    private       Boolean      @default(true)
+    associationId String?
+    facilityId    String?
+}
+
+model Association {
+    id          String    @id
+    name        String    @unique
+    description String?
+    admins      String[]
+    members     String[]
+    private     Boolean   @default(true)
+    creator     User      @relation(fields: [userId], references: [id])
+    userId      String
+    Booking     Booking[]
+}
+
+model Facility {
+    id          String    @id
+    name        String    @unique
+    description String?
+    address     String?
+    private     Boolean   @default(true)
+    lon         String?
+    lat         String?
+    courts      String[]
+    creator     User      @relation(fields: [userId], references: [id])
+    userId      String
+    Booking     Booking[]
 }

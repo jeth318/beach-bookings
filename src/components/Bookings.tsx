@@ -24,6 +24,7 @@ import { ArrogantFrog } from "./ArrogantFrog";
 import ActionModal from "./ActionModal";
 import { Player } from "./Player";
 import { OngoingGame } from "./OngoingGame";
+import { CustomIcon } from "./CustomIcon";
 
 type Bookings = {
   data: Booking[];
@@ -68,8 +69,19 @@ export const Bookings = ({ bookings }: Props) => {
   const { data: users = [], isInitialLoading: isInitialLoadingUsers } =
     api.user.getAll.useQuery();
 
+  const { data: associations = [] } = api.association.getAll.useQuery();
+  const { data: facilities = [] } = api.facility.getAll.useQuery();
   const { refetch: refetchBookings } = api.booking.getAll.useQuery();
+
   const emailerMutation = api.emailer.sendEmail.useMutation();
+
+  const getAssociation = (id: string) => {
+    return associations.find((item) => item.id === id);
+  };
+
+  const getFacility = (id: string) => {
+    return facilities.find((item) => item.id === id);
+  };
 
   const handleMutationSuccess = (
     mutatedBooking: Booking,
@@ -155,6 +167,7 @@ export const Bookings = ({ bookings }: Props) => {
   const bgColorDark = getBgColor(router.asPath);
 
   const bookingsToShow = bookingsByDate({
+    associations,
     bookings,
     path: router.asPath,
     sessionUserId,
@@ -198,7 +211,31 @@ export const Bookings = ({ bookings }: Props) => {
                         {parseDate(booking)}
                         {booking.players.length === 4 && !historyOnly && " ✅"}
                       </h2>
-                      <div className="text-lg">{parseTime(booking)}</div>
+                      <div className="">
+                        <div className="text-lg">{parseTime(booking)}</div>
+                        {/* {booking.associationId && (
+                          <div className="flex flex-row items-center">
+                            <CustomIcon path="/svg/people.svg" width={20} />
+                            <span className="pb-2 pl-2 pt-1">
+                              {getAssociation(booking?.associationId)?.name}
+                            </span>
+                          </div>
+                        )} 
+                        {booking.facilityId && (
+                          <div className="flex flex-row items-center">
+                            <CustomIcon
+                              path="/svg/location-arrow.svg"
+                              width={20}
+                            />
+                            <Link href="/" passHref>
+                              <span className="pb-2 pl-2 pt-1 text-white">
+                                {getFacility(booking?.facilityId)?.name}
+                              </span>
+                            </Link>
+                          </div>
+                        )}
+                        */}
+                      </div>
                       <div className="self-start pt-4">
                         {isInitialLoadingUsers ? (
                           <div className="flex justify-start">
@@ -223,6 +260,7 @@ export const Bookings = ({ bookings }: Props) => {
                       <div className="self-start pb-4">
                         <div className="">{booking.duration} minutes</div>
                         <div>Court {booking.court}</div>
+                        <div></div>
                       </div>
                       {!historyOnly && (
                         <div
