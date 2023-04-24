@@ -34,6 +34,7 @@ export const bookingRouter = createTRPCRouter({
         court: z.number().or(z.null()),
         date: z.date(),
         associationId: z.string().or(z.null()),
+        facilityId: z.string().or(z.null()),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -45,6 +46,7 @@ export const bookingRouter = createTRPCRouter({
           court: input.court,
           date: input.date,
           associationId: input.associationId,
+          facilityId: input.facilityId,
         },
       });
     }),

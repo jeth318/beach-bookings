@@ -97,7 +97,7 @@ export const bookingsByDate = ({
   const history = path === "/history";
   const joined = path === "/joined";
   const created = path === "/created";
-  console.log(associations);
+
   if (!sessionUserId) {
     return [];
   }
@@ -109,8 +109,12 @@ export const bookingsByDate = ({
         : a.date.getTime() - b.date.getTime()
     )
     .filter((booking) => {
-      return booking.associationId
-        ? associations.find((item) => item.id === booking.associationId)?.name
+      const association = associations.find(
+        (item) => item.id === booking.associationId
+      );
+
+      return association?.private
+        ? !!association.members.includes(sessionUserId)
         : true;
     })
     .filter((booking) => {

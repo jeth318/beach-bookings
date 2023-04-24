@@ -79,7 +79,7 @@ export const Bookings = ({ bookings }: Props) => {
     return associations.find((item) => item.id === id);
   };
 
-  const getFacility = (id: string) => {
+  const getFacility = (id: string | null) => {
     return facilities.find((item) => item.id === id);
   };
 
@@ -133,7 +133,11 @@ export const Bookings = ({ bookings }: Props) => {
     setIsJoining({ isWorking: true, bookingId: booking.id });
     const updatedPlayers = [...booking.players, sessionUserId];
     updateBooking.mutate(
-      { ...booking, players: updatedPlayers },
+      {
+        ...booking,
+        players: updatedPlayers,
+        association: booking.associationId,
+      },
       {
         onSuccess: (mutatedBooking: Booking) =>
           handleMutationSuccess(mutatedBooking, booking, "JOIN"),
@@ -151,7 +155,11 @@ export const Bookings = ({ bookings }: Props) => {
     );
 
     updateBooking.mutate(
-      { ...booking, players: updatedPlayers },
+      {
+        ...booking,
+        players: updatedPlayers,
+        association: booking.associationId,
+      },
       {
         onSuccess: (mutatedBooking: Booking) => {
           handleMutationSuccess(mutatedBooking, booking, "LEAVE");
@@ -211,30 +219,9 @@ export const Bookings = ({ bookings }: Props) => {
                         {parseDate(booking)}
                         {booking.players.length === 4 && !historyOnly && " ✅"}
                       </h2>
-                      <div className="">
-                        <div className="text-lg">{parseTime(booking)}</div>
-                        {/* {booking.associationId && (
-                          <div className="flex flex-row items-center">
-                            <CustomIcon path="/svg/people.svg" width={20} />
-                            <span className="pb-2 pl-2 pt-1">
-                              {getAssociation(booking?.associationId)?.name}
-                            </span>
-                          </div>
-                        )} 
-                        {booking.facilityId && (
-                          <div className="flex flex-row items-center">
-                            <CustomIcon
-                              path="/svg/location-arrow.svg"
-                              width={20}
-                            />
-                            <Link href="/" passHref>
-                              <span className="pb-2 pl-2 pt-1 text-white">
-                                {getFacility(booking?.facilityId)?.name}
-                              </span>
-                            </Link>
-                          </div>
-                        )}
-                        */}
+                      <div className="flex flex-row">
+                        <CustomIcon path="/svg/duration.svg" width={20} />
+                        <div className="pl-1 text-lg">{parseTime(booking)}</div>
                       </div>
                       <div className="self-start pt-4">
                         {isInitialLoadingUsers ? (
@@ -256,15 +243,47 @@ export const Bookings = ({ bookings }: Props) => {
                     </div>
                   </div>
                   <div className={`${historyOnly ? "items-center" : ""}`}>
-                    <div className="flex flex-col justify-between">
+                    <div
+                      className="flex flex-col justify-between"
+                      style={{ width: "120px" }}
+                    >
                       <div className="self-start pb-4">
-                        <div className="">{booking.duration} minutes</div>
-                        <div>Court {booking.court}</div>
+                        {booking.associationId && (
+                          <div className="flex flex-row items-center pb-1">
+                            <CustomIcon path="/svg/people.svg" width={18} />
+                            <div className="pl-2">
+                              {getAssociation(booking?.associationId)?.name}
+                            </div>
+                          </div>
+                        )}
+                        {booking.facilityId && (
+                          <div className="flex flex-row items-center pb-1">
+                            <CustomIcon
+                              path="/svg/location-arrow.svg"
+                              width={20}
+                            />
+                            <Link href="/" passHref>
+                              <div className="pl-2 text-white">
+                                {getFacility(booking?.facilityId)?.name}
+                              </div>
+                            </Link>
+                          </div>
+                        )}
+                        <div className="flex flex-row items-center">
+                          <CustomIcon
+                            path="/svg/volleyball-net.svg"
+                            width={20}
+                          />
+                          <span className="pl-2  text-white">
+                            Court {booking.court}
+                          </span>
+                        </div>
+
                         <div></div>
                       </div>
                       {!historyOnly && (
                         <div
-                          className={`radial-progress self-end text-lg font-bold ${getProgressAccent(
+                          className={`radial-progress self-center text-lg font-bold ${getProgressAccent(
                             booking
                           )}`}
                           style={{

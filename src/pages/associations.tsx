@@ -47,8 +47,6 @@ const Groups = () => {
     );
   }
 
-  console.log(associations);
-
   return (
     <main className="min-w-sm flex min-w-fit flex-col">
       <SubHeader title="Groups" />

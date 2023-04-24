@@ -65,8 +65,6 @@ const Booking = () => {
       ) as Booking;
 
       if (!!booking && !bookingToEdit) {
-        console.log({ bookingToEdit });
-
         setBookingToEdit(booking);
         setEventType("MODIFY");
         setDate(booking?.date);
@@ -83,8 +81,9 @@ const Booking = () => {
     } else {
       setEventType("ADD");
       resetBooking();
+      userAssociations?.[0] && setAssociation(userAssociations[0].id);
     }
-  }, [bookingToEdit, bookings, router.query.booking]);
+  }, [bookingToEdit, bookings, router.query.booking, userAssociations]);
 
   const isInitialLoading =
     isInitialLoadingBookings ||
@@ -137,7 +136,8 @@ const Booking = () => {
         eventType: "MODIFY",
       });
 
-      console.log("update booking:", bookingToEdit);
+      console.log("asso", association);
+      console.log("bookingToEdit.associationId", bookingToEdit.associationId);
 
       updateBooking.mutate(
         {
@@ -146,11 +146,10 @@ const Booking = () => {
           court,
           players: bookingToEdit.players,
           duration,
-          association: association || bookingToEdit.associationId,
+          association: bookingToEdit.associationId,
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
-            console.log({ mutatedBooking, bookingToEdit });
             emailDispatcher({
               originalBooking: bookingToEdit,
               mutatedBooking,
@@ -184,13 +183,12 @@ const Booking = () => {
         eventType: "ADD",
       });
 
-      console.log("add recipients", recipients);
-
       createBooking.mutate(
         {
           userId: sessionData?.user.id,
           date: new Date(formattedDate.replace(" ", "T")),
           court,
+          facilityId: null,
           associationId: association || null,
         },
         {
@@ -223,7 +221,12 @@ const Booking = () => {
   };
 
   const validBooking =
-    sessionData?.user.id && !!court && !!duration && !!date && !!time;
+    sessionData?.user.id &&
+    !!court &&
+    !!duration &&
+    !!date &&
+    !!time &&
+    !!association;
 
   return (
     <>

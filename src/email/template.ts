@@ -46,11 +46,6 @@ export const buildHtmlTemplate = ({
     mutatedBooking?.duration &&
     mutatedBooking?.duration !== originalBooking.duration;
 
-  console.log({
-    muteDate: mutatedBooking?.date,
-    orgigDate: originalBooking.date,
-  });
-
   const title = getEmailTitle(eventType);
   const ingress = getEmailIngress({
     bookerName,
