@@ -25,6 +25,7 @@ export const facilityRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         description: z.string(),
+        city: z.string(),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -33,6 +34,7 @@ export const facilityRouter = createTRPCRouter({
         data: {
           id: crypto.randomBytes(10).toString("hex"),
           userId,
+          city: input.city,
           description: input.description,
           name: input.name,
           private: true,

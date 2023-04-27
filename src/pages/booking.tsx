@@ -1,10 +1,10 @@
 import { useSession } from "next-auth/react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
-import { Booking } from "@prisma/client";
+import { Booking, type Facility } from "@prisma/client";
 import Link from "next/link";
 import { PlayersTable } from "~/components/PlayersTable";
 import DatePicker from "react-datepicker";
@@ -13,6 +13,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
+import { log } from "console";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -20,12 +21,15 @@ const Booking = () => {
     api.user.getAll.useQuery();
   const router = useRouter();
   const [bookingToEdit, setBookingToEdit] = useState<Booking>();
-  const [court, setCourt] = useState<number | null>();
+  const [court, setCourt] = useState<string | null>();
   const [association, setAssociation] = useState<string | null>();
-  const [duration, setDuration] = useState<number>();
+  const [duration, setDuration] = useState<number | null>();
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
+  const [facility, setFacility] = useState<Facility | null>();
   const [eventType, setEventType] = useState<EventType>("ADD");
+  const [maxPlayers, setMaxPlayers] = useState<number | null | undefined>(4);
+
   const setHours = (date: Date, hours: number) => {
     const updated = new Date(date);
     updated.setHours(hours);
@@ -53,6 +57,7 @@ const Booking = () => {
 
   const { data: users } = api.user.getAll.useQuery();
   const { data: userAssociations } = api.association.getForUser.useQuery();
+  const { data: facilities } = api.facility.getAll.useQuery();
 
   const createBooking = api.booking.create.useMutation({});
   const updateBooking = api.booking.update.useMutation({});
@@ -65,10 +70,18 @@ const Booking = () => {
       ) as Booking;
 
       if (!!booking && !bookingToEdit) {
+        console.log("Booking but non to edit");
+
+        const facility = facilities?.find(
+          (item) => item.id === booking.facilityId
+        );
+        console.log({ dasFas: facility });
+
         setBookingToEdit(booking);
         setEventType("MODIFY");
         setDate(booking?.date);
         setAssociation(booking.associationId);
+        setFacility(facility || null);
         setTime(
           booking?.date.toLocaleTimeString("sv-SE", {
             hour: "2-digit",
@@ -81,9 +94,14 @@ const Booking = () => {
     } else {
       setEventType("ADD");
       resetBooking();
-      userAssociations?.[0] && setAssociation(userAssociations[0].id);
     }
-  }, [bookingToEdit, bookings, router.query.booking, userAssociations]);
+  }, [
+    bookingToEdit,
+    bookings,
+    facilities,
+    router.query.booking,
+    userAssociations,
+  ]);
 
   const isInitialLoading =
     isInitialLoadingBookings ||
@@ -126,27 +144,25 @@ const Booking = () => {
       return null;
     }
 
-    const formattedDate = date.toLocaleString("sv-SE");
+    const formattedDate = date?.toLocaleString("sv-SE");
 
     if (!!bookingToEdit) {
       const recipients = getEmailRecipients({
         users: users || [],
         booking: bookingToEdit,
-        sessionUserId: sessionData.user.id,
+        sessionUserId: sessionData?.user.id,
         eventType: "MODIFY",
       });
-
-      console.log("asso", association);
-      console.log("bookingToEdit.associationId", bookingToEdit.associationId);
 
       updateBooking.mutate(
         {
           id: bookingToEdit.id,
           date: new Date(formattedDate.replace(" ", "T")),
-          court,
+          court: court || null,
           players: bookingToEdit.players,
-          duration,
-          association: bookingToEdit.associationId,
+          duration: duration || null,
+          facility: facility.id || null,
+          association,
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
@@ -175,8 +191,8 @@ const Booking = () => {
           private: true,
           userId: sessionData?.user.id,
           date: new Date(formattedDate.replace(" ", "T")),
-          court,
-          duration,
+          court: court || null,
+          duration: duration || 0,
           players: [],
         },
         sessionUserId: sessionData.user.id,
@@ -187,8 +203,8 @@ const Booking = () => {
         {
           userId: sessionData?.user.id,
           date: new Date(formattedDate.replace(" ", "T")),
-          court,
-          facilityId: null,
+          court: court || null,
+          facilityId: facility.id || null,
           associationId: association || null,
         },
         {
@@ -200,9 +216,9 @@ const Booking = () => {
                 facilityId: null,
                 private: true,
                 userId: sessionData?.user.id,
-                date: new Date(formattedDate.replace(" ", "T")),
-                court,
-                duration,
+                date: new Date(formattedDate?.replace(" ", "T")),
+                court: court || null,
+                duration: duration || 0,
                 players: [],
               },
               recipients,
@@ -221,12 +237,23 @@ const Booking = () => {
   };
 
   const validBooking =
-    sessionData?.user.id &&
-    !!court &&
-    !!duration &&
+    !!sessionData?.user.id &&
+    !!association &&
     !!date &&
     !!time &&
-    !!association;
+    !!facility &&
+    (facility?.courts.length ? !!court : true) &&
+    (facility?.durations.length ? !!duration : true);
+
+  console.log({
+    validBooking,
+    date,
+    time,
+    facility,
+    duration,
+    court,
+    association,
+  });
 
   return (
     <>
@@ -286,6 +313,72 @@ const Booking = () => {
                   />
                 </div>
                 <label className="label">
+                  <span className="label-text text-white">Where to play?</span>
+                </label>
+                <label className="input-group">
+                  <span>Facility</span>
+                  <select
+                    className="select-bordered select"
+                    onChange={(val) => {
+                      const selected =
+                        val.target.options[val.target.selectedIndex];
+
+                      const facilityId = selected?.dataset["facilityId"];
+                      console.log({ selected, facilityId });
+                      const facilityToSelect = facilities?.find(
+                        (f) => f.id === facilityId
+                      );
+                      setFacility(facilityToSelect);
+                      setCourt(null);
+                      setDuration(null);
+                    }}
+                    value={facility?.name || "Pick a place"}
+                  >
+                    <option disabled>Pick a place</option>
+                    {facilities?.map((facility) => {
+                      return (
+                        <option
+                          key={facility.id}
+                          data-facility-id={facility.id}
+                        >
+                          {facility.name}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </label>
+                <label className="label">
+                  <span className="label-text text-white">
+                    How many players?
+                  </span>
+                </label>
+                <label className="input-group">
+                  <span>Players</span>
+                  <select
+                    className="select-bordered select"
+                    onChange={(val) => {
+                      const selected =
+                        val.target.options[val.target.selectedIndex]?.value;
+                      if (typeof selected === "string") {
+                        setMaxPlayers(parseInt(selected));
+                      }
+                    }}
+                    value={maxPlayers || 4}
+                  >
+                    <option disabled>Pick a place</option>
+                    <option value={0}>Unlimited</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                    <option>9</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                  </select>
+                </label>
+                <label className="label">
                   <span className="label-text text-white">
                     With what group?
                   </span>
@@ -302,10 +395,10 @@ const Booking = () => {
                     }}
                     value={
                       userAssociations?.find((a) => a.id === association)
-                        ?.name || "Pick court"
+                        ?.name || "Pick a group"
                     }
                   >
-                    <option disabled>Pick group</option>
+                    <option disabled>Pick a group</option>
                     {userAssociations?.map((association) => {
                       return (
                         <option
@@ -318,65 +411,64 @@ const Booking = () => {
                     })}
                   </select>
                 </label>
-                <label className="label">
-                  <span className="label-text text-white">For how long?</span>
-                </label>
-                <label className="input-group">
-                  <span>Duration</span>
-                  <select
-                    className="select-bordered select"
-                    onChange={(val) => {
-                      setDuration(parseInt(val.target.value));
-                    }}
-                    value={duration || "Select duration"}
-                  >
-                    <option disabled>Select duration</option>
-                    <option value={60}>60 min</option>
-                    <option value={90}>90 min</option>
-                  </select>
-                </label>
-                <label className="label">
-                  <span className="label-text text-white">What court?</span>
-                </label>
-                <label className="input-group">
-                  <span>Court</span>
-                  <select
-                    className="select-bordered select"
-                    onChange={(val) => {
-                      setCourt(parseInt(val.target.value));
-                    }}
-                    value={court || "Pick court"}
-                  >
-                    <option disabled>Pick court</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                    <option>7</option>
-                    <option>8</option>
-                    <option>9</option>
-                    <option>10</option>
-                    <option>11</option>
-                    <option>12</option>
-                    <option>13</option>
-                    <option>14</option>
-                    <option>15</option>
-                    <option>16</option>
-                    <option>17</option>
-                    <option>18</option>
-                    <option>19</option>
-                    <option>20</option>
-                    <option>21</option>
-                    <option>22</option>
-                    <option>23</option>
-                    <option>24</option>
-                    <option>25</option>
-                    <option>26</option>
-                    <option>27</option>
-                  </select>
-                </label>
+                {!!facility?.durations?.length && (
+                  <>
+                    <label className="label">
+                      <span className="label-text text-white">
+                        For how long?
+                      </span>
+                    </label>
+                    <label className="input-group">
+                      <span>Duration</span>
+                      <select
+                        className="select-bordered select"
+                        onChange={(val) => {
+                          setDuration(parseInt(val.target.value));
+                        }}
+                        value={duration || "Select duration"}
+                      >
+                        <option disabled>Select duration</option>
+                        {facility.durations.map((item) => {
+                          return (
+                            <option key={item} value={item}>
+                              {item} minutes
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </label>
+                  </>
+                )}
+                {!!facility?.courts.length && (
+                  <>
+                    <label className="label">
+                      <span className="label-text text-white">What court?</span>
+                    </label>
+                    <label className="input-group">
+                      <span>Court</span>
+                      <select
+                        className="select-bordered select"
+                        onChange={(val) => {
+                          setCourt(val.target.value);
+                        }}
+                        value={court || "Pick court"}
+                      >
+                        <option disabled>Pick court</option>
+                        {facility.courts.map((court) => {
+                          return (
+                            <option
+                              key={court}
+                              data-court-id={court}
+                              value={court}
+                            >
+                              {court}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </label>
+                  </>
+                )}
                 <label className="label">
                   <span className="label-text text-white">Players</span>
                 </label>

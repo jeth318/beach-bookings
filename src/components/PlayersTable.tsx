@@ -57,6 +57,8 @@ export const PlayersTable = ({ booking }: Props) => {
       {
         ...booking,
         players: booking.players.filter((id) => id !== playerId),
+        association: booking.associationId,
+        facility: booking.facilityId,
       },
       {
         onSuccess: (mutatedBooking: Booking) => {

@@ -68,7 +68,7 @@ model Booking {
     players       String[]
     date          DateTime
     duration      Int          @default(90)
-    court         Int?
+    court         String?
     facility      Facility?    @relation(fields: [facilityId], references: [id])
     association   Association? @relation(fields: [associationId], references: [id])
     creator       User         @relation(fields: [userId], references: [id])
@@ -95,7 +95,9 @@ model Facility {
     name        String    @unique
     description String?
     address     String?
+    city        String
     private     Boolean   @default(true)
+    durations   String[]
     lon         String?
     lat         String?
     courts      String[]

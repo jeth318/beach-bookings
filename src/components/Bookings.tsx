@@ -137,6 +137,7 @@ export const Bookings = ({ bookings }: Props) => {
         ...booking,
         players: updatedPlayers,
         association: booking.associationId,
+        facility: booking.facilityId,
       },
       {
         onSuccess: (mutatedBooking: Booking) =>
@@ -159,6 +160,7 @@ export const Bookings = ({ bookings }: Props) => {
         ...booking,
         players: updatedPlayers,
         association: booking.associationId,
+        facility: booking.facilityId,
       },
       {
         onSuccess: (mutatedBooking: Booking) => {
@@ -215,11 +217,11 @@ export const Bookings = ({ bookings }: Props) => {
                   <div className="flex flex-col">
                     {isOngoingGame(booking) && <OngoingGame />}
                     <div>
-                      <h2 className="card-title text-2xl">
+                      <h2 className="card-title text-xl font-extrabold">
                         {parseDate(booking)}
                         {booking.players.length === 4 && !historyOnly && " ✅"}
                       </h2>
-                      <div className="flex flex-row">
+                      <div className="flex flex-row items-center font-medium">
                         <CustomIcon path="/svg/duration.svg" width={20} />
                         <div className="pl-1 text-lg">{parseTime(booking)}</div>
                       </div>
@@ -243,15 +245,15 @@ export const Bookings = ({ bookings }: Props) => {
                     </div>
                   </div>
                   <div className={`${historyOnly ? "items-center" : ""}`}>
-                    <div
-                      className="flex flex-col justify-between"
-                      style={{ width: "120px" }}
-                    >
-                      <div className="self-start pb-4">
+                    <div className="flex flex-col self-end pb-2">
+                      <div className="rounded-lg border border-slate-500 bg-gray-600 p-2">
                         {booking.associationId && (
                           <div className="flex flex-row items-center pb-1">
                             <CustomIcon path="/svg/people.svg" width={18} />
-                            <div className="pl-2">
+                            <div
+                              style={{ width: 100 }}
+                              className="overflow-dots pl-2"
+                            >
                               {getAssociation(booking?.associationId)?.name}
                             </div>
                           </div>
@@ -269,102 +271,115 @@ export const Bookings = ({ bookings }: Props) => {
                             </Link>
                           </div>
                         )}
-                        <div className="flex flex-row items-center">
-                          <CustomIcon
-                            path="/svg/volleyball-net.svg"
-                            width={20}
-                          />
-                          <span className="pl-2  text-white">
-                            Court {booking.court}
-                          </span>
-                        </div>
-
-                        <div></div>
+                        {booking.court && (
+                          <div className="flex flex-row items-center">
+                            <CustomIcon
+                              path="/svg/volleyball-net.svg"
+                              width={20}
+                            />
+                            <div
+                              style={{ width: 100 }}
+                              className="overflow-dots pl-2 text-white"
+                            >
+                              Court {booking.court}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      {!historyOnly && (
-                        <div
-                          className={`radial-progress self-center text-lg font-bold ${getProgressAccent(
-                            booking
-                          )}`}
-                          style={{
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore
-                            "--value": booking.players.length * 25,
-                            "--thickness": "3px",
-                          }}
-                        >
-                          {booking.players.length}/4
-                        </div>
-                      )}
+                      <div
+                        style={{ marginTop: "1.5rem", width: "80px" }}
+                        className="flex flex-col self-center"
+                      >
+                        {!historyOnly && (
+                          <div
+                            className={`radial-progress self-center text-lg font-bold ${getProgressAccent(
+                              booking
+                            )}`}
+                            style={{
+                              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                              // @ts-ignore
+                              "--value": booking.players.length * 25,
+                              "--thickness": "3px",
+                            }}
+                          >
+                            {booking.players.length}/4
+                          </div>
+                        )}
 
-                      <br />
-                      {sessionUserId && !historyOnly ? (
-                        <div className="smooth-render-in-slower btn-group btn-group-vertical flex">
-                          {booking.players.includes(sessionUserId) && (
-                            <button
-                              onClick={() => leaveGame(booking)}
-                              className="btn-warning btn-sm btn text-white"
-                            >
-                              {leaving.isWorking &&
-                              leaving.bookingId === booking.id ? (
-                                <BeatLoader size={10} color="white" />
-                              ) : (
-                                "Leave"
-                              )}
-                            </button>
-                          )}
-                          {!booking.players.includes(sessionUserId) && (
-                            <button
-                              onClick={() => joinGame(booking)}
-                              className={`${
-                                booking.players.length < 4
-                                  ? "btn-accent"
-                                  : "btn-disabled"
-                              } btn-sm btn text-white`}
-                            >
-                              {joining.isWorking &&
-                              booking.id === joining.bookingId ? (
-                                <BeatLoader size={10} color="white" />
-                              ) : booking.players.length < 4 ? (
-                                "Join"
-                              ) : (
-                                "Full"
-                              )}
-                            </button>
-                          )}
-                          {!isMainPage &&
-                            session?.data?.user?.id === booking?.userId && (
-                              <button className="btn-sm btn text-white">
-                                <Link
-                                  href={{
-                                    pathname: "/booking",
-                                    query: { booking: booking.id },
-                                  }}
-                                >
-                                  Edit
-                                </Link>
-                              </button>
-                            )}
-                          {!isMainPage &&
-                            sessionUserId === booking?.userId &&
-                            !historyOnly && (
-                              <label
-                                htmlFor="action-modal-delete-booking"
-                                onClick={() => void setBookingToDelete(booking)}
-                                className="btn-error btn-sm btn text-white"
+                        <br />
+                        {sessionUserId && !historyOnly ? (
+                          <div
+                            style={{ width: "auto" }}
+                            className="smooth-render-in-slower btn-group btn-group-vertical flex"
+                          >
+                            {booking.players.includes(sessionUserId) && (
+                              <button
+                                onClick={() => leaveGame(booking)}
+                                className="btn-warning btn-sm btn text-white"
                               >
-                                {deleting.isWorking &&
-                                booking.id === deleting.bookingId ? (
+                                {leaving.isWorking &&
+                                leaving.bookingId === booking.id ? (
                                   <BeatLoader size={10} color="white" />
                                 ) : (
-                                  "Delete"
+                                  "Leave"
                                 )}
-                              </label>
+                              </button>
                             )}
-                        </div>
-                      ) : (
-                        <div style={{ height: "32px" }}></div>
-                      )}
+                            {!booking.players.includes(sessionUserId) && (
+                              <button
+                                onClick={() => joinGame(booking)}
+                                className={`${
+                                  booking.players.length < 4
+                                    ? "btn-accent"
+                                    : "btn-disabled"
+                                } btn-sm btn text-white`}
+                              >
+                                {joining.isWorking &&
+                                booking.id === joining.bookingId ? (
+                                  <BeatLoader size={10} color="white" />
+                                ) : booking.players.length < 4 ? (
+                                  "Join"
+                                ) : (
+                                  "Full"
+                                )}
+                              </button>
+                            )}
+                            {!isMainPage &&
+                              session?.data?.user?.id === booking?.userId && (
+                                <button className="btn-sm btn text-white">
+                                  <Link
+                                    href={{
+                                      pathname: "/booking",
+                                      query: { booking: booking.id },
+                                    }}
+                                  >
+                                    Edit
+                                  </Link>
+                                </button>
+                              )}
+                            {!isMainPage &&
+                              sessionUserId === booking?.userId &&
+                              !historyOnly && (
+                                <label
+                                  htmlFor="action-modal-delete-booking"
+                                  onClick={() =>
+                                    void setBookingToDelete(booking)
+                                  }
+                                  className="btn-error btn-sm btn text-white"
+                                >
+                                  {deleting.isWorking &&
+                                  booking.id === deleting.bookingId ? (
+                                    <BeatLoader size={10} color="white" />
+                                  ) : (
+                                    "Delete"
+                                  )}
+                                </label>
+                              )}
+                          </div>
+                        ) : (
+                          <div style={{ height: "32px" }}></div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -31,7 +31,7 @@ export const bookingRouter = createTRPCRouter({
     .input(
       z.object({
         userId: z.string(),
-        court: z.number().or(z.null()),
+        court: z.string().or(z.null()),
         date: z.date(),
         associationId: z.string().or(z.null()),
         facilityId: z.string().or(z.null()),
@@ -54,11 +54,12 @@ export const bookingRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        duration: z.number(),
-        court: z.number().or(z.null()),
+        duration: z.number().or(z.null()),
+        court: z.string().or(z.null()),
         date: z.date(),
         players: z.string().array(),
         association: z.string().or(z.null()),
+        facility: z.string().or(z.null()),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -69,8 +70,9 @@ export const bookingRouter = createTRPCRouter({
         data: {
           court: input?.court,
           date: input.date,
-          duration: input.duration,
+          duration: input.duration || undefined,
           players: input.players,
+          facilityId: input.facility,
           associationId: input.association,
         },
       });
