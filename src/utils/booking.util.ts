@@ -165,4 +165,6 @@ export const getProgressAccent = (booking: Booking) => {
   if (percentFilled >= 100) {
     return "text-success";
   }
+
+  return "text-error";
 };
