@@ -28,7 +28,7 @@ const Booking = () => {
   const [time, setTime] = useState<string>();
   const [facility, setFacility] = useState<Facility | null>();
   const [eventType, setEventType] = useState<EventType>("ADD");
-  const [maxPlayers, setMaxPlayers] = useState<number>(4);
+  const [maxPlayers, setMaxPlayers] = useState<number>();
 
   const setHours = (date: Date, hours: number) => {
     const updated = new Date(date);
@@ -47,6 +47,7 @@ const Booking = () => {
     setDuration(undefined);
     setDate(undefined);
     setTime(undefined);
+    setMaxPlayers(4);
   };
 
   const {
@@ -87,6 +88,7 @@ const Booking = () => {
         );
         setCourt(booking?.court);
         setDuration(booking?.duration);
+        setMaxPlayers(booking.maxPlayers === undefined ? 0 : 4);
       }
     } else {
       setEventType("ADD");
@@ -160,7 +162,7 @@ const Booking = () => {
           duration: duration || null,
           facility: facility.id || null,
           association: association || null,
-          maxPlayers,
+          maxPlayers: maxPlayers || 0,
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
@@ -192,7 +194,7 @@ const Booking = () => {
           court: court || null,
           duration: duration || 0,
           players: [],
-          maxPlayers,
+          maxPlayers: maxPlayers || null,
         },
         sessionUserId: sessionData.user.id,
         eventType: "ADD",
@@ -205,7 +207,7 @@ const Booking = () => {
           court: court || null,
           facilityId: facility.id || null,
           associationId: association || null,
-          maxPlayers,
+          maxPlayers: maxPlayers || null,
         },
         {
           onSuccess: () => {
@@ -220,7 +222,7 @@ const Booking = () => {
                 court: court || null,
                 duration: duration || 0,
                 players: [],
-                maxPlayers,
+                maxPlayers: maxPlayers || null,
               },
               recipients,
               bookerName: sessionData.user.name || "Someone",
@@ -244,6 +246,8 @@ const Booking = () => {
     !!facility &&
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
+
+  console.log({ maxPlayers });
 
   return (
     <>
@@ -352,11 +356,13 @@ const Booking = () => {
 
                       if (typeof selected === "string") {
                         setMaxPlayers(parseInt(selected));
+                      } else {
+                        setMaxPlayers(0);
                       }
                     }}
-                    value={maxPlayers || 4}
+                    value={!maxPlayers ? "Unlimited" : maxPlayers || 4}
                   >
-                    <option disabled>Pick a place</option>
+                    <option disabled>Players</option>
                     <option value={0}>Unlimited</option>
                     <option>4</option>
                     <option>5</option>
