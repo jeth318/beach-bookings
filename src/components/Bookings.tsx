@@ -205,6 +205,7 @@ export const Bookings = ({ bookings }: Props) => {
 
       <div className={`bg-gradient-to-b ${bgColorDark} bookings-container`}>
         {bookingsToShow?.map((booking: Booking) => {
+          const maxPlayers = booking.maxPlayers || 0;
           return (
             <div
               key={booking.id}
@@ -217,15 +218,50 @@ export const Bookings = ({ bookings }: Props) => {
                   <div className="flex flex-col">
                     {isOngoingGame(booking) && <OngoingGame />}
                     <div>
-                      <h2 className="card-title text-xl font-extrabold">
+                      <h2 className="font-bil card-title text-2xl font-bold">
                         {parseDate(booking)}
                         {booking.players.length === 4 && !historyOnly && " ✅"}
                       </h2>
-                      <div className="flex flex-row items-center font-medium">
-                        <CustomIcon path="/svg/duration.svg" width={20} />
-                        <div className="pl-1 text-lg">{parseTime(booking)}</div>
+                      <div className="flex flex-col pb-1 font-medium">
+                        <div className="flex flex-row self-start pb-2">
+                          <CustomIcon path="/svg/duration.svg" width={20} />
+                          <div className="pl-1 text-lg">
+                            {parseTime(booking)}
+                          </div>
+                        </div>
+
+                        <div
+                          style={{ width: "140px" }}
+                          className="rounded-lg border border-slate-600 bg-gray-800 p-1 "
+                        >
+                          {booking.associationId && (
+                            <div className="flex flex-row items-center self-start pb-1 ">
+                              <CustomIcon path="/svg/people.svg" width={18} />
+                              <div
+                                style={{ width: 140 }}
+                                className="overflow-dots pl-2"
+                              >
+                                {getAssociation(booking?.associationId)?.name}
+                              </div>
+                            </div>
+                          )}
+                          {booking.facilityId && (
+                            <div className="flex flex-row items-center self-start">
+                              <CustomIcon
+                                path="/svg/location-arrow.svg"
+                                width={20}
+                              />
+                              <Link href="/" passHref>
+                                <div className="pl-2">
+                                  {getFacility(booking?.facilityId)?.name}
+                                </div>
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                        <div></div>
                       </div>
-                      <div className="self-start pt-4">
+                      <div className="self-start pt-2">
                         {isInitialLoadingUsers ? (
                           <div className="flex justify-start">
                             <BeatLoader size={10} color="#36d7b7" />
@@ -244,50 +280,18 @@ export const Bookings = ({ bookings }: Props) => {
                       </div>
                     </div>
                   </div>
-                  <div className={`${historyOnly ? "items-center" : ""}`}>
+                  <div className={`${historyOnly ? "items-center" : "flex"}`}>
                     <div className="flex flex-col self-end pb-2">
-                      <div className="rounded-lg border border-slate-500 bg-gray-600 p-2">
-                        {booking.associationId && (
-                          <div className="flex flex-row items-center pb-1">
-                            <CustomIcon path="/svg/people.svg" width={18} />
-                            <div
-                              style={{ width: 100 }}
-                              className="overflow-dots pl-2"
-                            >
-                              {getAssociation(booking?.associationId)?.name}
-                            </div>
-                          </div>
-                        )}
-                        {booking.facilityId && (
-                          <div className="flex flex-row items-center pb-1">
-                            <CustomIcon
-                              path="/svg/location-arrow.svg"
-                              width={20}
-                            />
-                            <Link href="/" passHref>
-                              <div className="pl-2 text-white">
-                                {getFacility(booking?.facilityId)?.name}
-                              </div>
-                            </Link>
-                          </div>
-                        )}
-                        {booking.court && (
-                          <div className="flex flex-row items-center">
-                            <CustomIcon
-                              path="/svg/volleyball-net.svg"
-                              width={20}
-                            />
-                            <div
-                              style={{ width: 100 }}
-                              className="overflow-dots pl-2 text-white"
-                            >
-                              Court {booking.court}
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      {!!booking.duration && (
+                        <div className="self-center">
+                          {booking.duration} min
+                        </div>
+                      )}
+                      {booking.court && (
+                        <div className="self-center">Court {booking.court}</div>
+                      )}
                       <div
-                        style={{ marginTop: "1.5rem", width: "80px" }}
+                        style={{ marginTop: "1.5rem" }}
                         className="flex flex-col self-center"
                       >
                         {!historyOnly && (
@@ -298,11 +302,16 @@ export const Bookings = ({ bookings }: Props) => {
                             style={{
                               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                               // @ts-ignore
-                              "--value": booking.players.length * 25,
+                              "--value":
+                                (!maxPlayers
+                                  ? 100
+                                  : booking.players.length / maxPlayers) * 100,
                               "--thickness": "3px",
                             }}
                           >
-                            {booking.players.length}/4
+                            {booking.maxPlayers
+                              ? `${booking.players.length} / ${booking.maxPlayers}`
+                              : booking.players.length}
                           </div>
                         )}
 

@@ -35,6 +35,7 @@ export const bookingRouter = createTRPCRouter({
         date: z.date(),
         associationId: z.string().or(z.null()),
         facilityId: z.string().or(z.null()),
+        maxPlayers: z.number().or(z.null()),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -47,6 +48,7 @@ export const bookingRouter = createTRPCRouter({
           date: input.date,
           associationId: input.associationId,
           facilityId: input.facilityId,
+          maxPlayers: input.maxPlayers,
         },
       });
     }),
@@ -60,6 +62,7 @@ export const bookingRouter = createTRPCRouter({
         players: z.string().array(),
         association: z.string().or(z.null()),
         facility: z.string().or(z.null()),
+        maxPlayers: z.number().or(z.null()),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -74,6 +77,7 @@ export const bookingRouter = createTRPCRouter({
           players: input.players,
           facilityId: input.facility,
           associationId: input.association,
+          maxPlayers: input.maxPlayers,
         },
       });
     }),

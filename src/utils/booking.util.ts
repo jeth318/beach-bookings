@@ -99,7 +99,18 @@ export const bookingsByDate = ({
   const created = path === "/created";
 
   if (!sessionUserId) {
-    return [];
+    return bookings?.filter((booking) => {
+      if (!booking.associationId) {
+        return true;
+      }
+
+      if (!!booking.associationId) {
+        const association = associations.find(
+          ({ id }) => id === booking.associationId
+        );
+        return !association?.private;
+      }
+    });
   }
 
   return bookings
@@ -139,16 +150,19 @@ export const bookingsByDate = ({
 };
 
 export const getProgressAccent = (booking: Booking) => {
-  switch (booking?.players?.length) {
-    case 1:
-      return "text-error";
-    case 2:
-      return "text-warning";
-    case 3:
-      return "text-warning";
-    case 4:
-      return "text-success";
-    default:
-      return "text-error";
+  const percentFilled = Math.floor(
+    (booking.players.length / (booking.maxPlayers || 4)) * 100
+  );
+
+  if (percentFilled <= 25) {
+    return "text-error";
+  }
+
+  if (percentFilled > 25 && percentFilled <= 75) {
+    return "text-warning";
+  }
+
+  if (percentFilled >= 100) {
+    return "text-success";
   }
 };

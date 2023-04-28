@@ -91,9 +91,6 @@ export const getEmailRecipients = ({
       .filter((email) => !!email) as string[];
   }
 
-  console.log(users);
-  console.log(eventType);
-
   return users
     .filter((user) => booking.players.includes(user.id))
     .filter((user) => !!user.email)

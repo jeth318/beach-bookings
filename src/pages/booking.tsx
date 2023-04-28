@@ -28,7 +28,7 @@ const Booking = () => {
   const [time, setTime] = useState<string>();
   const [facility, setFacility] = useState<Facility | null>();
   const [eventType, setEventType] = useState<EventType>("ADD");
-  const [maxPlayers, setMaxPlayers] = useState<number | null | undefined>(4);
+  const [maxPlayers, setMaxPlayers] = useState<number>(4);
 
   const setHours = (date: Date, hours: number) => {
     const updated = new Date(date);
@@ -70,12 +70,9 @@ const Booking = () => {
       ) as Booking;
 
       if (!!booking && !bookingToEdit) {
-        console.log("Booking but non to edit");
-
         const facility = facilities?.find(
           (item) => item.id === booking.facilityId
         );
-        console.log({ dasFas: facility });
 
         setBookingToEdit(booking);
         setEventType("MODIFY");
@@ -162,7 +159,8 @@ const Booking = () => {
           players: bookingToEdit.players,
           duration: duration || null,
           facility: facility.id || null,
-          association,
+          association: association || null,
+          maxPlayers,
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
@@ -194,6 +192,7 @@ const Booking = () => {
           court: court || null,
           duration: duration || 0,
           players: [],
+          maxPlayers,
         },
         sessionUserId: sessionData.user.id,
         eventType: "ADD",
@@ -206,6 +205,7 @@ const Booking = () => {
           court: court || null,
           facilityId: facility.id || null,
           associationId: association || null,
+          maxPlayers,
         },
         {
           onSuccess: () => {
@@ -220,6 +220,7 @@ const Booking = () => {
                 court: court || null,
                 duration: duration || 0,
                 players: [],
+                maxPlayers,
               },
               recipients,
               bookerName: sessionData.user.name || "Someone",
@@ -238,22 +239,11 @@ const Booking = () => {
 
   const validBooking =
     !!sessionData?.user.id &&
-    !!association &&
     !!date &&
     !!time &&
     !!facility &&
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
-
-  console.log({
-    validBooking,
-    date,
-    time,
-    facility,
-    duration,
-    court,
-    association,
-  });
 
   return (
     <>
@@ -324,7 +314,6 @@ const Booking = () => {
                         val.target.options[val.target.selectedIndex];
 
                       const facilityId = selected?.dataset["facilityId"];
-                      console.log({ selected, facilityId });
                       const facilityToSelect = facilities?.find(
                         (f) => f.id === facilityId
                       );
@@ -359,6 +348,8 @@ const Booking = () => {
                     onChange={(val) => {
                       const selected =
                         val.target.options[val.target.selectedIndex]?.value;
+                      console.log({ selected });
+
                       if (typeof selected === "string") {
                         setMaxPlayers(parseInt(selected));
                       }
@@ -384,7 +375,7 @@ const Booking = () => {
                   </span>
                 </label>
                 <label className="input-group">
-                  <span>Association</span>
+                  <span>Groups</span>
                   <select
                     className="select-bordered select"
                     onChange={(val) => {
@@ -395,10 +386,10 @@ const Booking = () => {
                     }}
                     value={
                       userAssociations?.find((a) => a.id === association)
-                        ?.name || "Pick a group"
+                        ?.name || "None (public)"
                     }
                   >
-                    <option disabled>Pick a group</option>
+                    <option>None (public)</option>
                     {userAssociations?.map((association) => {
                       return (
                         <option

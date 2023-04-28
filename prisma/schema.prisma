@@ -69,6 +69,7 @@ model Booking {
     date          DateTime
     duration      Int          @default(90)
     court         String?
+    maxPlayers    Int?         @default(4)
     facility      Facility?    @relation(fields: [facilityId], references: [id])
     association   Association? @relation(fields: [associationId], references: [id])
     creator       User         @relation(fields: [userId], references: [id])
