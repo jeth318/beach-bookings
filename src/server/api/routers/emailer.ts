@@ -2,8 +2,6 @@
 const sender = process.env.GMAIL_ACCOUNT_FOR_DISPATCH;
 const pass = process.env.GMAIL_APP_SPECIFIC_PASSWORD;
 const isEmailDispatcherActive = process.env.EMAIL_DISPATCH_ACTIVE;
-console.log({ isEmailDispatcherActive, whatType: typeof isEmailDispatcherActive });
-
 
 const hardCodedEmailsForTesting = [
   // "shopping.kalle.stropp@gmail.com",
@@ -29,16 +27,15 @@ export const emailerRouter = createTRPCRouter({
       const subject = getEmailHeading(input.eventType);
 
       // const emailRecipients: string[] = hardCodedEmailsForTesting;
-    console.log({ secondRound: "yes", isEmailDispatcherActive, whatType: typeof isEmailDispatcherActive });
 
       if (isEmailDispatcherActive === "true") {
         console.warn("Email dispatcher is active");
         try {
-          console.log("WOULD HAVE SENT EMAIL TO: ", input.recipients);
+          console.log("Email was send to the following recipients: ", input.recipients);
           
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           await transporter.sendMail({
-            ...getMailOptions({ sender, recipients: hardCodedEmailsForTesting }),
+            ...getMailOptions({ sender, recipients: input.recipients }),
             html: input.htmlString,
             subject,
             /*attachments: [{
