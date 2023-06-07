@@ -88,7 +88,7 @@ const Booking = () => {
         );
         setCourt(booking?.court);
         setDuration(booking?.duration);
-        setMaxPlayers(booking.maxPlayers === undefined ? 0 : 4);
+        setMaxPlayers(booking.maxPlayers || 0);
       }
     } else {
       setEventType("ADD");
@@ -153,13 +153,18 @@ const Booking = () => {
         eventType: "MODIFY",
       });
 
+      const preserveDuration =
+        duration !== undefined &&
+        facility.durations.find((dur) => dur === duration?.toString()) !==
+          undefined;
+
       updateBooking.mutate(
         {
           id: bookingToEdit.id,
           date: new Date(formattedDate.replace(" ", "T")),
           court: court || null,
           players: bookingToEdit.players,
-          duration: duration || null,
+          duration: preserveDuration ? duration : 0,
           facility: facility.id || null,
           association: association || null,
           maxPlayers: maxPlayers || 0,
@@ -200,6 +205,8 @@ const Booking = () => {
         eventType: "ADD",
       });
 
+      console.log("Will save: ", maxPlayers);
+
       createBooking.mutate(
         {
           userId: sessionData?.user.id,
@@ -207,7 +214,8 @@ const Booking = () => {
           court: court || null,
           facilityId: facility.id || null,
           associationId: association || null,
-          maxPlayers: maxPlayers || null,
+          duration: duration || null,
+          maxPlayers: maxPlayers === undefined ? 0 : maxPlayers,
         },
         {
           onSuccess: () => {
@@ -360,7 +368,7 @@ const Booking = () => {
                         setMaxPlayers(0);
                       }
                     }}
-                    value={!maxPlayers ? "Unlimited" : maxPlayers || 4}
+                    value={maxPlayers === 0 ? "Unlimited" : maxPlayers}
                   >
                     <option disabled>Players</option>
                     <option value={0}>Unlimited</option>
@@ -420,6 +428,11 @@ const Booking = () => {
                       <select
                         className="select-bordered select"
                         onChange={(val) => {
+                          console.log(
+                            "ON CHANGE DURATION",
+                            parseInt(val.target.value)
+                          );
+
                           setDuration(parseInt(val.target.value));
                         }}
                         value={duration || "Select duration"}
