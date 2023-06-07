@@ -2,6 +2,8 @@
 const sender = process.env.GMAIL_ACCOUNT_FOR_DISPATCH;
 const pass = process.env.GMAIL_APP_SPECIFIC_PASSWORD;
 const isEmailDispatcherActive = process.env.EMAIL_DISPATCH_ACTIVE;
+console.log({ isEmailDispatcherActive, whatType: typeof isEmailDispatcherActive });
+
 
 const hardCodedEmailsForTesting = [
   // "shopping.kalle.stropp@gmail.com",
