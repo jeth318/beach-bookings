@@ -29,6 +29,8 @@ export const emailerRouter = createTRPCRouter({
       const subject = getEmailHeading(input.eventType);
 
       // const emailRecipients: string[] = hardCodedEmailsForTesting;
+    console.log({ secondRound: "yes", isEmailDispatcherActive, whatType: typeof isEmailDispatcherActive });
+
       if (isEmailDispatcherActive === "true") {
         console.warn("Email dispatcher is active");
         try {
