@@ -30,9 +30,11 @@ export const emailerRouter = createTRPCRouter({
       if (isEmailDispatcherActive === "true") {
         console.warn("Email dispatcher is active");
         try {
+          console.log("WOULD HAVE SENT EMAIL TO: ", input.recipients);
+          
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           await transporter.sendMail({
-            ...getMailOptions({ sender, recipients: input.recipients }),
+            ...getMailOptions({ sender, recipients: hardCodedEmailsForTesting }),
             html: input.htmlString,
             subject,
             /*attachments: [{
