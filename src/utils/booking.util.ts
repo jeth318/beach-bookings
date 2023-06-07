@@ -101,7 +101,7 @@ export const bookingsByDate = ({
   if (!sessionUserId) {
     return bookings?.filter((booking) => {
       if (!booking.associationId) {
-        return true;
+        return getBookingEndDate(booking) >= today;
       }
 
       if (!!booking.associationId) {
