@@ -231,31 +231,43 @@ export const Bookings = ({ bookings }: Props) => {
                         </div>
 
                         <div
-                          style={{ width: "140px" }}
-                          className="rounded-lg border border-slate-600 bg-gray-800 p-1 "
+                          style={{ maxWidth: "150px" }}
+                          className="self-start rounded-lg border border-slate-600 bg-gray-800 p-1"
                         >
                           {booking.associationId && (
                             <div className="flex flex-row items-center self-start pb-1 ">
                               <CustomIcon path="/svg/people.svg" width={18} />
                               <div
-                                style={{ width: 140 }}
-                                className="overflow-dots pl-2"
+                                style={{ maxWidth: 150 }}
+                                className="overflow-dots"
                               >
                                 {getAssociation(booking?.associationId)?.name}
                               </div>
                             </div>
                           )}
                           {booking.facilityId && (
-                            <div className="flex flex-row items-center self-start">
-                              <CustomIcon
-                                path="/svg/location-arrow.svg"
-                                width={20}
-                              />
+                            <div className="flex flex-row items-center justify-start">
+                              <span className="pr-1">
+                                <CustomIcon
+                                  path="/svg/location-arrow.svg"
+                                  width={20}
+                                />
+                              </span>
                               <Link href="/" passHref>
-                                <div className="pl-2">
+                                <div className="flex flex-row items-center">
                                   {getFacility(booking?.facilityId)?.name}
                                 </div>
                               </Link>
+                              {!!getFacility(booking?.facilityId)?.durations
+                                .length && (
+                                <span className="pl-2">
+                                  <CustomIcon
+                                    alt="Game has costs"
+                                    path="/svg/coins.svg"
+                                    width={18}
+                                  />
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>
@@ -315,11 +327,10 @@ export const Bookings = ({ bookings }: Props) => {
                           </div>
                         )}
 
-                        <br />
                         {sessionUserId && !historyOnly ? (
                           <div
                             style={{ width: "auto" }}
-                            className="smooth-render-in-slower btn-group btn-group-vertical flex"
+                            className="smooth-render-in-slower btn-group btn-group-vertical flex pt-14"
                           >
                             {booking.players.includes(sessionUserId) && (
                               <button
