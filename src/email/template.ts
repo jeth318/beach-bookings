@@ -1,4 +1,4 @@
-import { type Booking } from "@prisma/client";
+import { type Facility, type Booking } from "@prisma/client";
 import { type EventType, getTimeWithZeroPadding } from "~/utils/booking.util";
 import {
   getEmailIngress,
@@ -71,14 +71,16 @@ export const buildHtmlTemplate = ({
                     originalBooking.date.getHours(),
                     originalBooking.date.getMinutes()
                   )}</s></i>`
-                : `⏳ ${time}`
+                : `⏱️ ${time}`
             }
         </div>
         <div class="booking-info-item">    
             ${
-              showDurationUpdated
-                ? ` <strong>⏱️ ${booking.duration} <s class="orange"><i>${originalBooking.duration}</i></s> minutes</strong>`
-                : `⏱️ ${booking.duration} minutes`
+              booking.duration > 0
+                ? showDurationUpdated
+                  ? ` <strong>⏱⏳ ${booking.duration} <s class="orange"><i>${originalBooking.duration}</i></s> minutes</strong>`
+                  : `⏳ ${booking.duration} minutes`
+                : ""
             }
         </div>
     </div>`;
