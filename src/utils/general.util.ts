@@ -72,7 +72,10 @@ export const getUsersByBooking = (users: User[], booking: Booking) => {
 
 export const getMailOptions = ({ sender, recipients }: MailOptions) => {
   return {
-    from: sender || "",
+    from: {
+      address: sender,
+      name: "Beach Bookings"
+    },
     to: recipients,
   };
 };
