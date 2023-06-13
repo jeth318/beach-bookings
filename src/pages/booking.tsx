@@ -14,6 +14,7 @@ import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
 import { log } from "console";
+import SearchSuggestions from "~/components/SearchSuggestions";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -317,8 +318,8 @@ const Booking = () => {
                 <label className="label">
                   <span className="label-text text-white">Where to play?</span>
                 </label>
-                <label className="input-group">
-                  <span>Facility</span>
+                  <SearchSuggestions items={facilities || []} />
+                {/* <label className="input-group">
                   <select
                     className="select-bordered select"
                     onChange={(val) => {
@@ -347,7 +348,7 @@ const Booking = () => {
                       );
                     })}
                   </select>
-                </label>
+                </label> */}
                 <label className="label">
                   <span className="label-text text-white">
                     How many players?
