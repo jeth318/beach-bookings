@@ -206,6 +206,24 @@ export const Bookings = ({ bookings }: Props) => {
       <div className={`bg-gradient-to-b ${bgColorDark} bookings-container`}>
         {bookingsToShow?.map((booking: Booking) => {
           const maxPlayers = booking.maxPlayers || 0;
+
+          const renderPlayersInBooking = () =>
+            getUsersByBooking(users, booking)
+              .filter((player) => player.id !== booking.userId)
+              .map((user: User) => (
+                <Player key={user.id} user={user} booking={booking} />
+              ));
+
+          const renderPartyLeader = () => {
+            const booker = getUsersByBooking(users, booking).find(
+              (user) => user.id === booking.userId
+            );
+
+            if (booker) {
+              return <Player key={booker.id} user={booker} booking={booking} />;
+            }
+          };
+
           return (
             <div
               key={booking.id}
@@ -279,15 +297,10 @@ export const Bookings = ({ bookings }: Props) => {
                             <BeatLoader size={10} color="#36d7b7" />
                           </div>
                         ) : (
-                          getUsersByBooking(users, booking).map(
-                            (user: User) => (
-                              <Player
-                                key={user.id}
-                                user={user}
-                                booking={booking}
-                              />
-                            )
-                          )
+                          <>
+                            {renderPartyLeader()}
+                            {renderPlayersInBooking()}
+                          </>
                         )}
                       </div>
                     </div>
