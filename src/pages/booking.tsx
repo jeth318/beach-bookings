@@ -400,10 +400,10 @@ const Booking = () => {
                     }}
                     value={
                       userAssociations?.find((a) => a.id === association)
-                        ?.name || "None (public)"
+                        ?.name || "Open (anybody can join)"
                     }
                   >
-                    <option>None (public)</option>
+                    <option>Open (anybody can join)</option>
                     {userAssociations?.map((association) => {
                       return (
                         <option
