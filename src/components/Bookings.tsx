@@ -391,7 +391,7 @@ export const Bookings = ({ bookings }: Props) => {
                                 booking.id === leaving.bookingId ? (
                                   <BeatLoader size={10} color="white" />
                                 ) : (
-                                  "Leavue"
+                                  "Leave"
                                 )}
                               </label>
                             )}
