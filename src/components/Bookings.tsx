@@ -53,7 +53,10 @@ export const Bookings = ({ bookings }: Props) => {
   const createdOnly = router.asPath === "/created";
 
   const sessionUserId = session?.data?.user?.id;
+  const [bookingToChange, setBookingToChange] = useState<Booking | undefined>();
   const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
+  const [bookingToLeave, setBookingToLeave] = useState<Booking | undefined>();
+  const [bookingToJoin, setBookingToJoin] = useState<Booking | undefined>();
 
   const [joining, setIsJoining] = useState<BookingAction>({
     isWorking: false,
@@ -195,37 +198,46 @@ export const Bookings = ({ bookings }: Props) => {
 
   return (
     <div>
-      <ActionModal
-        callback={deleteBooking}
-        data={bookingToDelete}
-        tagRef="delete-booking"
-        title="Confirm deletion"
-        body={removeBookingText}
-        confirmButtonText="Delete"
-        cancelButtonText="Cancel"
-      />
+      {["delete", "leave", "join"].flatMap((action) => {
+        let level = "error";
+        let body = "";
+        let callback;
 
-      <ActionModal
-        title="Confirm leave"
-        callback={leaveGame}
-        data={bookingToDelete}
-        tagRef="leave-booking"
-        body={leaveBookingText}
-        confirmButtonText="Leave"
-        cancelButtonText="Stay"
-        level="warning"
-      />
+        switch (action) {
+          case "delete":
+            level = "error";
+            body = removeBookingText;
+            callback = deleteBooking;
+            break;
+          case "leave":
+            level = "warning";
+            body = leaveBookingText;
+            callback = leaveGame;
+            break;
+          case "join":
+            level = "accent";
+            body = joinBookingText;
+            callback = joinGame;
+            break;
+          default:
+            callback = () => {
+              return null;
+            };
+        }
 
-      <ActionModal
-        title="Confirm join"
-        callback={joinGame}
-        data={bookingToDelete}
-        tagRef="join-booking"
-        body={joinBookingText}
-        confirmButtonText="Join"
-        cancelButtonText="Cancel"
-        level="accent"
-      />
+        return (
+          <ActionModal
+            callback={callback}
+            data={bookingToChange}
+            tagRef={`${action}-booking`}
+            title={`Confirm ${action}`}
+            body={body}
+            confirmButtonText={action.charAt(0).toUpperCase() + action.slice(1)}
+            cancelButtonText="Cancel"
+            level={level}
+          />
+        );
+      })}
 
       <div className={`bg-gradient-to-b ${bgColorDark} bookings-container`}>
         {bookingsToShow?.map((booking: Booking) => {
@@ -372,20 +384,21 @@ export const Bookings = ({ bookings }: Props) => {
                             {booking.players.includes(sessionUserId) && (
                               <label
                                 htmlFor="action-modal-leave-booking"
+                                onClick={() => void setBookingToChange(booking)}
                                 className="btn-warning btn-sm btn text-white"
                               >
                                 {leaving.isWorking &&
                                 booking.id === leaving.bookingId ? (
                                   <BeatLoader size={10} color="white" />
                                 ) : (
-                                  "Leave"
+                                  "Leavue"
                                 )}
                               </label>
                             )}
                             {!booking.players.includes(sessionUserId) && (
                               <label
                                 htmlFor="action-modal-join-booking"
-                                onClick={() => void joinGame(booking)}
+                                onClick={() => void setBookingToChange(booking)}
                                 className={`${
                                   booking.players.length < 4
                                     ? "btn-accent"
@@ -421,7 +434,7 @@ export const Bookings = ({ bookings }: Props) => {
                                 <label
                                   htmlFor="action-modal-delete-booking"
                                   onClick={() =>
-                                    void setBookingToDelete(booking)
+                                    void setBookingToChange(booking)
                                   }
                                   className="btn-error btn-sm btn text-white"
                                 >

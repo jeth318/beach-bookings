@@ -6,7 +6,7 @@ type Props = {
   tagRef: string;
   cancelButtonText?: string;
   confirmButtonText?: string;
-  level?: "info" | "error" | "warning" | "primary" | "accent";
+  level?: string;
 };
 
 export default function ActionModal({
