@@ -6,6 +6,7 @@ type Props = {
   tagRef: string;
   cancelButtonText?: string;
   confirmButtonText?: string;
+  level?: "info" | "error" | "warning" | "primary" | "accent";
 };
 
 export default function ActionModal({
@@ -16,6 +17,7 @@ export default function ActionModal({
   tagRef,
   cancelButtonText,
   confirmButtonText,
+  level = "error",
 }: Props) {
   return (
     <div>
@@ -27,7 +29,7 @@ export default function ActionModal({
       />
       <div className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
-          {title && <h3 className="text-lg font-bold">{cancelButtonText}</h3>}
+          {title && <h3 className="text-lg font-bold">{title}</h3>}
           {body && <p className="py-4">{body}</p>}
           <div className="modal-action">
             <div className="btn-group">
@@ -36,7 +38,7 @@ export default function ActionModal({
               </label>
               <label
                 htmlFor={`action-modal-${tagRef}`}
-                className="btn-error btn text-white"
+                className={`btn-${level} btn text-white`}
                 onClick={() => {
                   callback(data);
                 }}

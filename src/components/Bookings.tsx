@@ -18,6 +18,8 @@ import {
 import {
   getEmailRecipients,
   getUsersByBooking,
+  joinBookingText,
+  leaveBookingText,
   removeBookingText,
 } from "~/utils/general.util";
 import { ArrogantFrog } from "./ArrogantFrog";
@@ -203,6 +205,28 @@ export const Bookings = ({ bookings }: Props) => {
         cancelButtonText="Cancel"
       />
 
+      <ActionModal
+        title="Confirm leave"
+        callback={leaveGame}
+        data={bookingToDelete}
+        tagRef="leave-booking"
+        body={leaveBookingText}
+        confirmButtonText="Leave"
+        cancelButtonText="Stay"
+        level="warning"
+      />
+
+      <ActionModal
+        title="Confirm join"
+        callback={joinGame}
+        data={bookingToDelete}
+        tagRef="join-booking"
+        body={joinBookingText}
+        confirmButtonText="Join"
+        cancelButtonText="Cancel"
+        level="accent"
+      />
+
       <div className={`bg-gradient-to-b ${bgColorDark} bookings-container`}>
         {bookingsToShow?.map((booking: Booking) => {
           const maxPlayers = booking.maxPlayers || 0;
@@ -346,21 +370,22 @@ export const Bookings = ({ bookings }: Props) => {
                             className="smooth-render-in-slower btn-group btn-group-vertical flex pt-14"
                           >
                             {booking.players.includes(sessionUserId) && (
-                              <button
-                                onClick={() => leaveGame(booking)}
+                              <label
+                                htmlFor="action-modal-leave-booking"
                                 className="btn-warning btn-sm btn text-white"
                               >
                                 {leaving.isWorking &&
-                                leaving.bookingId === booking.id ? (
+                                booking.id === leaving.bookingId ? (
                                   <BeatLoader size={10} color="white" />
                                 ) : (
                                   "Leave"
                                 )}
-                              </button>
+                              </label>
                             )}
                             {!booking.players.includes(sessionUserId) && (
-                              <button
-                                onClick={() => joinGame(booking)}
+                              <label
+                                htmlFor="action-modal-join-booking"
+                                onClick={() => void joinGame(booking)}
                                 className={`${
                                   booking.players.length < 4
                                     ? "btn-accent"
@@ -375,7 +400,7 @@ export const Bookings = ({ bookings }: Props) => {
                                 ) : (
                                   "Full"
                                 )}
-                              </button>
+                              </label>
                             )}
                             {!isMainPage &&
                               session?.data?.user?.id === booking?.userId && (
