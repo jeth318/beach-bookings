@@ -413,7 +413,7 @@ const Booking = () => {
                   </span>
                 </label>
                 <label className="input-group">
-                  <span>Groups</span>
+                  <span>Group</span>
                   <select
                     className="select-bordered select"
                     onChange={(val) => {
