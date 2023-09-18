@@ -283,9 +283,17 @@ const Booking = () => {
                     />
 
                     <span style={{ margin: 0 }}>
-                      Yo! Before publishing a booking here, make sure that you
-                      actually book a court at GBC official page and receive a
-                      confirmation email.
+                      <p>
+                        Yo! Before publishing a booking here, make sure that you
+                        actually book a court over at{" "}
+                        <a
+                          className="link"
+                          href="https://gbc.goactivebooking.com/book-service/27?facility=1"
+                        >
+                          GBC official page
+                        </a>{" "}
+                        and receive a confirmation email.
+                      </p>
                     </span>
                   </div>
                 </div>
