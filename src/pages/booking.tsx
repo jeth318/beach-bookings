@@ -14,6 +14,7 @@ import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
 import Image from "next/image";
+import { relative } from "path";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -272,29 +273,26 @@ const Booking = () => {
           <div className="container max-w-md p-4">
             {sessionData?.user.id && (
               <div>
-                <div>
-                  <div className="alert alert-info flex flex-row text-white">
-                    <Image
-                      className="rounded-full"
-                      alt="arrogant-frog"
-                      src="/cig-frog.gif"
-                      width={45}
-                      height={45}
-                    />
-
-                    <span style={{ margin: 0 }}>
-                      <p>
-                        Yo! Before publishing a booking here, make sure that you
-                        actually book a court over at{" "}
-                        <a
-                          className="link"
-                          href="https://gbc.goactivebooking.com/book-service/27?facility=1"
-                        >
-                          GBC official page
-                        </a>{" "}
-                        and receive a confirmation email.
-                      </p>
-                    </span>
+                <div className="alert alert-info mt-14 flex flex-row text-white">
+                  <div>
+                    <p>
+                      <Image
+                        className="float-left mr-2 rounded-full"
+                        alt="arrogant-frog"
+                        src="/cig-frog.gif"
+                        width={45}
+                        height={45}
+                      />
+                      Yo! Before publishing a booking here, make sure that you
+                      actually book a court over at{" "}
+                      <a
+                        className="link"
+                        href="https://gbc.goactivebooking.com/book-service/27?facility=1"
+                      >
+                        GBC official page
+                      </a>{" "}
+                      and receive a confirmation email from them.
+                    </p>
                   </div>
                 </div>
                 <label className="label">
