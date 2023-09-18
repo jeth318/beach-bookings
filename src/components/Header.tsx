@@ -174,7 +174,7 @@ export const Header = () => {
                 >
                   <Link className="whitespace-nowrap p-1 text-lg" href="/help">
                     <CustomIcon path="/svg/help.svg" width={25} height={25} />
-                    Help
+                    How to
                   </Link>
                 </li>
                 <li
