@@ -29,26 +29,11 @@ const Help = () => {
           <br />
           Some advices.
         </h1>
-        <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
-          Chat-GPT, write a short sales pitch on why anyone would use this
-          app...
-        </p>
-        <br />
-        <p className="text-lg font-normal italic text-gray-500 dark:text-gray-400 lg:text-xl">
-          "- Get ready to have a blast with Beach Bookings, the ultimate web app
-          for player squad gathering. Say goodbye to boring Google Sheets and
-          say hello to an interactive experience that keeps you in the loop.
-          With Beach Bookings, you will receive email notifications for booking
-          updates, edits, or cancellations in real-time. Do not worry; you are
-          in control! Just head to the settings option in the top-right corner
-          to customize your email notifications to your hearts content."
-        </p>
-        <br />
         <br />
         <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
           🌴 Add a new booking
         </p>
-        <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+        <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           1️⃣ Start by visiting the{" "}
           <a className="link" href="https://gbc.goactivebooking.com/">
             official GBC website
@@ -60,12 +45,12 @@ const Help = () => {
           record!
         </p>
         <br />
-        <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+        <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           2️⃣ Now, go back and log in to Beach Bookings and navigate to the top
           left menu where you will find the Add-option.
         </p>
         <br />
-        <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+        <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           3️⃣ Select Add and then proceed to input all the necessary details from
           your GBC booking. This includes information like the date, time,
           facility (only GBC Kviberg available at the moment), court, your group
@@ -73,29 +58,54 @@ const Help = () => {
           or allowed (usually defaults to 4).
         </p>
         <br />
-        <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+        <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           4️⃣ When all required information is entered, the Save-button will turn
           green. Click save and your now booking will be added and everyone will
           get notified via email that you just added an opportunity to play.
           Enjoy your game on the beach! 🏖️🏐
         </p>
         <br />
+        <hr />
+        <br />
         <p className="bold text-lg font-bold  text-gray-500 dark:text-gray-400 lg:text-xl">
           🌴 Join booking
         </p>
-        <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+        <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           When logged in, simply tap Join in in the booking and confirm. When
           joining, an email will be sent to the other players in the booking.
         </p>
         <br />
+        <hr />
+        <br />
         <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
           🌴 Leave booking
         </p>
-        <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+        <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           When logged in, go to Joined in the menu and tap and confirm on the
           orange leave-button. Make sure to be logged in, otherwise the actions
           such as leave wont be visible. When leaving, an email will be sent to
           the other players in the booking.
+        </p>
+        <br />
+        <hr />
+        <br />
+        <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
+          💡 About the app
+        </p>
+        <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+          Chat-GPT, write a short sales pitch on why anyone would use this
+          app...
+        </p>
+        <br />
+
+        <p className="text-lg font-normal italic text-gray-500 dark:text-gray-400 lg:text-xl">
+          "- Get ready to have a blast with Beach Bookings, the ultimate web app
+          for player squad gathering. Say goodbye to boring Google Sheets and
+          say hello to an interactive experience that keeps you in the loop.
+          With Beach Bookings, you will receive email notifications for booking
+          updates, edits, or cancellations in real-time. Do not worry; you are
+          in control! Just head to the settings option in the top-right corner
+          to customize your email notifications to your hearts content."
         </p>
         <br />
       </div>

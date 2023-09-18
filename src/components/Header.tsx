@@ -33,6 +33,15 @@ export const Header = () => {
     >
       <div className="navbar-start">
         <>
+          {sessionStatus === "unauthenticated" && (
+            <Link
+              href={"/help"}
+              className="btn-info btn-sm btn self-end text-white"
+            >
+              Help
+            </Link>
+          )}
+
           <div className="hidden pr-2 text-lg md:hidden lg:flex"></div>
           <Link className="hidden text-lg md:hidden lg:flex" href="/">
             ßeach ßookings 🏖️
@@ -187,7 +196,7 @@ export const Header = () => {
           </>
         ) : (
           sessionStatus === "unauthenticated" && (
-            <div>
+            <div className="flex">
               <button
                 onClick={() => void signIn()}
                 className="btn-outline btn-sm btn self-end"
