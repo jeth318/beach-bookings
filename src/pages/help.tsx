@@ -99,13 +99,13 @@ const Help = () => {
         <br />
 
         <p className="text-lg font-normal italic text-gray-500 dark:text-gray-400 lg:text-xl">
-          "- Get ready to have a blast with Beach Bookings, the ultimate web app
+          - Get ready to have a blast with Beach Bookings, the ultimate web app
           for player squad gathering. Say goodbye to boring Google Sheets and
           say hello to an interactive experience that keeps you in the loop.
           With Beach Bookings, you will receive email notifications for booking
           updates, edits, or cancellations in real-time. Do not worry; you are
           in control! Just head to the settings option in the top-right corner
-          to customize your email notifications to your hearts content."
+          to customize your email notifications to your hearts content.
         </p>
         <br />
       </div>
