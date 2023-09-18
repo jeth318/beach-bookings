@@ -13,6 +13,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
+import Image from "next/image";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -271,6 +272,23 @@ const Booking = () => {
           <div className="container max-w-md p-4">
             {sessionData?.user.id && (
               <div>
+                <div>
+                  <div className="alert alert-info flex flex-row text-white">
+                    <Image
+                      className="rounded-full"
+                      alt="arrogant-frog"
+                      src="/cig-frog.gif"
+                      width={45}
+                      height={45}
+                    />
+
+                    <span style={{ margin: 0 }}>
+                      Yo! Before publishing a booking here, make sure that you
+                      actually book a court at GBC official page and receive a
+                      confirmation email.
+                    </span>
+                  </div>
+                </div>
                 <label className="label">
                   <span className="label-text text-white">
                     When are you playing?
