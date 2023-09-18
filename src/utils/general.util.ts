@@ -223,7 +223,7 @@ export const removeBookingText =
   "If you remove this booking, it will be gone forever. But hey, I'm not your mommy, you are in charge";
 
 export const leaveBookingText =
-  "If you leave, all members in this party will me notified by email. Be a hero and help your fellow players find a replacement.";
+  "If you leave, the members in this booking will be notified by e-mail. Be a hero and help your fellow players find a replacement.";
 
 export const joinBookingText =
-  "If you join, all members in this booking will me notified by email.";
+  "If you join, the members in this booking will be notified by e-mail.";
