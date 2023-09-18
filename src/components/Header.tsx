@@ -38,7 +38,7 @@ export const Header = () => {
               href={"/help"}
               className="btn-info btn-sm btn self-end text-white"
             >
-              Help
+              How to
             </Link>
           )}
 
