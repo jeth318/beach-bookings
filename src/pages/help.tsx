@@ -55,7 +55,7 @@ const Help = () => {
           record!
         </p>
         <br />
-        <p className="text-grays-500 text-lg font-normal dark:text-gray-400 lg:text-xl">
+        <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           2️⃣ Now, log in to Beach Bookings and navigate to the top left menu
           where you will find the Add-option.
         </p>
@@ -69,8 +69,9 @@ const Help = () => {
         <br />
         <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           4️⃣ When all required information is entered, the Save-button will turn
-          green. Click save and your now booking will be added. Enjoy your game
-          on the beach! 🏖️🏐
+          green. Click save and your now booking will be added and everyone will
+          get notified via email that you just added an opportunity to play.
+          Enjoy your game on the beach! 🏖️🏐
         </p>
         <br />
         <p className="bold text-lg font-bold  text-gray-500 dark:text-gray-400 lg:text-xl">
