@@ -13,7 +13,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
-import { log } from "console";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -92,6 +91,7 @@ const Booking = () => {
       }
     } else {
       setEventType("ADD");
+      setFacility(facilities?.find((facility) => facility.id === "1"));
       resetBooking();
     }
   }, [
@@ -255,8 +255,6 @@ const Booking = () => {
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
 
-  console.log({ maxPlayers });
-
   return (
     <>
       <SubHeader
@@ -336,21 +334,23 @@ const Booking = () => {
                     value={facility?.name || "Pick a place"}
                   >
                     <option disabled>Pick a place</option>
-                    {facilities?.map((facility) => {
-                      return (
-                        <option
-                          key={facility.id}
-                          data-facility-id={facility.id}
-                        >
-                          {facility.name}
-                        </option>
-                      );
-                    })}
+                    {facilities
+                      ?.filter((facility) => facility.id === "1")
+                      .map((facility) => {
+                        return (
+                          <option
+                            key={facility.id}
+                            data-facility-id={facility.id}
+                          >
+                            {facility.name}
+                          </option>
+                        );
+                      })}
                   </select>
                 </label>
                 <label className="label">
                   <span className="label-text text-white">
-                    How many players?
+                    How many players are required?
                   </span>
                 </label>
                 <label className="input-group">
@@ -400,10 +400,10 @@ const Booking = () => {
                     }}
                     value={
                       userAssociations?.find((a) => a.id === association)
-                        ?.name || "Open (anybody can join)"
+                        ?.name || "Open (everyone)"
                     }
                   >
-                    <option>Open (anybody can join)</option>
+                    <option>Open (everyone)</option>
                     {userAssociations?.map((association) => {
                       return (
                         <option

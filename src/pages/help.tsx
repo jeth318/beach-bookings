@@ -56,15 +56,16 @@ const Help = () => {
         </p>
         <br />
         <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
-          2️⃣ Now, log in to Beach Bookings and navigate to the top left menu
-          where you will find the Add-option.
+          2️⃣ Now, go back and log in to Beach Bookings and navigate to the top
+          left menu where you will find the Add-option.
         </p>
         <br />
         <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           3️⃣ Select Add and then proceed to input all the necessary details from
           your GBC booking. This includes information like the date, time,
-          facility, court, your group (which is currently one big group), and
-          the number of players needed or allowed (usually defaults to 4).
+          facility (only GBC Kviberg available at the moment), court, your group
+          (which is currently one big group), and the number of players needed
+          or allowed (usually defaults to 4).
         </p>
         <br />
         <p className="text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
