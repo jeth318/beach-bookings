@@ -277,11 +277,11 @@ const Booking = () => {
                   <div>
                     <p>
                       <Image
-                        className="float-left mr-2 rounded-full"
+                        className="float-left mr-2 rounded-full shadow-sm shadow-black"
                         alt="arrogant-frog"
                         src="/cig-frog.gif"
-                        width={45}
-                        height={45}
+                        width={40}
+                        height={40}
                       />
                       Yo! Before publishing a booking here, make sure that you
                       actually book a court over at{" "}
@@ -291,7 +291,7 @@ const Booking = () => {
                       >
                         GBC official page
                       </a>{" "}
-                      and receive a confirmation email from them.
+                      and receive a confirmation email.
                     </p>
                   </div>
                 </div>
