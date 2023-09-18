@@ -163,6 +163,17 @@ export const Header = () => {
                     toggleDropdown(false, "user-dropdown");
                   }}
                 >
+                  <Link className="whitespace-nowrap p-1 text-lg" href="/help">
+                    <CustomIcon path="/svg/help.svg" width={25} height={25} />
+                    Help
+                  </Link>
+                </li>
+                <li
+                  className="p-1"
+                  onClick={() => {
+                    toggleDropdown(false, "user-dropdown");
+                  }}
+                >
                   <a
                     className="whitespace-nowrap p-1 text-lg"
                     onClick={() => void signOut()}
