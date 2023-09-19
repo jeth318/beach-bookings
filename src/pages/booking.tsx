@@ -374,7 +374,7 @@ const Booking = () => {
                 </label>
                 <label className="label">
                   <span className="label-text text-white">
-                    How many players are required?
+                    How many players are required/allowed?
                   </span>
                 </label>
                 <label className="input-group">
@@ -407,7 +407,7 @@ const Booking = () => {
                     <option>12</option>
                   </select>
                 </label>
-                <label className="label">
+                {/* <label className="label">
                   <span className="label-text text-white">
                     With what group?
                   </span>
@@ -439,7 +439,7 @@ const Booking = () => {
                       );
                     })}
                   </select>
-                </label>
+                </label> */}
                 {!!facility?.durations?.length && (
                   <>
                     <label className="label">
