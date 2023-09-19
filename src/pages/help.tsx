@@ -18,7 +18,7 @@ const Help = () => {
       <div
         style={{
           padding: 10,
-          paddingTop: 30,
+          paddingTop: 70,
           maxWidth: 600,
         }}
       >
@@ -31,20 +31,7 @@ const Help = () => {
         </h1>
         <br />
         <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
-          🌴 Remove booking
-        </p>
-        <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
-          Log in and tap the top menu icon, then tap Booked-option (visible only
-          for bookings added by you). Selet Delete-option After confirmation, an
-          email will be sent to the other players in the booking with
-          information of the update. Important! You still have reach out to GBC
-          and actually delete the booking from their system.
-        </p>
-        <br />
-        <hr />
-        <br />r
-        <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
-          🌴 Add a new booking
+          🌴 Publish a booking
         </p>
         <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           1️⃣ Visit the{" "}
@@ -55,8 +42,8 @@ const Help = () => {
         </p>
         <br />
         <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
-          2️⃣ In Beach Bookings, navigate to the top left menu where you will
-          find the Add-option. Tap it.
+          2️⃣ Here in Beach Bookings, navigate to the top left menu where you
+          will find the Add-option. Tap it.
         </p>
         <br />
         <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
@@ -91,8 +78,8 @@ const Help = () => {
           booking letting them know you left.
         </p>
         <br />
-        <br />
         <hr />
+        <br />
         <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
           🌴 Change/Edit booking
         </p>
@@ -105,6 +92,18 @@ const Help = () => {
         <hr />
         <br />
         <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
+          🌴 Remove booking
+        </p>
+        <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+          Log in and tap the top menu icon, then tap Booked-option (visible only
+          for bookings added by you). Selet Delete-option After confirmation, an
+          email will be sent to the other players in the booking with
+          information of the update. Important!
+        </p>
+        <br />
+        <hr />
+        <br />
+        <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
           💡 About the app
         </p>
         <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
@@ -112,7 +111,7 @@ const Help = () => {
           app...
         </p>
         <br />
-        <p className="text-lg font-normal italic text-gray-500 dark:text-gray-400 lg:text-xl">
+        <p className="p-2 text-lg font-normal italic text-gray-500 dark:text-gray-400 lg:text-xl">
           - Get ready to have a blast with Beach Bookings, the ultimate web app
           for player squad gathering. Say goodbye to boring Google Sheets and
           say hello to an interactive experience that keeps you in the loop.
