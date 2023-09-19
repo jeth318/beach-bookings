@@ -275,17 +275,19 @@ const Booking = () => {
               <div>
                 <div className="alert alert-info mt-14 flex flex-row text-white">
                   <div>
+                    <Image
+                      className="mr-2 rounded-full shadow-sm shadow-black"
+                      alt="arrogant-frog"
+                      src="/cig-frog.gif"
+                      width={55}
+                      height={55}
+                    />
                     <p>
-                      <Image
-                        className="float-left mr-2 rounded-full shadow-sm shadow-black"
-                        alt="arrogant-frog"
-                        src="/cig-frog.gif"
-                        width={40}
-                        height={40}
-                      />
-                      Yo! Before publishing a booking here, make sure that you
-                      actually book a court over at{" "}
+                      <b>Yo!</b> Before publishing a booking here, make sure
+                      that you actually book it first at{" "}
                       <a
+                        style={{ color: "gold" }}
+                        target="_blank"
                         className="link"
                         href="https://gbc.goactivebooking.com/book-service/27?facility=1"
                       >
