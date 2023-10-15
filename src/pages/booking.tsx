@@ -386,7 +386,6 @@ const Booking = () => {
                     onChange={(val) => {
                       const selected =
                         val.target.options[val.target.selectedIndex]?.value;
-                      console.log({ selected });
 
                       if (typeof selected === "string") {
                         setMaxPlayers(parseInt(selected));
