@@ -4,13 +4,27 @@ import { CustomIcon } from "./CustomIcon";
 import { useRouter } from "next/router";
 import { menuItems, type DropdownItem } from "~/utils/general.util";
 import { CircleLoader } from "react-spinners";
+import { useEffect, useState } from "react";
+import ActionModal from "./ActionModal";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Toast } from "./Toast";
 
 export const Header = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
+  const [invalidUseragent, setInvalidUseragent] = useState<boolean>(false);
   const avatar = sessionData?.user.image;
+  const [toastMessage, setToastMessage] = useState<string>();
+
   const router = useRouter();
 
   const noBoxShadow = router.asPath !== "/";
+
+  const renderToast = (body: string) => {
+    setToastMessage(body);
+    setTimeout(() => {
+      setToastMessage(undefined);
+    }, 3000);
+  };
 
   const toggleDropdown = (value: boolean, elementId: string) => {
     const dropdownElement = document.getElementById(elementId);
@@ -25,12 +39,51 @@ export const Header = () => {
     }
   };
 
+  useEffect(() => {
+    if (navigator.userAgent.toUpperCase().includes("FBAN")) {
+      setInvalidUseragent(true);
+    }
+  }, []);
+
   return (
     <div
       className={`navbar sticky top-0 z-50  bg-white dark:bg-slate-900 ${
         noBoxShadow ? "" : "shadow-md shadow-black"
       }`}
     >
+      <ActionModal
+        level="info"
+        callback={() => null}
+        tagRef="bad-useragent"
+        title="Oh 💩, the Facebook web-browser"
+        hideConfirm
+        cancelButtonText="Close"
+      >
+        <div>
+          <p className="pt-3">
+            It looks like you arrived to Beach Bookings from within the
+            Facebook/Messenger app. Unfortunately, Google does not allow sign
+            ins from embedded browsers.
+          </p>
+          <p className="pt-3">
+            In order to login to Beach Bookings, <br /> 👉
+            <CopyToClipboard
+              text={"https://beachbookings.se"}
+              onCopy={() => {
+                renderToast(`https://beachbookings.se copied to clipboard.`);
+              }}
+            >
+              <button className="btn-success btn-xs btn ml-2 mr-2 self-end text-white">
+                copy the link
+              </button>
+            </CopyToClipboard>
+            👈 <br />
+            and open it in your phones regular web-browser such as Safari och
+            Chrome instead.
+          </p>
+          <br />
+        </div>
+      </ActionModal>
       <div className="navbar-start">
         <>
           {sessionStatus === "unauthenticated" && (
@@ -197,12 +250,22 @@ export const Header = () => {
         ) : (
           sessionStatus === "unauthenticated" && (
             <div className="flex">
-              <button
-                onClick={() => void signIn()}
-                className="btn-outline btn-sm btn self-end"
-              >
-                Login
-              </button>
+              {toastMessage && <Toast body={toastMessage} />}
+              {invalidUseragent ? (
+                <label
+                  className="btn-outline btn-sm btn self-end"
+                  htmlFor="action-modal-bad-useragent"
+                >
+                  Login
+                </label>
+              ) : (
+                <button
+                  onClick={() => void signIn()}
+                  className="btn-outline btn-sm btn self-end"
+                >
+                  Login
+                </button>
+              )}
             </div>
           )
         )}

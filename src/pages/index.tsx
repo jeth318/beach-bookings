@@ -50,8 +50,6 @@ const Home = () => {
     return null;
   }
 
-  const beachBookingsHelp = localStorage.getItem("beach-bookings-help");
-
   return (
     <main className="min-w-sm flex min-w-fit flex-col">
       <Bookings bookings={data} />
