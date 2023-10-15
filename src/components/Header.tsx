@@ -53,7 +53,7 @@ export const Header = () => {
     >
       <ActionModal
         level="info"
-        callback={() => {}}
+        callback={() => null}
         tagRef="bad-useragent"
         title="Oh 💩, the Facebook web-browser"
         hideConfirm
