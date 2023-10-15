@@ -62,8 +62,8 @@ export const Header = () => {
         <div>
           <p className="pt-3">
             It looks like you arrived to Beach Bookings from within the
-            Facebook/Messenger app. Unfortunately, Google doesn't allow sign ins
-            from embedded browsers.
+            Facebook/Messenger app. Unfortunately, Google does not allow sign
+            ins from embedded browsers.
           </p>
           <p className="pt-3">
             In order to login to Beach Bookings, <br /> 👉
@@ -260,7 +260,7 @@ export const Header = () => {
                 </label>
               ) : (
                 <button
-                  onClick={async () => void signIn()}
+                  onClick={() => void signIn()}
                   className="btn-outline btn-sm btn self-end"
                 >
                   Login
