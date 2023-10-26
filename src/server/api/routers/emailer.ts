@@ -48,14 +48,14 @@ export const emailerRouter = createTRPCRouter({
                   subject,
                 });
                 console.log("*************************'");
-                console.log("Email was send to: ", recipient);
+                console.log("Email was send to:", recipient);
               }
               return {
                 success: true,
                 data: "success!",
               };
             } catch (err) {
-              console.log(err);
+              console.log("EMAIL ERROR", err);
               return { success: false, message: "Error" };
             }
           });
