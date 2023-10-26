@@ -76,7 +76,7 @@ export const getMailOptions = ({ sender, recipients }: MailOptions) => {
       address: sender,
       name: "Beach Bookings",
     },
-    to: recipients,
+    to: [recipients],
   };
 };
 
@@ -90,16 +90,14 @@ export const getEmailRecipients = ({
     return users
       .filter((user) => user.id !== sessionUserId)
       .filter((user) => user.emailConsents.includes("ADD"))
-      .map((user) => user.email)
-      .filter((email) => !!email) as string[];
+      .map((user) => user.id);
   }
 
   return users
     .filter((user) => booking.players.includes(user.id))
-    .filter((user) => !!user.email)
     .filter((user) => user?.emailConsents?.includes(eventType))
     .filter((user) => user.id !== sessionUserId)
-    .map((user) => user.email) as string[];
+    .map((user) => user.id);
 };
 
 export const getEmailTitle = (eventType: EventType) => {

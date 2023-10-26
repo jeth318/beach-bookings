@@ -81,9 +81,7 @@ export const emailDispatcher = ({
       htmlString,
     },
     {
-      onSuccess: () => {
-        console.log(`Email sent to ${recipients?.toString() || ""}`);
-      },
+      onSuccess: () => null,
     }
   );
 };

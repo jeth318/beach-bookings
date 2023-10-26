@@ -28,13 +28,6 @@ export const getUsersByBooking = (users: User[], booking: Booking) => {
   return users.filter((user) => booking.players.includes(user.id));
 };
 
-export const getMailOptions = ({ sender, recipients }: MailOptions) => {
-  return {
-    from: sender || "",
-    to: recipients,
-  };
-};
-
 export const getConsentIcon = (consent: EventType) => {
   switch (consent) {
     case "ADD":

@@ -68,8 +68,6 @@ export const bookingRouter = createTRPCRouter({
       })
     )
     .mutation(({ ctx, input }) => {
-      console.log("YOYOYO", input.duration);
-
       return ctx.prisma.booking.update({
         where: {
           id: input.id,

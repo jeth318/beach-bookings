@@ -4,9 +4,10 @@ const pass = process.env.GMAIL_APP_SPECIFIC_PASSWORD;
 const isEmailDispatcherActive = process.env.EMAIL_DISPATCH_ACTIVE;
 
 const hardCodedEmailsForTesting = [
-  // "shopping.kalle.stropp@gmail.com",
+  "shopping.kalle.stropp@gmail.com",
   "public.kalle.stropp@gmail.com",
-  // "jesper.thornberg@me.com",
+  "sdsf@@@sdf.sdf",
+  "jesper.thornberg@me.com",
 ];
 
 import { z } from "zod";
@@ -26,34 +27,41 @@ export const emailerRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const subject = getEmailHeading(input.eventType);
 
-      // const emailRecipients: string[] = hardCodedEmailsForTesting;
+      try {
+        const users = await ctx.prisma.user.findMany({});
 
-      if (isEmailDispatcherActive === "true") {
-        console.warn("Email dispatcher is active");
-        try {
-          console.log("Email was send to the following recipients: ", input.recipients);
-          
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          await transporter.sendMail({
-            ...getMailOptions({ sender, recipients: input.recipients }),
-            html: input.htmlString,
-            subject,
-            /*attachments: [{
-                filename: 'cig-frog-still.png',
-                path: path.join(process.cwd(), 'public'),
-                cid: 'unique@nodemailer.com' //same cid value as in the html img src
-            }],*/
+        const emailAddresses = users
+          .filter((user) => input.recipients.includes(user.id))
+          .map((user) => user.email);
+
+        console.log({ emailAddresses });
+
+        if (isEmailDispatcherActive === "true") {
+          console.warn("Email dispatcher is active");
+          emailAddresses.forEach((recipient) => {
+            try {
+              if (!!recipient) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                transporter.sendMail({
+                  ...getMailOptions({ sender, recipients: [recipient] }),
+                  html: input.htmlString,
+                  subject,
+                });
+                console.log("*************************'");
+                console.log("Email was send to: ", recipient);
+              }
+              return {
+                success: true,
+                data: "success!",
+              };
+            } catch (err) {
+              console.log(err);
+              return { success: false, message: "Error" };
+            }
           });
-          return {
-            success: true,
-            data: "success!",
-          };
-        } catch (err) {
-          console.log(err);
-          return { success: false, message: "Error" };
+        } else {
+          console.log("Email dispatcher not active");
         }
-      } else {
-        console.log("Email dispatcher not active");
-      }
+      } catch (error) {}
     }),
 });
