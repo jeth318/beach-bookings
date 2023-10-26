@@ -207,8 +207,6 @@ const Booking = () => {
         eventType: "ADD",
       });
 
-      console.log("Will save: ", maxPlayers);
-
       createBooking.mutate(
         {
           userId: sessionData?.user.id,
@@ -386,7 +384,6 @@ const Booking = () => {
                     onChange={(val) => {
                       const selected =
                         val.target.options[val.target.selectedIndex]?.value;
-                      console.log({ selected });
 
                       if (typeof selected === "string") {
                         setMaxPlayers(parseInt(selected));
@@ -454,11 +451,6 @@ const Booking = () => {
                       <select
                         className="select-bordered select"
                         onChange={(val) => {
-                          console.log(
-                            "ON CHANGE DURATION",
-                            parseInt(val.target.value)
-                          );
-
                           setDuration(parseInt(val.target.value));
                         }}
                         value={duration || "Select duration"}

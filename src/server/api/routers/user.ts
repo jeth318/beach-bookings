@@ -6,7 +6,13 @@ import {
 } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
-  getAll: publicProcedure.query(({ ctx }) => {
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const users = await ctx.prisma.user.findMany({});
+
+    return users.map((user) => ({ ...user, email: "" }));
+  }),
+  // CALL ONLY FROM SERVER
+  getAllWithEmail: publicProcedure.query(async ({ ctx }) => {
     return ctx.prisma.user.findMany({});
   }),
   get: protectedProcedure.query(({ ctx }) => {

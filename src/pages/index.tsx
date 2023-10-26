@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 export async function getStaticProps() {
   await serverSideHelpers.booking.getAll.prefetch();
-  await serverSideHelpers.user.getAll.prefetch();
   await serverSideHelpers.association.getAll.prefetch();
   await serverSideHelpers.facility.getAll.prefetch();
 
