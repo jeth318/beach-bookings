@@ -41,7 +41,9 @@ export const emailerRouter = createTRPCRouter({
               console.log(error);
               reject(error);
             } else {
-              console.log(`Server is ready to take our messages`);
+              console.log(
+                `Nodemailer verification OK. Server is ready to receive messages`
+              );
               resolve(success);
             }
           });
@@ -49,16 +51,16 @@ export const emailerRouter = createTRPCRouter({
 
         if (isEmailDispatcherActive === "true") {
           console.warn("Email dispatcher is active");
-          const promises = hardCodedEmailsForTesting.map((recipient, index) => {
+          const promises = emailAddresses.map((recipient, index) => {
             return new Promise((resolve, reject) => {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-call
               transporter.sendMail(
                 {
-                  ...getMailOptions({ sender, recipients: [recipient] }),
+                  ...getMailOptions({ sender, recipients: [recipient || ""] }),
                   html: input.htmlString,
                   subject,
                 },
-                (err: any, info: any) => {
+                (err: unknown, info: unknown) => {
                   if (err) {
                     console.error(err);
                     reject(err);
@@ -72,12 +74,12 @@ export const emailerRouter = createTRPCRouter({
           });
 
           console.log(promises);
-
           const resolved = await Promise.all([verificationPromise, promises]);
-
           console.log({ resolved });
           return true;
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error("Emailer had issues:", error);
+      }
     }),
 });
