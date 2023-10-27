@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-const sender = process.env.GMAIL_ACCOUNT_FOR_DISPATCH;
-const pass = process.env.GMAIL_APP_SPECIFIC_PASSWORD;
+const sender = process.env.EMAIL_DISPATCHER_ADDRESS;
 const isEmailDispatcherActive = process.env.EMAIL_DISPATCH_ACTIVE;
 
 const hardCodedEmailsForTesting = [

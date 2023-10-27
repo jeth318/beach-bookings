@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import nodemailer from "nodemailer";
 
-const email = process.env.GMAIL_ACCOUNT_FOR_DISPATCH;
-const pass = process.env.GMAIL_APP_SPECIFIC_PASSWORD;
+const user = process.env.EMAIL_DISPATCH_ADDRESS;
+const smtpAddress = process.env.EMAIL_DISPATCH_SMTP;
+const pass = process.env.EMAIL_DISPATCH_PASSWORD;
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 export const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: smtpAddress,
+  port: 587,
+  secure: false,
   auth: {
-    user: email,
+    // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+    user,
     pass,
   },
 });
-
-
