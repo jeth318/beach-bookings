@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-const sender = process.env.GMAIL_ACCOUNT_FOR_DISPATCH;
-const pass = process.env.GMAIL_APP_SPECIFIC_PASSWORD;
+const sender = process.env.EMAIL_DISPATCH_ADDRESS;
 const isEmailDispatcherActive = process.env.EMAIL_DISPATCH_ACTIVE;
 
 const hardCodedEmailsForTesting = [
   "shopping.kalle.stropp@gmail.com",
   "public.kalle.stropp@gmail.com",
-  "sdsf@@@sdf.sdf",
   "jesper.thornberg@me.com",
 ];
 
@@ -14,6 +12,21 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { getEmailHeading, getMailOptions } from "~/utils/general.util";
 import { transporter } from "~/utils/nodemailer.util";
+
+const verificationPromise = new Promise((resolve, reject) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  transporter.verify((error: any, success: any) => {
+    if (error) {
+      console.log(error);
+      reject(error);
+    } else {
+      console.log(
+        `Nodemailer verification OK. Server is ready to receive messages`
+      );
+      resolve(success);
+    }
+  });
+});
 
 export const emailerRouter = createTRPCRouter({
   sendEmail: protectedProcedure
@@ -38,30 +51,38 @@ export const emailerRouter = createTRPCRouter({
 
         if (isEmailDispatcherActive === "true") {
           console.warn("Email dispatcher is active");
-          emailAddresses.forEach((recipient) => {
-            try {
-              if (!!recipient) {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                transporter.sendMail({
-                  ...getMailOptions({ sender, recipients: [recipient] }),
+          const promises = emailAddresses.map((recipient, index) => {
+            return new Promise((resolve, reject) => {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              transporter.sendMail(
+                {
+                  ...getMailOptions({ sender, recipients: [recipient || ""] }),
                   html: input.htmlString,
                   subject,
-                });
-                console.log("*************************'");
-                console.log("Email was send to: ", recipient);
-              }
-              return {
-                success: true,
-                data: "success!",
-              };
-            } catch (err) {
-              console.log(err);
-              return { success: false, message: "Error" };
-            }
+                },
+                (err: unknown, info: unknown) => {
+                  if (err) {
+                    console.error(err);
+                    reject(err);
+                  } else {
+                    console.log(`Email was sent successfully ${index}`);
+                    resolve(info);
+                  }
+                }
+              );
+            });
           });
-        } else {
-          console.log("Email dispatcher not active");
+
+          console.log(promises);
+          const resolved = await Promise.all([
+            verificationPromise,
+            ...promises,
+          ]);
+          console.log({ resolved });
+          return true;
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error("Emailer had issues:", error);
+      }
     }),
 });
