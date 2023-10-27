@@ -35,6 +35,7 @@ export const emailerRouter = createTRPCRouter({
         console.log({ emailAddresses });
 
         const verificationPromise = new Promise((resolve, reject) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           transporter.verify((error: any, success: any) => {
             if (error) {
               console.log(error);
@@ -51,6 +52,7 @@ export const emailerRouter = createTRPCRouter({
           const promises = hardCodedEmailsForTesting.reduce(
             (acc, recipient, index) => {
               const dispatchPromise = new Promise((resolve, reject) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 transporter.sendMail(
                   {
                     ...getMailOptions({ sender, recipients: [recipient] }),
