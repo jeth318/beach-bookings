@@ -5,7 +5,6 @@ const isEmailDispatcherActive = process.env.EMAIL_DISPATCH_ACTIVE;
 const hardCodedEmailsForTesting = [
   "shopping.kalle.stropp@gmail.com",
   "public.kalle.stropp@gmail.com",
-  "sdsf@@@sdf.sdf",
   "jesper.thornberg@me.com",
 ];
 
@@ -35,61 +34,52 @@ export const emailerRouter = createTRPCRouter({
 
         console.log({ emailAddresses });
 
-        if (isEmailDispatcherActive === "true") {
-          console.warn("Email dispatcher is active");
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          emailAddresses.forEach(async (recipient) => {
-            try {
-              if (!!recipient) {
-                const verification = await new Promise((resolve, reject) => {
-                  // verify connection configuration
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                  transporter.verify(function (error: any, success: any) {
-                    if (error) {
-                      console.log(error);
-                      reject(error);
-                    } else {
-                      console.log("Server is ready to take our messages");
-                      resolve(success);
-                    }
-                  });
-                });
-                console.log("'''''''''''''''''''''", { sender });
-
-                const dispatch = await new Promise((resolve, reject) => {
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                  transporter.sendMail(
-                    {
-                      ...getMailOptions({ sender, recipients: [recipient] }),
-                      html: input.htmlString,
-                      subject,
-                    },
-                    (err: any, info: any) => {
-                      if (err) {
-                        console.error(err);
-                        reject(err);
-                      } else {
-                        console.log(info);
-                        resolve(info);
-                      }
-                    }
-                  );
-                });
-
-                console.log({ verification, dispatch });
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                console.log("*************************'");
-                console.log("Email was send to:", recipient);
-              }
-              return {
-                success: true,
-                data: "success!",
-              };
-            } catch (err) {
-              console.log("EMAIL ERROR", err);
-              return { success: false, message: "Error" };
+        const verificationPromise = new Promise((resolve, reject) => {
+          transporter.verify((error: any, success: any) => {
+            if (error) {
+              console.log(error);
+              reject(error);
+            } else {
+              console.log(`Server is ready to take our messages`);
+              resolve(success);
             }
           });
+        });
+
+        if (isEmailDispatcherActive === "true") {
+          console.warn("Email dispatcher is active");
+          const promises = hardCodedEmailsForTesting.reduce(
+            (acc, recipient, index) => {
+              const dispatchPromise = new Promise((resolve, reject) => {
+                transporter.sendMail(
+                  {
+                    ...getMailOptions({ sender, recipients: [recipient] }),
+                    html: input.htmlString,
+                    subject,
+                  },
+                  (err: any, info: any) => {
+                    if (err) {
+                      console.error(err);
+                      reject(err);
+                    } else {
+                      console.log(`Email was sent successfully ${index}`);
+                      resolve(info);
+                    }
+                  }
+                );
+              });
+
+              return [...acc, dispatchPromise];
+            },
+            []
+          );
+
+          console.log(promises);
+
+          const resolved = await Promise.all([verificationPromise, promises]);
+
+          console.log({ resolved });
+          return true;
         }
       } catch (error) {}
     }),
