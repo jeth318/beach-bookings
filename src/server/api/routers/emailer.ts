@@ -49,32 +49,27 @@ export const emailerRouter = createTRPCRouter({
 
         if (isEmailDispatcherActive === "true") {
           console.warn("Email dispatcher is active");
-          const promises = hardCodedEmailsForTesting.reduce(
-            (acc, recipient, index) => {
-              const dispatchPromise = new Promise((resolve, reject) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                transporter.sendMail(
-                  {
-                    ...getMailOptions({ sender, recipients: [recipient] }),
-                    html: input.htmlString,
-                    subject,
-                  },
-                  (err: any, info: any) => {
-                    if (err) {
-                      console.error(err);
-                      reject(err);
-                    } else {
-                      console.log(`Email was sent successfully ${index}`);
-                      resolve(info);
-                    }
+          const promises = hardCodedEmailsForTesting.map((recipient, index) => {
+            return new Promise((resolve, reject) => {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              transporter.sendMail(
+                {
+                  ...getMailOptions({ sender, recipients: [recipient] }),
+                  html: input.htmlString,
+                  subject,
+                },
+                (err: any, info: any) => {
+                  if (err) {
+                    console.error(err);
+                    reject(err);
+                  } else {
+                    console.log(`Email was sent successfully ${index}`);
+                    resolve(info);
                   }
-                );
-              });
-
-              return [...acc, dispatchPromise];
-            },
-            []
-          );
+                }
+              );
+            });
+          });
 
           console.log(promises);
 
