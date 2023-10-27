@@ -13,6 +13,21 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { getEmailHeading, getMailOptions } from "~/utils/general.util";
 import { transporter } from "~/utils/nodemailer.util";
 
+const verificationPromise = new Promise((resolve, reject) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  transporter.verify((error: any, success: any) => {
+    if (error) {
+      console.log(error);
+      reject(error);
+    } else {
+      console.log(
+        `Nodemailer verification OK. Server is ready to receive messages`
+      );
+      resolve(success);
+    }
+  });
+});
+
 export const emailerRouter = createTRPCRouter({
   sendEmail: protectedProcedure
     .input(
@@ -33,21 +48,6 @@ export const emailerRouter = createTRPCRouter({
           .map((user) => user.email);
 
         console.log({ emailAddresses });
-
-        const verificationPromise = new Promise((resolve, reject) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          transporter.verify((error: any, success: any) => {
-            if (error) {
-              console.log(error);
-              reject(error);
-            } else {
-              console.log(
-                `Nodemailer verification OK. Server is ready to receive messages`
-              );
-              resolve(success);
-            }
-          });
-        });
 
         if (isEmailDispatcherActive === "true") {
           console.warn("Email dispatcher is active");
@@ -74,7 +74,10 @@ export const emailerRouter = createTRPCRouter({
           });
 
           console.log(promises);
-          const resolved = await Promise.all([verificationPromise, promises]);
+          const resolved = await Promise.all([
+            verificationPromise,
+            ...promises,
+          ]);
           console.log({ resolved });
           return true;
         }
