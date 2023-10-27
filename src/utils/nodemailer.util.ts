@@ -8,8 +8,9 @@ const pass = process.env.EMAIL_DISPATCH_PASSWORD;
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 export const transporter = nodemailer.createTransport({
   host: smtpAddress,
-  port: 587,
-  secure: false,
+  //port: 587,
+  port: 465,
+  secure: true,
   auth: {
     // TODO: replace `user` and `pass` values from <https://forwardemail.net>
     user,
