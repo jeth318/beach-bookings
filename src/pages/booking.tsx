@@ -30,7 +30,7 @@ const Booking = () => {
   const [facility, setFacility] = useState<Facility | null>();
   const [eventType, setEventType] = useState<EventType>("ADD");
   const [maxPlayers, setMaxPlayers] = useState<number>();
-  const [locked, setLocked] = useState<boolean>();
+  const [locked, setLocked] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>();
 
   const setHours = (date: Date, hours: number) => {
@@ -81,9 +81,12 @@ const Booking = () => {
           },
           onSettled: () => {
             setIsLoading(false);
+            void refetchBookings();
           },
         }
       );
+    } else {
+      setLocked(!locked);
     }
   };
 
@@ -109,7 +112,8 @@ const Booking = () => {
             minute: "2-digit",
           })
         );
-        setLocked(booking?.locked);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        setLocked(booking.locked);
         setCourt(booking?.court);
         setDuration(booking?.duration);
         setMaxPlayers(booking.maxPlayers || 0);
@@ -117,6 +121,7 @@ const Booking = () => {
     } else {
       setEventType("ADD");
       setFacility(facilities?.find((facility) => facility.id === "1"));
+      setLocked(false);
       resetBooking();
     }
   }, [bookingToEdit, bookings, facilities, router.query.booking]);
@@ -187,7 +192,6 @@ const Booking = () => {
           facility: facility.id || null,
           association: association || null,
           maxPlayers: maxPlayers || 0,
-          locked: locked,
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
@@ -321,7 +325,7 @@ const Booking = () => {
                 <div className="flex flex-col align-middle">
                   <label className="label">
                     <span className="label-text text-lg text-white">
-                      Joining enabled
+                      Prevent join
                     </span>
                   </label>
                   <div className="flex flex-col self-start">
@@ -329,7 +333,7 @@ const Booking = () => {
                       <label>
                         <input
                           type="checkbox"
-                          className={`toggle-success toggle toggle-lg`}
+                          className={`toggle-error toggle toggle-lg`}
                           onChange={mutateBookingLock}
                           checked={locked}
                         />

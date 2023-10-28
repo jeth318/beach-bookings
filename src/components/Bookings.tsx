@@ -400,7 +400,7 @@ export const Bookings = ({ bookings }: Props) => {
                                 htmlFor="action-modal-join-booking"
                                 onClick={() => void setBookingToChange(booking)}
                                 className={`${
-                                  booking.players.length < 4
+                                  !booking.locked && booking.players.length < 4
                                     ? "btn-accent"
                                     : "btn-disabled"
                                 } btn-sm btn text-white`}
@@ -408,6 +408,8 @@ export const Bookings = ({ bookings }: Props) => {
                                 {joining.isWorking &&
                                 booking.id === joining.bookingId ? (
                                   <BeatLoader size={10} color="white" />
+                                ) : booking.locked ? (
+                                  "Locked"
                                 ) : booking.players.length < 4 ? (
                                   "Join"
                                 ) : (
