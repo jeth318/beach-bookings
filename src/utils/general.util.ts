@@ -1,6 +1,5 @@
 import { type User, type Booking } from "@prisma/client";
 import { type EventType, getTimeWithZeroPadding } from "./booking.util";
-import { array } from "zod";
 
 type EmailRecipientsProps = {
   sessionUserId: string;

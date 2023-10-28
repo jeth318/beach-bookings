@@ -37,6 +37,7 @@ export const bookingRouter = createTRPCRouter({
         facilityId: z.string().or(z.null()),
         maxPlayers: z.number().or(z.null()),
         duration: z.number().or(z.null()),
+        locked: z.boolean(),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -51,6 +52,7 @@ export const bookingRouter = createTRPCRouter({
           associationId: input.associationId,
           facilityId: input.facilityId,
           maxPlayers: input.maxPlayers === null ? 0 : input.maxPlayers,
+          locked: input.locked,
         },
       });
     }),
@@ -65,6 +67,7 @@ export const bookingRouter = createTRPCRouter({
         association: z.string().or(z.null()),
         facility: z.string().or(z.null()),
         maxPlayers: z.number().or(z.null()),
+        locked: z.boolean(),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -80,6 +83,24 @@ export const bookingRouter = createTRPCRouter({
           facilityId: input.facility,
           associationId: input.association,
           maxPlayers: input.maxPlayers,
+          locked: input.locked,
+        },
+      });
+    }),
+  updateLock: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        locked: z.boolean(),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.booking.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          locked: input.locked,
         },
       });
     }),

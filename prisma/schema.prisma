@@ -77,6 +77,7 @@ model Booking {
     private       Boolean      @default(true)
     associationId String?
     facilityId    String?
+    locked        Boolean      @default(true)
 }
 
 model Association {

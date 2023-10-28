@@ -14,7 +14,7 @@ import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
 import Image from "next/image";
-import { relative } from "path";
+import { BeatLoader } from "react-spinners";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -30,6 +30,8 @@ const Booking = () => {
   const [facility, setFacility] = useState<Facility | null>();
   const [eventType, setEventType] = useState<EventType>("ADD");
   const [maxPlayers, setMaxPlayers] = useState<number>();
+  const [locked, setLocked] = useState<boolean>();
+  const [isLoading, setIsLoading] = useState<boolean>();
 
   const setHours = (date: Date, hours: number) => {
     const updated = new Date(date);
@@ -58,12 +60,32 @@ const Booking = () => {
   } = api.booking.getAll.useQuery();
 
   const { data: users } = api.user.getAll.useQuery();
-  const { data: userAssociations } = api.association.getForUser.useQuery();
   const { data: facilities } = api.facility.getAll.useQuery();
 
   const createBooking = api.booking.create.useMutation({});
   const updateBooking = api.booking.update.useMutation({});
+  const updateLock = api.booking.updateLock.useMutation({});
   const emailerMutation = api.emailer.sendEmail.useMutation();
+
+  const mutateBookingLock = () => {
+    console.log("HEJ");
+
+    if (bookingToEdit) {
+      setIsLoading(true);
+      updateLock.mutate(
+        { id: bookingToEdit.id, locked: !locked },
+        {
+          onSuccess: (mutatedBooking: Booking) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            setLocked(mutatedBooking?.locked);
+          },
+          onSettled: () => {
+            setIsLoading(false);
+          },
+        }
+      );
+    }
+  };
 
   useEffect(() => {
     if (router.query.booking) {
@@ -87,6 +109,7 @@ const Booking = () => {
             minute: "2-digit",
           })
         );
+        setLocked(booking?.locked);
         setCourt(booking?.court);
         setDuration(booking?.duration);
         setMaxPlayers(booking.maxPlayers || 0);
@@ -96,13 +119,7 @@ const Booking = () => {
       setFacility(facilities?.find((facility) => facility.id === "1"));
       resetBooking();
     }
-  }, [
-    bookingToEdit,
-    bookings,
-    facilities,
-    router.query.booking,
-    userAssociations,
-  ]);
+  }, [bookingToEdit, bookings, facilities, router.query.booking]);
 
   const isInitialLoading =
     isInitialLoadingBookings ||
@@ -170,6 +187,7 @@ const Booking = () => {
           facility: facility.id || null,
           association: association || null,
           maxPlayers: maxPlayers || 0,
+          locked: locked,
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
@@ -202,6 +220,7 @@ const Booking = () => {
           duration: duration || 0,
           players: [],
           maxPlayers: maxPlayers || null,
+          locked: locked,
         },
         sessionUserId: sessionData.user.id,
         eventType: "ADD",
@@ -216,6 +235,7 @@ const Booking = () => {
           associationId: association || null,
           duration: duration || null,
           maxPlayers: maxPlayers === undefined ? 0 : maxPlayers,
+          locked: locked,
         },
         {
           onSuccess: () => {
@@ -231,6 +251,7 @@ const Booking = () => {
                 duration: duration || 0,
                 players: [],
                 maxPlayers: maxPlayers || null,
+                locked: locked,
               },
               recipients,
               bookerName: sessionData.user.name || "Someone",
@@ -271,30 +292,59 @@ const Booking = () => {
           <div className="container max-w-md p-4">
             {sessionData?.user.id && (
               <div>
-                <div className="alert alert-info mt-14 flex flex-row text-white">
-                  <div>
-                    <Image
-                      className="mr-2 rounded-full shadow-sm shadow-black"
-                      alt="arrogant-frog"
-                      src="/cig-frog.gif"
-                      width={55}
-                      height={55}
-                    />
-                    <p>
-                      <b>Yo!</b> Before publishing a booking here, make sure
-                      that you actually book it first at{" "}
-                      <a
-                        style={{ color: "gold" }}
-                        target="_blank"
-                        className="link"
-                        href="https://gbc.goactivebooking.com/book-service/27?facility=1"
-                      >
-                        GBC official page
-                      </a>{" "}
-                      and receive a confirmation email.
-                    </p>
+                {eventType === "ADD" && (
+                  <div className="alert alert-info mt-14 flex flex-row text-white">
+                    <div>
+                      <Image
+                        className="mr-2 rounded-full shadow-sm shadow-black"
+                        alt="arrogant-frog"
+                        src="/cig-frog.gif"
+                        width={55}
+                        height={55}
+                      />
+                      <p>
+                        <b>Yo!</b> Before publishing a booking here, make sure
+                        that you actually book it first at{" "}
+                        <a
+                          style={{ color: "gold" }}
+                          target="_blank"
+                          className="link"
+                          href="https://gbc.goactivebooking.com/book-service/27?facility=1"
+                        >
+                          GBC official page
+                        </a>{" "}
+                        and receive a confirmation email.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <div className="flex flex-col align-middle">
+                  <label className="label">
+                    <span className="label-text text-lg text-white">
+                      Joining enabled
+                    </span>
+                  </label>
+                  <div className="flex flex-col self-start">
+                    <div>
+                      <label>
+                        <input
+                          type="checkbox"
+                          className={`toggle-success toggle toggle-lg`}
+                          onChange={mutateBookingLock}
+                          checked={locked}
+                        />
+                      </label>
+                    </div>
+                    {isLoading ? (
+                      <div className="self-center">
+                        <BeatLoader size={10} color="purple" />
+                      </div>
+                    ) : (
+                      <div style={{ height: "24px" }}></div>
+                    )}
                   </div>
                 </div>
+
                 <label className="label">
                   <span className="label-text text-white">
                     When are you playing?
