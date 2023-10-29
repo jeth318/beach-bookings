@@ -137,7 +137,11 @@ export const Bookings = ({ bookings }: Props) => {
       (typeof booking?.maxPlayers === "number" &&
         booking?.maxPlayers > booking.players.length);
 
-    return spotsAvailable ? (booking?.locked ? "Locked" : "Join") : "Full";
+    return spotsAvailable
+      ? booking?.locked && booking.userId !== sessionUserId
+        ? "Locked"
+        : "Join"
+      : "Full";
   };
 
   const getJoinButtonClassName = (booking: Booking) => {
@@ -147,7 +151,7 @@ export const Bookings = ({ bookings }: Props) => {
         booking?.maxPlayers > booking.players.length);
 
     const btnVariant = spotsAvailable
-      ? booking?.locked
+      ? booking?.locked && booking.userId !== sessionUserId 
         ? "btn-disabled"
         : "btn-accent"
       : "btn-disabled";
