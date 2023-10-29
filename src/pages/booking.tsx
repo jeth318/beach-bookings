@@ -243,26 +243,32 @@ const Booking = () => {
         },
         {
           onSuccess: () => {
-            emailDispatcher({
-              originalBooking: {
-                id: "placeholderId",
-                associationId: association || null,
-                facilityId: null,
-                private: true,
-                userId: sessionData?.user.id,
-                date: new Date(formattedDate?.replace(" ", "T")),
-                court: court || null,
-                duration: duration || 0,
-                players: [],
-                maxPlayers: maxPlayers || null,
-                locked: locked,
-              },
-              recipients,
-              bookerName: sessionData.user.name || "Someone",
-              bookings: bookings || [],
-              eventType: "ADD",
-              mutation: emailerMutation,
-            });
+            if (eventType === "ADD" && locked) {
+              console.log(
+                "No email sent due to booking being set to locked when added"
+              );
+            } else {
+              emailDispatcher({
+                originalBooking: {
+                  id: "placeholderId",
+                  associationId: association || null,
+                  facilityId: null,
+                  private: true,
+                  userId: sessionData?.user.id,
+                  date: new Date(formattedDate?.replace(" ", "T")),
+                  court: court || null,
+                  duration: duration || 0,
+                  players: [],
+                  maxPlayers: maxPlayers || null,
+                  locked: locked,
+                },
+                recipients,
+                bookerName: sessionData.user.name || "Someone",
+                bookings: bookings || [],
+                eventType: "ADD",
+                mutation: emailerMutation,
+              });
+            }
             void refetchBookings().then(() => {
               void router.push("/");
             });

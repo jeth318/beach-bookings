@@ -131,6 +131,30 @@ export const Bookings = ({ bookings }: Props) => {
     }
   };
 
+  const getJoinButtonText = (booking: Booking) => {
+    const spotsAvailable =
+      !booking?.maxPlayers ||
+      (typeof booking?.maxPlayers === "number" &&
+        booking?.maxPlayers > booking.players.length);
+
+    return spotsAvailable ? (booking?.locked ? "Locked" : "Join") : "Full";
+  };
+
+  const getJoinButtonClassName = (booking: Booking) => {
+    const spotsAvailable =
+      !booking?.maxPlayers ||
+      (typeof booking?.maxPlayers === "number" &&
+        booking?.maxPlayers > booking.players.length);
+
+    const btnVariant = spotsAvailable
+      ? booking?.locked
+        ? "btn-disabled"
+        : "btn-accent"
+      : "btn-disabled";
+
+    return `btn-sm btn text-white ${btnVariant}`;
+  };
+
   const joinGame = (booking: Booking) => {
     if (!sessionUserId) {
       return null;
@@ -399,21 +423,13 @@ export const Bookings = ({ bookings }: Props) => {
                               <label
                                 htmlFor="action-modal-join-booking"
                                 onClick={() => void setBookingToChange(booking)}
-                                className={`${
-                                  !booking.locked && booking.players.length < 4
-                                    ? "btn-accent"
-                                    : "btn-disabled"
-                                } btn-sm btn text-white`}
+                                className={getJoinButtonClassName(booking)}
                               >
                                 {joining.isWorking &&
                                 booking.id === joining.bookingId ? (
                                   <BeatLoader size={10} color="white" />
-                                ) : booking.locked ? (
-                                  "Locked"
-                                ) : booking.players.length < 4 ? (
-                                  "Join"
                                 ) : (
-                                  "Full"
+                                  getJoinButtonText(booking)
                                 )}
                               </label>
                             )}
