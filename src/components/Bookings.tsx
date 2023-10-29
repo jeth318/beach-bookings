@@ -156,13 +156,7 @@ export const Bookings = ({ bookings }: Props) => {
   };
 
   const joinGame = (booking: Booking) => {
-    const { data: refetchedBooking } = api.booking.getSingle.useQuery({
-      id: booking.id,
-    });
-
-    console.log({ refetchedBooking });
-
-    if (!sessionUserId || refetchedBooking?.locked) {
+    if (!sessionUserId) {
       return null;
     }
     setIsJoining({ isWorking: true, bookingId: booking.id });
