@@ -555,10 +555,16 @@ const Booking = () => {
                     </label>
                   </>
                 )}
-                <label className="label">
-                  <span className="label-text text-white">Players</span>
-                </label>
-                <PlayersTable booking={bookingToEdit || defaultBooking} />
+
+                {eventType !== "ADD" && (
+                  <>
+                    <label className="label">
+                      <span className="label-text text-white">Players</span>
+                    </label>
+                    <PlayersTable booking={bookingToEdit || defaultBooking} />
+                  </>
+                )}
+
                 <div className="btn-group btn-group-vertical flex self-end pt-5">
                   <Link className="btn-warning btn text-white" href="/">
                     Back
