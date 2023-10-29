@@ -69,11 +69,21 @@ main {
   animation-duration: 200ms;
 }
 
+
 #test {
   width: 100vh;
   padding: 2em 0;
   background: #c14545;
   visibility: hidden;
+}
+
+.label-info-text {
+  width: fill-available;
+}
+
+.full-width {
+  width: 250px;
+  max-width: 300px;
 }
 
 @keyframes fadeInOpacity {

@@ -398,9 +398,9 @@ const Booking = () => {
                   <span className="label-text text-white">Where to play?</span>
                 </label>
                 <label className="input-group">
-                  <span>Facility</span>
+                  <span className="label-info-text">Facility</span>
                   <select
-                    className="select-bordered select"
+                    className="full-width select-bordered select"
                     onChange={(val) => {
                       const selected =
                         val.target.options[val.target.selectedIndex];
@@ -431,14 +431,14 @@ const Booking = () => {
                   </select>
                 </label>
                 <label className="label">
-                  <span className="label-text text-white">
+                  <span className="label-text label-text text-white">
                     How many players are required/allowed?
                   </span>
                 </label>
                 <label className="input-group">
-                  <span>Players</span>
+                  <span className="label-info-text">Players</span>
                   <select
-                    className="select-bordered select"
+                    className="full-width select-bordered select"
                     onChange={(val) => {
                       const selected =
                         val.target.options[val.target.selectedIndex]?.value;
@@ -472,7 +472,7 @@ const Booking = () => {
                 <label className="input-group">
                   <span>Group</span>
                   <select
-                    className="select-bordered select"
+                    className="select-bordered select full-width"
                     onChange={(val) => {
                       const selected =
                         val.target.options[val.target.selectedIndex];
@@ -505,9 +505,9 @@ const Booking = () => {
                       </span>
                     </label>
                     <label className="input-group">
-                      <span>Duration</span>
+                      <span className="label-info-text">Duration</span>
                       <select
-                        className="select-bordered select"
+                        className="full-width select-bordered select"
                         onChange={(val) => {
                           setDuration(parseInt(val.target.value));
                         }}
@@ -531,9 +531,9 @@ const Booking = () => {
                       <span className="label-text text-white">What court?</span>
                     </label>
                     <label className="input-group">
-                      <span>Court</span>
+                      <span className="label-info-text">Court</span>
                       <select
-                        className="select-bordered select"
+                        className="full-width select-bordered select"
                         onChange={(val) => {
                           setCourt(val.target.value);
                         }}
