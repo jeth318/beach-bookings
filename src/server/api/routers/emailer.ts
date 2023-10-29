@@ -49,7 +49,7 @@ export const emailerRouter = createTRPCRouter({
 
         console.log({ emailAddresses });
 
-        if (isEmailDispatcherActive === "hejja") {
+        if (isEmailDispatcherActive === "true") {
           console.warn("Email dispatcher is active");
           const promises = emailAddresses.map((recipient, index) => {
             return new Promise((resolve, reject) => {
