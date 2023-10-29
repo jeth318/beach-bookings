@@ -54,9 +54,6 @@ export const Bookings = ({ bookings }: Props) => {
 
   const sessionUserId = session?.data?.user?.id;
   const [bookingToChange, setBookingToChange] = useState<Booking | undefined>();
-  const [bookingToDelete, setBookingToDelete] = useState<Booking | undefined>();
-  const [bookingToLeave, setBookingToLeave] = useState<Booking | undefined>();
-  const [bookingToJoin, setBookingToJoin] = useState<Booking | undefined>();
 
   const [joining, setIsJoining] = useState<BookingAction>({
     isWorking: false,
@@ -76,7 +73,10 @@ export const Bookings = ({ bookings }: Props) => {
 
   const { data: associations = [] } = api.association.getAll.useQuery();
   const { data: facilities = [] } = api.facility.getAll.useQuery();
-  const { refetch: refetchBookings } = api.booking.getAll.useQuery();
+  const { refetch: refetchBookings } = api.booking.getAll.useQuery(undefined, {
+    refetchIntervalInBackground: true,
+    refetchInterval: 15000,
+  });
 
   const emailerMutation = api.emailer.sendEmail.useMutation();
 
@@ -156,7 +156,13 @@ export const Bookings = ({ bookings }: Props) => {
   };
 
   const joinGame = (booking: Booking) => {
-    if (!sessionUserId) {
+    const { data: refetchedBooking } = api.booking.getSingle.useQuery({
+      id: booking.id,
+    });
+
+    console.log({ refetchedBooking });
+
+    if (!sessionUserId || refetchedBooking?.locked) {
       return null;
     }
     setIsJoining({ isWorking: true, bookingId: booking.id });
@@ -405,34 +411,41 @@ export const Bookings = ({ bookings }: Props) => {
                             style={{ width: "auto" }}
                             className="smooth-render-in-slower btn-group btn-group-vertical flex pt-14"
                           >
-                            {booking.players.includes(sessionUserId) && (
-                              <label
-                                htmlFor="action-modal-leave-booking"
-                                onClick={() => void setBookingToChange(booking)}
-                                className="btn-warning btn-sm btn text-white"
-                              >
-                                {leaving.isWorking &&
-                                booking.id === leaving.bookingId ? (
-                                  <BeatLoader size={10} color="white" />
-                                ) : (
-                                  "Leave"
-                                )}
-                              </label>
-                            )}
-                            {!booking.players.includes(sessionUserId) && (
-                              <label
-                                htmlFor="action-modal-join-booking"
-                                onClick={() => void setBookingToChange(booking)}
-                                className={getJoinButtonClassName(booking)}
-                              >
-                                {joining.isWorking &&
-                                booking.id === joining.bookingId ? (
-                                  <BeatLoader size={10} color="white" />
-                                ) : (
-                                  getJoinButtonText(booking)
-                                )}
-                              </label>
-                            )}
+                            {booking.players.includes(sessionUserId) &&
+                              !isOngoingGame(booking) && (
+                                <label
+                                  htmlFor="action-modal-leave-booking"
+                                  onClick={() =>
+                                    void setBookingToChange(booking)
+                                  }
+                                  className="btn-warning btn-sm btn text-white"
+                                >
+                                  {leaving.isWorking &&
+                                  booking.id === leaving.bookingId ? (
+                                    <BeatLoader size={10} color="white" />
+                                  ) : (
+                                    "Leave"
+                                  )}
+                                </label>
+                              )}
+                            {!booking.players.includes(sessionUserId) &&
+                              !isOngoingGame(booking) && (
+                                <label
+                                  htmlFor="action-modal-join-booking"
+                                  onClick={() =>
+                                    void setBookingToChange(booking)
+                                  }
+                                  className={getJoinButtonClassName(booking)}
+                                >
+                                  {joining.isWorking &&
+                                  booking.id === joining.bookingId ? (
+                                    <BeatLoader size={10} color="white" />
+                                  ) : (
+                                    getJoinButtonText(booking)
+                                  )}
+                                </label>
+                              )}
+
                             {!isMainPage &&
                               session?.data?.user?.id === booking?.userId && (
                                 <button className="btn-sm btn text-white">

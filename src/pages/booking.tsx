@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
@@ -330,16 +330,14 @@ const Booking = () => {
                 )}
                 <div className="flex flex-col align-middle">
                   <label className="label">
-                    <span className="label-text text-lg text-white">
-                      Prevent join
-                    </span>
+                    <span className="label-text text-white">Lock booking</span>
                   </label>
                   <div className="flex flex-col self-start">
                     <div>
                       <label>
                         <input
                           type="checkbox"
-                          className={`toggle-error toggle toggle-lg`}
+                          className={`toggle-error toggle toggle-md`}
                           onChange={mutateBookingLock}
                           checked={locked}
                         />
