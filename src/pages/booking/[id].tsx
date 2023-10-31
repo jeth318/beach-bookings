@@ -22,15 +22,13 @@ const Booking = () => {
     api.user.getAll.useQuery();
   const router = useRouter();
   const [court, setCourt] = useState<string | null>();
-  const [association, setAssociation] = useState<string | null>();
   const [duration, setDuration] = useState<number | null>();
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
   const [facility, setFacility] = useState<Facility | null>();
-  const [eventType, setEventType] = useState<EventType>("ADD");
+  const [eventType] = useState<EventType>("JOIN");
   const [maxPlayers, setMaxPlayers] = useState<number>();
   const [joinable, setJoinable] = useState<boolean>(true);
-  const [isLoading, setIsLoading] = useState<boolean>();
 
   type PrePopulateBookingState = {
     bte: Booking;
@@ -306,7 +304,6 @@ const Booking = () => {
                     updated booking details.
                   </p>
                 </ActionModal>
-
                 <label className="label">
                   <span className="label-text text-white">
                     When are you playing?
@@ -444,7 +441,6 @@ const Booking = () => {
                     <option>12</option>
                   </select>
                 </label>
-
                 {!!facility?.durations?.length && (
                   <>
                     <label className="label">
@@ -503,7 +499,6 @@ const Booking = () => {
                     </label>
                   </>
                 )}
-
                 {router.query.id && (
                   <>
                     <label className="label">
@@ -512,34 +507,36 @@ const Booking = () => {
                     <PlayersTable booking={bte || defaultBooking} />
                   </>
                 )}
-                <div className="w-100 btn-group btn-group-horizontal flex justify-center self-center pt-5">
-                  <Link
-                    href="/"
-                    className={`${
-                      validBooking && !isLoadingBookingMutation
-                        ? "btn-warning btn"
-                        : "btn-disabled"
-                    } btn text-white`}
-                  >
-                    Cancel
-                  </Link>
+                <div className="flex flex-col justify-center">
+                  <div className="w-100 btn-group btn-group-horizontal flex justify-center self-center pt-5">
+                    <Link
+                      href="/"
+                      className={`${
+                        validBooking && !isLoadingBookingMutation
+                          ? "btn-warning btn"
+                          : "btn-disabled"
+                      } btn text-white`}
+                    >
+                      Cancel
+                    </Link>
 
-                  <label
-                    style={{ position: "relative" }}
-                    className={`${
-                      validBooking && !isLoadingBookingMutation
-                        ? "btn-success"
-                        : "btn-disabled"
-                    } btn text-white`}
-                    htmlFor="action-modal-booking"
-                  >
-                    {router.query.id ? "Update" : "Publish"}
-                    {isLoadingBookingMutation && (
-                      <div style={{ position: "absolute", bottom: 0 }}>
-                        <BeatLoader size={8} color="white" />
-                      </div>
-                    )}
-                  </label>
+                    <label
+                      style={{ position: "relative" }}
+                      className={`${
+                        validBooking && !isLoadingBookingMutation
+                          ? "btn-success"
+                          : "btn-disabled"
+                      } btn text-white`}
+                      htmlFor="action-modal-booking"
+                    >
+                      {router.query.id ? "Update" : "Publish"}
+                    </label>
+                  </div>
+                  {isLoadingBookingMutation && (
+                    <div className="mt-4 flex justify-center">
+                      <BeatLoader size={15} color="white" />
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
