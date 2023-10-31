@@ -89,7 +89,6 @@ const Booking = () => {
             setJoinable(mutatedBooking?.joinable);
           },
           onSettled: () => {
-            setIsLoading(false);
             void refetchBookings();
           },
         }
@@ -279,7 +278,7 @@ const Booking = () => {
       <SubHeader title={router.query.id ? "Change booking" : "Add booking"} />
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
-          <div className="flex flex-col items-center justify-center p-3">
+          <div className="flex h-screen flex-col items-center justify-center p-3">
             <h2 className="text-center text-2xl text-white">
               If you want to add or edit bookings, you have to be logged in.
             </h2>
