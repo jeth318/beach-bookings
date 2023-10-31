@@ -13,15 +13,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
 import { type EventType, emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
-import Image from "next/image";
 import { BeatLoader } from "react-spinners";
+import ActionModal from "~/components/ActionModal";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const { isInitialLoading: isInitialLoadingUsers } =
     api.user.getAll.useQuery();
   const router = useRouter();
-  const [bookingToEdit, setBookingToEdit] = useState<Booking>();
   const [court, setCourt] = useState<string | null>();
   const [association, setAssociation] = useState<string | null>();
   const [duration, setDuration] = useState<number | null>();
@@ -30,8 +29,20 @@ const Booking = () => {
   const [facility, setFacility] = useState<Facility | null>();
   const [eventType, setEventType] = useState<EventType>("ADD");
   const [maxPlayers, setMaxPlayers] = useState<number>();
-  const [locked, setLocked] = useState<boolean>(false);
+  const [joinable, setJoinable] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>();
+
+  type PrePopulateBookingState = {
+    bte: Booking;
+    court?: string;
+    duration?: number;
+    date: Date;
+    time: string;
+    facility: Facility;
+    eventType: EventType;
+    maxPlayers?: number;
+    joinable: boolean;
+  };
 
   const setHours = (date: Date, hours: number) => {
     const updated = new Date(date);
@@ -45,39 +56,39 @@ const Booking = () => {
     return new Date(updated);
   };
 
-  const resetBooking = () => {
-    setCourt(null);
-    setDuration(undefined);
-    setDate(undefined);
-    setTime(undefined);
-    setMaxPlayers(4);
-  };
-
   const {
     data: bookings,
     refetch: refetchBookings,
     isInitialLoading: isInitialLoadingBookings,
   } = api.booking.getAll.useQuery();
 
-  const { data: users } = api.user.getAll.useQuery();
-  const { data: facilities } = api.facility.getAll.useQuery();
+  const query = Array.isArray(router.query.id)
+    ? router?.query?.id[0] || ""
+    : router?.query?.id || "";
 
-  const createBooking = api.booking.create.useMutation({});
-  const updateBooking = api.booking.update.useMutation({});
-  const updateLock = api.booking.updateLock.useMutation({});
+  const { data: users } = api.user.getAll.useQuery();
+  const { data: facilities, isFetched: isFacilitiesFetched } =
+    api.facility.getAll.useQuery();
+
+  const { data: bte, isFetched: isSingleBookingFetched } =
+    api.booking.getSingle.useQuery({
+      id: query,
+    });
+
+  const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
+    api.booking.update.useMutation({});
+  const { mutate: mutateJoinable, isLoading: isLoadingJoinable } =
+    api.booking.updateJoinable.useMutation({});
   const emailerMutation = api.emailer.sendEmail.useMutation();
 
-  const mutateBookingLock = () => {
-    console.log("HEJ");
-
-    if (bookingToEdit) {
-      setIsLoading(true);
-      updateLock.mutate(
-        { id: bookingToEdit.id, locked: !locked },
+  const onJoinableChange = () => {
+    if (bte) {
+      mutateJoinable(
+        { id: bte.id, joinable: !joinable },
         {
           onSuccess: (mutatedBooking: Booking) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            setLocked(mutatedBooking?.locked);
+            setJoinable(mutatedBooking?.joinable);
           },
           onSettled: () => {
             setIsLoading(false);
@@ -86,45 +97,69 @@ const Booking = () => {
         }
       );
     } else {
-      setLocked(!locked);
+      setJoinable(!joinable);
     }
   };
 
+  const getPrePopulationSource = (
+    bte: Booking | null | undefined,
+    facilities: Facility[]
+  ) =>
+    ({
+      court: bte?.court,
+      duration: bte?.duration,
+      maxPlayers: bte?.maxPlayers,
+      date: bte?.date,
+      joinable: Boolean(bte?.joinable),
+      time: bte?.date.toLocaleTimeString("sv-SE", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      facility: facilities.find(({ id }) => id === bte?.facilityId),
+    } as PrePopulateBookingState);
+
   useEffect(() => {
-    if (router.query.booking) {
-      const booking = bookings?.find(
-        ({ id }) => router.query.booking === id
-      ) as Booking;
+    console.log(router.isReady, router.query.id, bte);
 
-      if (!!booking && !bookingToEdit) {
-        const facility = facilities?.find(
-          (item) => item.id === booking.facilityId
-        );
-
-        setBookingToEdit(booking);
-        setEventType("MODIFY");
-        setDate(booking?.date);
-        setAssociation(booking.associationId);
-        setFacility(facility || null);
-        setTime(
-          booking?.date.toLocaleTimeString("sv-SE", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-        );
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        setLocked(booking.locked);
-        setCourt(booking?.court);
-        setDuration(booking?.duration);
-        setMaxPlayers(booking.maxPlayers || 0);
-      }
-    } else {
-      setEventType("ADD");
-      setFacility(facilities?.find((facility) => facility.id === "1"));
-      setLocked(false);
-      resetBooking();
+    if (
+      !router.query.id ||
+      !isSingleBookingFetched ||
+      !bte ||
+      !isFacilitiesFetched
+    ) {
+      return undefined;
     }
-  }, [bookingToEdit, bookings, facilities, router.query.booking]);
+
+    const source = getPrePopulationSource(bte, facilities || []);
+
+    if (source) {
+      setJoinable(source.joinable);
+
+      if (source.facility) {
+        setFacility(source.facility);
+      }
+
+      if (Number.isInteger(source.duration)) {
+        setDuration(source.duration);
+      }
+      if (source.maxPlayers) {
+        setMaxPlayers(source.maxPlayers);
+      }
+      if (source.court) {
+        setCourt(source.court);
+      }
+
+      if (source.date !== null && source.date !== undefined) {
+        setDate(new Date(source.date));
+      }
+
+      if (source.time !== null && source.time !== undefined) {
+        setTime(source.time);
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady, router.query.id, bte, isFacilitiesFetched]);
 
   const isInitialLoading =
     isInitialLoadingBookings ||
@@ -169,10 +204,10 @@ const Booking = () => {
 
     const formattedDate = date?.toLocaleString("sv-SE");
 
-    if (!!bookingToEdit) {
+    if (!!bte) {
       const recipients = getEmailRecipients({
         users: users || [],
-        booking: bookingToEdit,
+        booking: bte,
         sessionUserId: sessionData?.user.id,
         eventType: "MODIFY",
       });
@@ -182,21 +217,22 @@ const Booking = () => {
         facility.durations.find((dur) => dur === duration?.toString()) !==
           undefined;
 
-      updateBooking.mutate(
+      mutateBooking(
         {
-          id: bookingToEdit.id,
+          id: bte.id,
           date: new Date(formattedDate.replace(" ", "T")),
           court: court || null,
-          players: bookingToEdit.players,
+          players: bte.players,
           duration: preserveDuration ? duration : 0,
           facility: facility.id || null,
           association: association || null,
           maxPlayers: maxPlayers || 0,
+          joinable: joinable,
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
             emailDispatcher({
-              originalBooking: bookingToEdit,
+              originalBooking: bte,
               mutatedBooking,
               bookerName: sessionData.user.name || "Someone",
               bookings: bookings || [],
@@ -224,57 +260,11 @@ const Booking = () => {
           duration: duration || 0,
           players: [],
           maxPlayers: maxPlayers || null,
-          locked: locked,
+          joinable: joinable,
         },
         sessionUserId: sessionData.user.id,
         eventType: "ADD",
       });
-
-      createBooking.mutate(
-        {
-          userId: sessionData?.user.id,
-          date: new Date(formattedDate.replace(" ", "T")),
-          court: court || null,
-          facilityId: facility.id || null,
-          associationId: association || null,
-          duration: duration || null,
-          maxPlayers: maxPlayers === undefined ? 0 : maxPlayers,
-          locked: locked,
-        },
-        {
-          onSuccess: () => {
-            if (eventType === "ADD" && locked) {
-              console.log(
-                "No email sent due to booking being set to locked when added"
-              );
-            } else {
-              emailDispatcher({
-                originalBooking: {
-                  id: "placeholderId",
-                  associationId: association || null,
-                  facilityId: null,
-                  private: true,
-                  userId: sessionData?.user.id,
-                  date: new Date(formattedDate?.replace(" ", "T")),
-                  court: court || null,
-                  duration: duration || 0,
-                  players: [],
-                  maxPlayers: maxPlayers || null,
-                  locked: locked,
-                },
-                recipients,
-                bookerName: sessionData.user.name || "Someone",
-                bookings: bookings || [],
-                eventType: "ADD",
-                mutation: emailerMutation,
-              });
-            }
-            void refetchBookings().then(() => {
-              void router.push("/");
-            });
-          },
-        }
-      );
     }
   };
 
@@ -288,10 +278,8 @@ const Booking = () => {
 
   return (
     <>
-      <SubHeader
-        title={router.query.booking ? "Change booking" : "Add booking"}
-      />
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <SubHeader title={router.query.id ? "Change booking" : "Add booking"} />
+      <main className="min-w-sm pd-3 flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
             <h2 className="text-center text-2xl text-white">
@@ -300,58 +288,24 @@ const Booking = () => {
           </div>
         ) : (
           <div className="container max-w-md p-4">
-            {sessionData?.user.id && (
+            {sessionData?.user.id && bte ? (
               <div>
-                {eventType === "ADD" && (
-                  <div className="alert alert-info mt-14 flex flex-row text-white">
-                    <div>
-                      <Image
-                        className="mr-2 rounded-full shadow-sm shadow-black"
-                        alt="arrogant-frog"
-                        src="/cig-frog.gif"
-                        width={55}
-                        height={55}
-                      />
-                      <p>
-                        <b>Yo!</b> Before publishing a booking here, make sure
-                        that you actually book it first at{" "}
-                        <a
-                          style={{ color: "gold" }}
-                          target="_blank"
-                          className="link"
-                          href="https://gbc.goactivebooking.com/book-service/27?facility=1"
-                        >
-                          GBC official page
-                        </a>{" "}
-                        and receive a confirmation email.
-                      </p>
-                    </div>
-                  </div>
-                )}
-                <div className="flex flex-col align-middle">
-                  <label className="label">
-                    <span className="label-text text-white">Lock booking</span>
-                  </label>
-                  <div className="flex flex-col self-start">
-                    <div>
-                      <label>
-                        <input
-                          type="checkbox"
-                          className={`toggle-error toggle toggle-md`}
-                          onChange={mutateBookingLock}
-                          checked={locked}
-                        />
-                      </label>
-                    </div>
-                    {isLoading ? (
-                      <div className="self-center">
-                        <BeatLoader size={10} color="purple" />
-                      </div>
-                    ) : (
-                      <div style={{ height: "24px" }}></div>
-                    )}
-                  </div>
-                </div>
+                <ActionModal
+                  callback={addBooking}
+                  data={undefined}
+                  tagRef={`booking`}
+                  title={`Confirm ${
+                    router.query.id ? "new booking details" : "new booking"
+                  }`}
+                  confirmButtonText={"Update"}
+                  cancelButtonText="Cancel"
+                  level="success"
+                >
+                  <p className="py-4">
+                    All players in this booking will receive an email about the
+                    updated booking details.
+                  </p>
+                </ActionModal>
 
                 <label className="label">
                   <span className="label-text text-white">
@@ -393,6 +347,32 @@ const Booking = () => {
                       );
                     }}
                   />
+                </div>
+                <div className="flex flex-col align-middle">
+                  <label className="label">
+                    <span className="text-md label-text text-white">
+                      Allow players to join
+                    </span>
+                  </label>
+                  <div className="flex flex-col self-start">
+                    <div>
+                      <label>
+                        <input
+                          type="checkbox"
+                          className={`toggle-accent toggle toggle-md`}
+                          onChange={onJoinableChange}
+                          checked={joinable}
+                        />
+                      </label>
+                    </div>
+                    {isLoadingJoinable ? (
+                      <div className="self-center">
+                        <BeatLoader size={10} color="purple" />
+                      </div>
+                    ) : (
+                      <div style={{ height: "24px" }}></div>
+                    )}
+                  </div>
                 </div>
                 <label className="label">
                   <span className="label-text text-white">Where to play?</span>
@@ -464,39 +444,7 @@ const Booking = () => {
                     <option>12</option>
                   </select>
                 </label>
-                {/* <label className="label">
-                  <span className="label-text text-white">
-                    With what group?
-                  </span>
-                </label>
-                <label className="input-group">
-                  <span>Group</span>
-                  <select
-                    className="select-bordered select full-width"
-                    onChange={(val) => {
-                      const selected =
-                        val.target.options[val.target.selectedIndex];
-                      const associationId = selected?.dataset["associationId"];
-                      setAssociation(associationId);
-                    }}
-                    value={
-                      userAssociations?.find((a) => a.id === association)
-                        ?.name || "Open (everyone)"
-                    }
-                  >
-                    <option>Open (everyone)</option>
-                    {userAssociations?.map((association) => {
-                      return (
-                        <option
-                          key={association.id}
-                          data-association-id={association.id}
-                        >
-                          {association.name}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </label> */}
+
                 {!!facility?.durations?.length && (
                   <>
                     <label className="label">
@@ -556,28 +504,47 @@ const Booking = () => {
                   </>
                 )}
 
-                {eventType !== "ADD" && (
+                {router.query.id && (
                   <>
                     <label className="label">
                       <span className="label-text text-white">Players</span>
                     </label>
-                    <PlayersTable booking={bookingToEdit || defaultBooking} />
+                    <PlayersTable booking={bte || defaultBooking} />
                   </>
                 )}
-
-                <div className="btn-group btn-group-vertical flex self-end pt-5">
-                  <Link className="btn-warning btn text-white" href="/">
-                    Back
-                  </Link>
-                  <button
-                    onClick={addBooking}
+                <div className="w-100 btn-group btn-group-horizontal flex justify-center self-center pt-5">
+                  <Link
+                    href="/"
                     className={`${
-                      validBooking ? "btn-accent" : "btn-disabled"
+                      validBooking && !isLoadingBookingMutation
+                        ? "btn-warning btn"
+                        : "btn-disabled"
                     } btn text-white`}
                   >
-                    Save
-                  </button>
+                    Cancel
+                  </Link>
+
+                  <label
+                    style={{ position: "relative" }}
+                    className={`${
+                      validBooking && !isLoadingBookingMutation
+                        ? "btn-success"
+                        : "btn-disabled"
+                    } btn text-white`}
+                    htmlFor="action-modal-booking"
+                  >
+                    {router.query.id ? "Update" : "Publish"}
+                    {isLoadingBookingMutation && (
+                      <div style={{ position: "absolute", bottom: 0 }}>
+                        <BeatLoader size={8} color="white" />
+                      </div>
+                    )}
+                  </label>
                 </div>
+              </div>
+            ) : (
+              <div className="flex h-screen items-center justify-center self-center">
+                <BeatLoader size={20} color="white" />
               </div>
             )}
           </div>

@@ -138,7 +138,7 @@ export const Bookings = ({ bookings }: Props) => {
         booking?.maxPlayers > booking.players.length);
 
     return spotsAvailable
-      ? booking?.locked && booking.userId !== sessionUserId
+      ? !booking?.joinable && booking.userId !== sessionUserId
         ? "Locked"
         : "Join"
       : "Full";
@@ -151,7 +151,7 @@ export const Bookings = ({ bookings }: Props) => {
         booking?.maxPlayers > booking.players.length);
 
     const btnVariant = spotsAvailable
-      ? booking?.locked && booking.userId !== sessionUserId 
+      ? !booking?.joinable && booking.userId !== sessionUserId
         ? "btn-disabled"
         : "btn-accent"
       : "btn-disabled";
@@ -449,8 +449,7 @@ export const Bookings = ({ bookings }: Props) => {
                                 <button className="btn-sm btn text-white">
                                   <Link
                                     href={{
-                                      pathname: "/booking",
-                                      query: { booking: booking.id },
+                                      pathname: `/booking/${booking.id}`,
                                     }}
                                   >
                                     Edit
