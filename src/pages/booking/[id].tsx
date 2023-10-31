@@ -223,7 +223,7 @@ const Booking = () => {
           players: bte.players,
           duration: preserveDuration ? duration : 0,
           facility: facility.id || null,
-          association: association || null,
+          association: null,
           maxPlayers: maxPlayers || 0,
           joinable: joinable,
         },
@@ -249,7 +249,7 @@ const Booking = () => {
         users: users || [],
         booking: {
           id: "placeholderId",
-          associationId: association || null,
+          associationId: null,
           facilityId: null,
           private: true,
           userId: sessionData?.user.id,
