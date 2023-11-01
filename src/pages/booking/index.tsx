@@ -409,6 +409,28 @@ const Booking = () => {
                     </div>
                   </div>
                 </ActionModal>
+                <ActionModal
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                  callback={async () => {
+                    console.log("YEAH");
+                    setPreventLocalStorageWrite(true);
+                    localStorage.removeItem("booking-state");
+                    await router.push("/");
+                    return undefined;
+                  }}
+                  data={undefined}
+                  tagRef={`booking-cancel`}
+                  title="Are you sure?"
+                  confirmButtonText={"Yesbox"}
+                  cancelButtonText="Keep editing"
+                >
+                  <div className="py-4">
+                    <p>
+                      This draft will be removed and you will have to re-enter
+                      the the booking information.
+                    </p>
+                  </div>
+                </ActionModal>
 
                 <label className="label">
                   <span className="label-text text-white">
@@ -607,18 +629,13 @@ const Booking = () => {
                   </div>
                 </div>
                 <div className="w-100 btn-group btn-group-horizontal mb-40 flex justify-center self-center pt-5">
-                  <button
+                  <label
+                    htmlFor="action-modal-booking-cancel"
                     className="btn-warning btn text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    onClick={async () => {
-                      setPreventLocalStorageWrite(true);
-                      localStorage.getItem("booking-state") &&
-                        localStorage.removeItem("booking-state");
-                      await router.push("/");
-                    }}
                   >
                     Cancel
-                  </button>
+                  </label>
 
                   <label
                     style={{ position: "relative" }}

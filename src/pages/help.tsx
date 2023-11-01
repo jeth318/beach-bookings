@@ -43,7 +43,7 @@ const Help = () => {
         <br />
         <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           2️⃣ Here in Beach Bookings, navigate to the top left menu where you
-          will find the Add-option. Tap it.
+          will find the Publish-option. Tap it.
         </p>
         <br />
         <p className="pl-1 pl-2 pl-4 pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">

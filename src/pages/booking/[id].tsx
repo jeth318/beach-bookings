@@ -266,7 +266,7 @@ const Booking = () => {
 
   return (
     <>
-      <SubHeader title={router.query.id ? "Change booking" : "Add booking"} />
+      <SubHeader title="Change booking" />
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">

@@ -34,7 +34,7 @@ export const userMenuItems = [
 
 export const menuItems: DropdownItem[] = [
   {
-    text: "Add",
+    text: "Publish",
     href: "/booking",
     icon: "add-circle.svg",
   },
