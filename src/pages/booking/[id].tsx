@@ -443,6 +443,7 @@ const Booking = () => {
                       <select
                         className="full-width select-bordered select"
                         onChange={(val) => {
+                          console.log("VALLL", val.target.value);
                           setDuration(parseInt(val.target.value));
                         }}
                         value={duration || "Select duration"}

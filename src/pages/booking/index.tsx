@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 
-import { useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
@@ -14,6 +14,7 @@ import { getEmailRecipients } from "~/utils/general.util";
 import { BeatLoader } from "react-spinners";
 import ActionModal from "~/components/ActionModal";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
+import { SelectInput } from "~/components/SelectInput";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -333,6 +334,45 @@ const Booking = () => {
     );
   };
 
+  const onFacilitySelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selected = event.target.options[event.target.selectedIndex];
+
+    const facilityId = selected?.dataset["facilityId"];
+    const facilityToSelect = facilities?.find((f) => f.id === facilityId);
+    setFacility(facilityToSelect);
+    setCourt(null);
+    setDuration(null);
+  };
+
+  const onDurationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    setDuration(Number(event?.target?.value));
+  };
+
+  const onMaxPlayersSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    setMaxPlayers(parseInt(event?.target.value));
+  };
+
+  const onCourtSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    setCourt(event?.target.value);
+  };
+
+  const facilitiesToShow =
+    facilities
+      ?.filter((facility) => facility.id === "1")
+      .map((facility) => {
+        return {
+          id: facility.id,
+          name: facility.name,
+        };
+      }) || [];
+
+  const maxPlayersToShow = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
+    (item) => ({
+      id: String(item),
+      name: String(item),
+    })
+  );
+
   const validBooking =
     !!sessionData?.user.id &&
     !!date &&
@@ -473,151 +513,52 @@ const Booking = () => {
                     }}
                   />
                 </div>
-                <label className="label">
-                  <span className="label-text text-white">Where to play?</span>
-                </label>
-                <label
-                  className={`input-group ${facility ? "input-valid" : ""}`}
-                >
-                  <span className="label-info-text">
-                    Facility {facility && "✅"}
-                  </span>
+                <SelectInput
+                  label="Facility"
+                  description="Where are you playing?"
+                  valid={!!facility}
+                  value={facility?.name || "Pick a place"}
+                  items={facilitiesToShow}
+                  callback={onFacilitySelect}
+                />
 
-                  <select
-                    className="full-width select-bordered select"
-                    onChange={(val) => {
-                      const selected =
-                        val.target.options[val.target.selectedIndex];
-
-                      const facilityId = selected?.dataset["facilityId"];
-                      const facilityToSelect = facilities?.find(
-                        (f) => f.id === facilityId
-                      );
-                      setFacility(facilityToSelect);
-                      setCourt(null);
-                      setDuration(null);
-                    }}
-                    value={facility?.name || "Pick a place"}
-                  >
-                    <option disabled>Pick a place</option>
-                    {facilities
-                      ?.filter((facility) => facility.id === "1")
-                      .map((facility) => {
-                        return (
-                          <option
-                            key={facility.id}
-                            data-facility-id={facility.id}
-                          >
-                            {facility.name}
-                          </option>
-                        );
-                      })}
-                  </select>
-                </label>
-                <label className="label">
-                  <span className="label-text label-text text-white">
-                    How many players are required/allowed?
-                  </span>
-                </label>
-                <label
-                  className={`input-group ${maxPlayers ? "input-valid" : ""}`}
-                >
-                  <span className="label-info-text">
-                    Players {maxPlayers && "✅"}
-                  </span>
-                  <select
-                    className="full-width select-bordered select"
-                    onChange={(val) => {
-                      const selected =
-                        val.target.options[val.target.selectedIndex]?.value;
-
-                      if (typeof selected === "string") {
-                        setMaxPlayers(parseInt(selected));
-                      } else {
-                        setMaxPlayers(0);
-                      }
-                    }}
-                    value={maxPlayers === 0 ? "Unlimited" : maxPlayers}
-                  >
-                    <option disabled>Players</option>
-                    <option value={0}>Unlimited</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                    <option>7</option>
-                    <option>8</option>
-                    <option>9</option>
-                    <option>10</option>
-                    <option>11</option>
-                    <option>12</option>
-                  </select>
-                </label>
+                <SelectInput
+                  label="Players"
+                  description="How many players are required/allowed?"
+                  valid={!!maxPlayers}
+                  value={String(maxPlayers) || "Players"}
+                  items={maxPlayersToShow}
+                  callback={onMaxPlayersSelect}
+                />
 
                 {!!facility?.durations?.length && (
-                  <>
-                    <label className="label">
-                      <span className="label-text text-white">
-                        For how long?
-                      </span>
-                    </label>
-                    <label
-                      className={`input-group ${duration ? "input-valid" : ""}`}
-                    >
-                      <span className="label-info-text">
-                        Duration {duration && "✅"}
-                      </span>
-                      <select
-                        className="full-width select-bordered select"
-                        onChange={(val) => {
-                          setDuration(parseInt(val.target.value));
-                        }}
-                        value={duration || "Select duration"}
-                      >
-                        <option disabled>Select duration</option>
-                        {facility.durations.map((item) => {
-                          return (
-                            <option key={item} value={item}>
-                              {item} minutes
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </label>
-                  </>
+                  <SelectInput
+                    label="Duration"
+                    disabledOption="Select duration"
+                    description="Fow how long?"
+                    optionSuffix={` minutes`}
+                    valid={!!duration}
+                    value={duration || "Select duration"}
+                    items={facility.durations.map((item) => ({
+                      id: item,
+                      name: item,
+                    }))}
+                    callback={onDurationSelect}
+                  />
                 )}
                 {!!facility?.courts.length && (
-                  <>
-                    <label className="label">
-                      <span className="label-text text-white">What court?</span>
-                    </label>
-                    <label
-                      className={`input-group ${court ? "input-valid" : ""}`}
-                    >
-                      <span className="label-info-text">
-                        Court {court && "✅"}
-                      </span>
-                      <select
-                        className="full-width select-bordered select"
-                        onChange={(val) => {
-                          setCourt(val.target.value);
-                        }}
-                        value={court || "Pick court"}
-                      >
-                        <option disabled>Pick court</option>
-                        {facility.courts.map((court) => {
-                          return (
-                            <option
-                              key={court}
-                              data-court-id={court}
-                              value={court}
-                            >
-                              {court}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </label>
-                  </>
+                  <SelectInput
+                    label="Court"
+                    disabledOption="Pick court"
+                    description="What court?"
+                    valid={!!court}
+                    value={court || "Pick court"}
+                    items={facility.courts.map((item) => ({
+                      id: item,
+                      name: item,
+                    }))}
+                    callback={onCourtSelect}
+                  />
                 )}
                 <div className="flex flex-col align-middle">
                   <label className="label">
