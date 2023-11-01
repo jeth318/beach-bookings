@@ -606,7 +606,7 @@ const Booking = () => {
                     )}
                   </div>
                 </div>
-                <div className="w-100 btn-group btn-group-horizontal flex justify-center self-center pt-5">
+                <div className="w-100 btn-group btn-group-horizontal mb-40 flex justify-center self-center pt-5">
                   <button
                     className="btn-warning btn text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises

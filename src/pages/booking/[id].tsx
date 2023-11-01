@@ -497,7 +497,7 @@ const Booking = () => {
                     <PlayersTable booking={bte || defaultBooking} />
                   </>
                 )}
-                <div className="flex flex-col justify-center">
+                <div className="mb-40 flex flex-col justify-center">
                   <div className="w-100 btn-group btn-group-horizontal flex justify-center self-center pt-5">
                     <Link
                       href="/"
