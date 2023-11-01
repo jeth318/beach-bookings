@@ -441,7 +441,7 @@ const Booking = () => {
                   <DatePicker
                     popperPlacement="top"
                     id="booking-date-picker"
-                    className="p-3"
+                    className={`p-3 ${date && time ? "input-valid" : ""}`}
                     showTimeSelect
                     selected={date}
                     open={true}
@@ -476,8 +476,13 @@ const Booking = () => {
                 <label className="label">
                   <span className="label-text text-white">Where to play?</span>
                 </label>
-                <label className="input-group">
-                  <span className="label-info-text">Facility</span>
+                <label
+                  className={`input-group ${facility ? "input-valid" : ""}`}
+                >
+                  <span className="label-info-text">
+                    Facility {facility && "✅"}
+                  </span>
+
                   <select
                     className="full-width select-bordered select"
                     onChange={(val) => {
@@ -514,8 +519,12 @@ const Booking = () => {
                     How many players are required/allowed?
                   </span>
                 </label>
-                <label className="input-group">
-                  <span className="label-info-text">Players</span>
+                <label
+                  className={`input-group ${maxPlayers ? "input-valid" : ""}`}
+                >
+                  <span className="label-info-text">
+                    Players {maxPlayers && "✅"}
+                  </span>
                   <select
                     className="full-width select-bordered select"
                     onChange={(val) => {
@@ -551,8 +560,12 @@ const Booking = () => {
                         For how long?
                       </span>
                     </label>
-                    <label className="input-group">
-                      <span className="label-info-text">Duration</span>
+                    <label
+                      className={`input-group ${duration ? "input-valid" : ""}`}
+                    >
+                      <span className="label-info-text">
+                        Duration {duration && "✅"}
+                      </span>
                       <select
                         className="full-width select-bordered select"
                         onChange={(val) => {
@@ -577,8 +590,12 @@ const Booking = () => {
                     <label className="label">
                       <span className="label-text text-white">What court?</span>
                     </label>
-                    <label className="input-group">
-                      <span className="label-info-text">Court</span>
+                    <label
+                      className={`input-group ${court ? "input-valid" : ""}`}
+                    >
+                      <span className="label-info-text">
+                        Court {court && "✅"}
+                      </span>
                       <select
                         className="full-width select-bordered select"
                         onChange={(val) => {
