@@ -18,8 +18,7 @@ import ActionModal from "~/components/ActionModal";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
-  const { isInitialLoading: isInitialLoadingUsers } =
-    api.user.getAll.useQuery();
+
   const router = useRouter();
   const [court, setCourt] = useState<string | null>();
   const [duration, setDuration] = useState<number | null>();
@@ -54,12 +53,6 @@ const Booking = () => {
     return new Date(updated);
   };
 
-  const {
-    data: bookings,
-    refetch: refetchBookings,
-    isInitialLoading: isInitialLoadingBookings,
-  } = api.booking.getAll.useQuery();
-
   const query = Array.isArray(router.query.id)
     ? router?.query?.id[0] || ""
     : router?.query?.id || "";
@@ -89,7 +82,7 @@ const Booking = () => {
             setJoinable(mutatedBooking?.joinable);
           },
           onSettled: () => {
-            void refetchBookings();
+            //void refetchBookings();
           },
         }
       );
@@ -158,14 +151,12 @@ const Booking = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady, router.query.id, bte, isFacilitiesFetched]);
 
-  const isInitialLoading =
-    isInitialLoadingBookings ||
-    isInitialLoadingUsers ||
-    sessionStatus === "loading";
+  const isInitialLoading = sessionStatus === "loading";
 
   const defaultBooking = {
     players: [sessionData?.user.id],
     court: null,
+    maxPlayers: 4,
     userId: sessionData?.user.id,
   } as Booking;
 
@@ -232,14 +223,14 @@ const Booking = () => {
               originalBooking: bte,
               mutatedBooking,
               bookerName: sessionData.user.name || "Someone",
-              bookings: bookings || [],
+              bookings: [],
               eventType,
               recipients,
               mutation: emailerMutation,
             });
-            void refetchBookings().then(() => {
-              void router.push("/");
-            });
+            void router.push("/");
+            /*  void refetchBookings().then(() => {
+            }); */
           },
         }
       );

@@ -1,4 +1,4 @@
-import { type User, type Booking } from "@prisma/client";
+import { type User, type Booking, type Facility } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { api } from "~/utils/api";
@@ -30,6 +30,7 @@ import { CustomIcon } from "./CustomIcon";
 
 type Bookings = {
   data: Booking[];
+  facilities?: Facility[];
 };
 
 type Props = {
