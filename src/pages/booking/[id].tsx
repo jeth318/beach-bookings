@@ -378,7 +378,7 @@ const Booking = () => {
                 <JoinableToggle
                   value={joinable}
                   isLoading={false}
-                  callback={mutateJoinable}
+                  callback={() => null}
                 />
                 {router.query.id && (
                   <>
