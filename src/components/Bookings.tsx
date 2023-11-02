@@ -27,6 +27,7 @@ import ActionModal from "./ActionModal";
 import { Player } from "./Player";
 import { OngoingGame } from "./OngoingGame";
 import { CustomIcon } from "./CustomIcon";
+import { PlayersTable } from "./PlayersTable";
 
 type Bookings = {
   data: Booking[];
@@ -363,8 +364,8 @@ export const Bookings = ({ bookings }: Props) => {
                           </div>
                         ) : (
                           <>
-                            {renderPartyLeader()}
-                            {renderPlayersInBooking()}
+                            {isMainPage && renderPartyLeader()}
+                            {isMainPage ? renderPlayersInBooking() : null}
                           </>
                         )}
                       </div>
@@ -483,6 +484,11 @@ export const Bookings = ({ bookings }: Props) => {
                     </div>
                   </div>
                 </div>
+                {!isMainPage && (
+                  <div className="max-w-lg p-2">
+                    <PlayersTable booking={booking} />
+                  </div>
+                )}
               </div>
             </div>
           );

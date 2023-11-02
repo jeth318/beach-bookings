@@ -106,7 +106,7 @@ export const PlayersTable = ({ booking }: Props) => {
             <div
               key={player.id}
               style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
-              className="flex flex-row justify-between bg-slate-200 p-2 dark:bg-slate-800"
+              className="flex flex-row justify-between bg-slate-200 dark:bg-slate-800"
             >
               <div className="flex items-center space-x-3">
                 <div className="avatar">
@@ -128,7 +128,7 @@ export const PlayersTable = ({ booking }: Props) => {
                     }}
                     className="font-bold"
                   >
-                    {player.name}
+                    {player.name?.split(" ")[0]}
                   </div>
                   <div
                     className="text-sm opacity-50"
@@ -143,7 +143,8 @@ export const PlayersTable = ({ booking }: Props) => {
                 </div>
               </div>
               <div className="self-center pr-2" style={{ textAlign: "center" }}>
-                {playersInBooking.length >= 2 ? (
+                {session.data?.user.id === booking.userId &&
+                playersInBooking.length >= 2 ? (
                   <label
                     onClick={() => setPlayerToRemove(player.id)}
                     className="btn-outline btn-sm btn"
@@ -152,10 +153,16 @@ export const PlayersTable = ({ booking }: Props) => {
                     Kick 👋
                   </label>
                 ) : (
-                  <div>
-                    <CustomIcon path="/svg/crown.svg" />
-                  </div>
+                  player.id === booking.userId && (
+                    <div>
+                      <CustomIcon path="/svg/crown.svg" />
+                    </div>
+                  )
                 )}
+                <div className="br-3 flex flex-row gap-4">
+                  <div className="text-3xl">✉️</div>
+                  <div className="text-3xl">📞</div>
+                </div>
               </div>
             </div>
           );

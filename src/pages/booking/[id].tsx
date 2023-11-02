@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
@@ -15,6 +15,9 @@ import { type EventType, emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
 import { BeatLoader } from "react-spinners";
 import ActionModal from "~/components/ActionModal";
+import { JoinableToggle } from "~/components/JoinableToggle";
+import { SelectInput } from "~/components/SelectInput";
+import { DateSelector } from "~/components/DateSelector";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -91,6 +94,22 @@ const Booking = () => {
     }
   };
 
+  const facilitiesToShow =
+    facilities
+      ?.filter((facility) => facility.id === "1")
+      .map((facility) => {
+        return {
+          id: facility.id,
+          name: facility.name,
+        };
+      }) || [];
+
+  const maxPlayersToShow = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
+    (item) => ({
+      id: String(item),
+      name: String(item),
+    })
+  );
   const getPrePopulationSource = (
     bte: Booking | null | undefined,
     facilities: Facility[]
@@ -160,29 +179,41 @@ const Booking = () => {
     userId: sessionData?.user.id,
   } as Booking;
 
-  const today = new Date(new Date().setDate(new Date().getDate() - 1));
+  const onDateSelect = (date: Date) => {
+    setDate(date);
 
-  const bookingDateFutureLimit = new Date(
-    new Date().setDate(new Date().getDate() + 14)
-  );
-
-  const getBookableHours = () => {
-    const timeSlots = [];
-
-    for (let i = 9; i <= 21; i++) {
-      timeSlots.push(setHours(setMinutes(0), i));
-      if (i < 21) {
-        timeSlots.push(setHours(setMinutes(30), i));
-      }
+    if (date.getHours() < 9 || date.getHours() > 21) {
+      date.setHours(9);
     }
-    return timeSlots;
+
+    setTime(
+      date.toLocaleTimeString("sv-SE", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
   };
 
-  const filterPassedTime = (time: Date) => {
-    const currentDate = new Date();
-    const selectedDate = new Date(time);
+  const onFacilitySelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selected = event.target.options[event.target.selectedIndex];
 
-    return currentDate.getTime() < selectedDate.getTime();
+    const facilityId = selected?.dataset["facilityId"];
+    const facilityToSelect = facilities?.find((f) => f.id === facilityId);
+    setFacility(facilityToSelect);
+    setCourt(null);
+    setDuration(null);
+  };
+
+  const onDurationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    setDuration(Number(event?.target?.value));
+  };
+
+  const onMaxPlayersSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    setMaxPlayers(parseInt(event?.target.value));
+  };
+
+  const onCourtSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    setCourt(event?.target.value);
   };
 
   const addBooking = () => {
@@ -294,202 +325,61 @@ const Booking = () => {
                     updated booking details.
                   </p>
                 </ActionModal>
-                <label className="label">
-                  <span className="label-text text-white">
-                    When are you playing?
-                  </span>
-                </label>
-                <div className="custom-datepicker-wrapper pb-6">
-                  <DatePicker
-                    popperPlacement="top"
-                    id="booking-date-picker"
-                    className="p-3"
-                    showTimeSelect
-                    selected={date}
-                    open={true}
-                    fixedHeight={true}
-                    placeholderText="Pick date and time"
-                    timeFormat="HH:mm"
-                    dateFormat="yyyy-MM-dd - HH:mm"
-                    filterTime={filterPassedTime}
-                    includeTimes={getBookableHours()}
-                    includeDateIntervals={[
-                      {
-                        start: today,
-                        end: bookingDateFutureLimit,
-                      },
-                    ]}
-                    onChange={(date: Date) => {
-                      setDate(date);
+                <DateSelector date={date} time={time} callback={onDateSelect} />
+                <SelectInput
+                  label="Facility"
+                  description="Where are you playing?"
+                  valid={!!facility}
+                  value={facility?.name || "Pick a place"}
+                  items={facilitiesToShow}
+                  callback={onFacilitySelect}
+                />
 
-                      if (date.getHours() < 9 || date.getHours() > 21) {
-                        date.setHours(9);
-                      }
+                <SelectInput
+                  label="Players"
+                  description="How many players are required/allowed?"
+                  valid={!!maxPlayers}
+                  value={String(maxPlayers) || "Players"}
+                  items={maxPlayersToShow}
+                  callback={onMaxPlayersSelect}
+                />
 
-                      setTime(
-                        date.toLocaleTimeString("sv-SE", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      );
-                    }}
-                  />
-                </div>
-                <div className="flex flex-col align-middle">
-                  <label className="label">
-                    <span className="text-md label-text">
-                      Allow players to join
-                    </span>
-                  </label>
-                  <div className="flex flex-col self-start">
-                    <div>
-                      <label>
-                        <input
-                          type="checkbox"
-                          className={`toggle-accent toggle toggle-md`}
-                          onChange={onJoinableChange}
-                          checked={joinable}
-                        />
-                      </label>
-                    </div>
-                    {isLoadingJoinable ? (
-                      <div className="self-center">
-                        <BeatLoader size={10} color="purple" />
-                      </div>
-                    ) : (
-                      <div style={{ height: "24px" }}></div>
-                    )}
-                  </div>
-                </div>
-                <label className="label">
-                  <span className="label-text text-white">Where to play?</span>
-                </label>
-                <label className="input-group">
-                  <span className="label-info-text">Facility</span>
-                  <select
-                    className="full-width select-bordered select"
-                    onChange={(val) => {
-                      const selected =
-                        val.target.options[val.target.selectedIndex];
-
-                      const facilityId = selected?.dataset["facilityId"];
-                      const facilityToSelect = facilities?.find(
-                        (f) => f.id === facilityId
-                      );
-                      setFacility(facilityToSelect);
-                      setCourt(null);
-                      setDuration(null);
-                    }}
-                    value={facility?.name || "Pick a place"}
-                  >
-                    <option disabled>Pick a place</option>
-                    {facilities
-                      ?.filter((facility) => facility.id === "1")
-                      .map((facility) => {
-                        return (
-                          <option
-                            key={facility.id}
-                            data-facility-id={facility.id}
-                          >
-                            {facility.name}
-                          </option>
-                        );
-                      })}
-                  </select>
-                </label>
-                <label className="label">
-                  <span className="label-text label-text text-white">
-                    How many players are required/allowed?
-                  </span>
-                </label>
-                <label className="input-group">
-                  <span className="label-info-text">Players</span>
-                  <select
-                    className="full-width select-bordered select"
-                    onChange={(val) => {
-                      const selected =
-                        val.target.options[val.target.selectedIndex]?.value;
-
-                      if (typeof selected === "string") {
-                        setMaxPlayers(parseInt(selected));
-                      } else {
-                        setMaxPlayers(0);
-                      }
-                    }}
-                    value={maxPlayers === 0 ? "Unlimited" : maxPlayers}
-                  >
-                    <option disabled>Players</option>
-                    <option value={0}>Unlimited</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                    <option>7</option>
-                    <option>8</option>
-                    <option>9</option>
-                    <option>10</option>
-                    <option>11</option>
-                    <option>12</option>
-                  </select>
-                </label>
                 {!!facility?.durations?.length && (
-                  <>
-                    <label className="label">
-                      <span className="label-text text-white">
-                        For how long?
-                      </span>
-                    </label>
-                    <label className="input-group">
-                      <span className="label-info-text">Duration</span>
-                      <select
-                        className="full-width select-bordered select"
-                        onChange={(val) => {
-                          console.log("VALLL", val.target.value);
-                          setDuration(parseInt(val.target.value));
-                        }}
-                        value={duration || "Select duration"}
-                      >
-                        <option disabled>Select duration</option>
-                        {facility.durations.map((item) => {
-                          return (
-                            <option key={item} value={item}>
-                              {item} minutes
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </label>
-                  </>
+                  <SelectInput
+                    label="Duration"
+                    disabledOption="Select duration"
+                    description="Fow how long?"
+                    optionSuffix={` minutes`}
+                    valid={!!duration}
+                    value={duration || "Select duration"}
+                    items={facility.durations.map((item) => ({
+                      id: item,
+                      name: item,
+                    }))}
+                    callback={onDurationSelect}
+                  />
                 )}
+
                 {!!facility?.courts.length && (
-                  <>
-                    <label className="label">
-                      <span className="label-text text-white">What court?</span>
-                    </label>
-                    <label className="input-group">
-                      <span className="label-info-text">Court</span>
-                      <select
-                        className="full-width select-bordered select"
-                        onChange={(val) => {
-                          setCourt(val.target.value);
-                        }}
-                        value={court || "Pick court"}
-                      >
-                        <option disabled>Pick court</option>
-                        {facility.courts.map((court) => {
-                          return (
-                            <option
-                              key={court}
-                              data-court-id={court}
-                              value={court}
-                            >
-                              {court}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </label>
-                  </>
+                  <SelectInput
+                    label="Court"
+                    disabledOption="Pick court"
+                    description="What court?"
+                    valid={!!court}
+                    value={court || "Pick court"}
+                    items={facility.courts.map((item) => ({
+                      id: item,
+                      name: item,
+                    }))}
+                    callback={onCourtSelect}
+                  />
                 )}
+
+                <JoinableToggle
+                  value={joinable}
+                  isLoading={false}
+                  callback={mutateJoinable}
+                />
                 {router.query.id && (
                   <>
                     <label className="label">

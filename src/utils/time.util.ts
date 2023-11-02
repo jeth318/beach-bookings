@@ -13,18 +13,18 @@ export const days = [
 ];
 
 export const months = [
-  "January",
-  "February",
+  "Jan",
+  "Feb",
   "March",
   "April",
   "May",
   "June",
   "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "Aug",
+  "Sept",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 export const parseTime = (booking: Booking) => {
