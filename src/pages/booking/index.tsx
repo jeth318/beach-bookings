@@ -211,6 +211,7 @@ const Booking = () => {
           void refetchBookings().then(() => {
             void router.push("/");
           });
+          setPreventLocalStorageWrite(true);
           localStorage.removeItem("booking-state");
         },
       }
