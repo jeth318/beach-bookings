@@ -337,7 +337,7 @@ const Booking = () => {
                 </div>
                 <div className="flex flex-col align-middle">
                   <label className="label">
-                    <span className="text-md label-text text-white">
+                    <span className="text-md label-text">
                       Allow players to join
                     </span>
                   </label>

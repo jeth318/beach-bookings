@@ -32,8 +32,9 @@ export const SelectInput = ({
         <span className="label-text text-white">{description}</span>
       </label>
       <label className={`input-group ${valid ? "input-valid" : ""}`}>
-        <span className="label-info-text">
-          {label} {valid && "✅"}
+        <span className="label-info-text flex justify-between">
+          <div>{label}</div>
+          <div className="self-center">{valid && "✅"}</div>
         </span>
 
         <select

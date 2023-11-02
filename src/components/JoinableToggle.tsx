@@ -11,7 +11,7 @@ export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
     <div className="flex flex-col self-start">
       <div>
         <label className="label mt-2">
-          <span className="label-text">Allow players to join</span>
+          <span className="label-text text-white">Allow players to join</span>
         </label>
         <label>
           <input
