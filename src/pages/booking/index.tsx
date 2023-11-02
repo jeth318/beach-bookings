@@ -4,17 +4,21 @@ import { type ChangeEvent, useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
-import { Booking, type Facility } from "@prisma/client";
-import DatePicker from "react-datepicker";
-
-import "react-datepicker/dist/react-datepicker.css";
+import { type Facility } from "@prisma/client";
 import { SubHeader } from "~/components/SubHeader";
-import { type EventType, emailDispatcher } from "~/utils/booking.util";
+import { emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
 import { BeatLoader } from "react-spinners";
 import ActionModal from "~/components/ActionModal";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { SelectInput } from "~/components/SelectInput";
+import { DateSelector } from "~/components/DateSelector";
+import { BeforePublishInfo } from "~/components/BeforePublishInfo";
+import { JoinableToggle } from "~/components/JoinableToggle";
+import {
+  getPrePopulationState,
+  setPrePopulateBookingState,
+} from "~/utils/storage";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -32,8 +36,6 @@ const Booking = () => {
   const [hydrated, setHydrated] = useState<boolean>(false);
 
   const { data: sessionData, status: sessionStatus } = useSession();
-  const { isInitialLoading: isInitialLoadingUsers } =
-    api.user.getAll.useQuery();
   const router = useRouter();
   const [court, setCourt] = useState<string | null>();
   const [duration, setDuration] = useState<number | null>();
@@ -45,86 +47,6 @@ const Booking = () => {
   const [isLoading, setIsLoading] = useState<boolean>();
   const [preventLocalStorageWrite, setPreventLocalStorageWrite] =
     useState<boolean>(false);
-
-  type PrePopulateBookingState = {
-    court?: string;
-    duration?: number;
-    date: Date;
-    time: string;
-    facility: Facility;
-    eventType: EventType;
-    maxPlayers?: number;
-    joinable: boolean;
-  };
-
-  type LocalStorageBookingState = {
-    value: PrePopulateBookingState;
-    expiry: number;
-  };
-
-  const setPrePopulateBookingState = () => {
-    console.log("SETTING NEW");
-    const now = new Date();
-    // Five minutes
-    const ttl = 60000;
-    const data = {
-      value: {
-        court,
-        duration,
-        time,
-        date,
-        facility,
-        maxPlayers,
-        joinable,
-        isLoading,
-      },
-      expiry: now.getTime() + ttl,
-    };
-
-    localStorage.setItem("booking-state", JSON.stringify(data));
-  };
-
-  const readPrePopulateBookingState = ():
-    | PrePopulateBookingState
-    | undefined => {
-    try {
-      const outputString = localStorage.getItem("booking-state") || "";
-
-      if (!outputString) {
-        return undefined;
-      }
-
-      const item = JSON.parse(outputString) as LocalStorageBookingState;
-      const now = new Date();
-
-      if (now.getTime() > item.expiry) {
-        localStorage.removeItem("booking-state");
-        return undefined;
-      }
-
-      return item.value;
-    } catch (error) {
-      console.error("Could not parse booking-state", error);
-      return undefined;
-    }
-  };
-
-  const setHours = (date: Date, hours: number) => {
-    const updated = new Date(date);
-    updated.setHours(hours);
-    return updated;
-  };
-
-  const setMinutes = (minutes: number) => {
-    const now = new Date();
-    const updated = now.setMinutes(minutes);
-    return new Date(updated);
-  };
-
-  const resetState = () => {
-    setDuration(null);
-    setDuration(null);
-  };
 
   const {
     data: bookings,
@@ -142,22 +64,8 @@ const Booking = () => {
     setJoinable(!joinable);
   };
 
-  const getPrePopulationState = (facilities: Facility[]) => {
-    const ls = readPrePopulateBookingState();
-    if (ls) {
-      return {
-        court: ls?.court,
-        duration: Number(ls?.duration),
-        maxPlayers: ls?.maxPlayers,
-        date: ls?.date,
-        time: ls?.time,
-        facility: facilities.find((facility) => facility.id === "1"),
-        joinable: ls.joinable,
-      } as PrePopulateBookingState;
-    }
-  };
+  const localStorageState = getPrePopulationState(facilities);
 
-  const localStorageState = getPrePopulationState(facilities || []);
   useEffect(() => {
     console.log("HEJ HEJ HEJ");
     setHydrated(true);
@@ -208,9 +116,17 @@ const Booking = () => {
   }, [facilities, facility, hydrated]);
 
   useEffect(() => {
-    console.log("");
     if (hydrated && !isInitialLoading && !preventLocalStorageWrite) {
-      setPrePopulateBookingState();
+      setPrePopulateBookingState({
+        court,
+        duration,
+        time,
+        date,
+        facility,
+        maxPlayers,
+        joinable,
+        isLoading,
+      });
     }
   }, [
     court,
@@ -225,40 +141,7 @@ const Booking = () => {
   ]);
 
   const isInitialLoading =
-    isInitialLoadingBookings ||
-    isInitialLoadingUsers ||
-    sessionStatus === "loading";
-
-  const defaultBooking = {
-    players: [sessionData?.user.id],
-    court: null,
-    userId: sessionData?.user.id,
-  } as Booking;
-
-  const today = new Date(new Date().setDate(new Date().getDate() - 1));
-
-  const bookingDateFutureLimit = new Date(
-    new Date().setDate(new Date().getDate() + 14)
-  );
-
-  const getBookableHours = () => {
-    const timeSlots = [];
-
-    for (let i = 9; i <= 21; i++) {
-      timeSlots.push(setHours(setMinutes(0), i));
-      if (i < 21) {
-        timeSlots.push(setHours(setMinutes(30), i));
-      }
-    }
-    return timeSlots;
-  };
-
-  const filterPassedTime = (time: Date) => {
-    const currentDate = new Date();
-    const selectedDate = new Date(time);
-
-    return currentDate.getTime() < selectedDate.getTime();
-  };
+    isInitialLoadingBookings || sessionStatus === "loading";
 
   const addBooking = () => {
     if (!validBooking) {
@@ -334,6 +217,21 @@ const Booking = () => {
     );
   };
 
+  const onDateSelect = (date: Date) => {
+    setDate(date);
+
+    if (date.getHours() < 9 || date.getHours() > 21) {
+      date.setHours(9);
+    }
+
+    setTime(
+      date.toLocaleTimeString("sv-SE", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
+  };
+
   const onFacilitySelect = (event: ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.options[event.target.selectedIndex];
 
@@ -355,7 +253,12 @@ const Booking = () => {
   const onCourtSelect = (event: ChangeEvent<HTMLSelectElement>) => {
     setCourt(event?.target.value);
   };
-
+  const onDraftCancel = async () => {
+    setPreventLocalStorageWrite(true);
+    localStorage.removeItem("booking-state");
+    await router.push("/");
+    return undefined;
+  };
   const facilitiesToShow =
     facilities
       ?.filter((facility) => facility.id === "1")
@@ -412,52 +315,15 @@ const Booking = () => {
                   cancelButtonText="Cancel"
                   level="success"
                 >
-                  <div className="py-4">
-                    <p>
-                      All players with notifications enabled will receive an
-                      email about the new booking.
-                    </p>
-                    <br />
-                    <p>
-                      By default, the booking is open for people to join. If you
-                      want to prevent others from joining right now, use the
-                      toggle below. You can change this setting later anytime.
-                    </p>
-                    <div className="flex flex-col self-start">
-                      <div>
-                        <label className="label mt-2">
-                          <span className="label-text">
-                            Allow players to join
-                          </span>
-                        </label>
-                        <label>
-                          <input
-                            type="checkbox"
-                            className={`toggle-accent toggle toggle-md`}
-                            onChange={mutateJoinable}
-                            checked={joinable}
-                          />
-                        </label>
-                      </div>
-                      {isLoading ? (
-                        <div className="self-center">
-                          <BeatLoader size={10} color="purple" />
-                        </div>
-                      ) : (
-                        <div style={{ height: "24px" }}></div>
-                      )}
-                    </div>
-                  </div>
+                  <BeforePublishInfo
+                    isLoading={isLoading}
+                    joinable={joinable}
+                    callback={mutateJoinable}
+                  />
                 </ActionModal>
                 <ActionModal
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  callback={async () => {
-                    console.log("YEAH");
-                    setPreventLocalStorageWrite(true);
-                    localStorage.removeItem("booking-state");
-                    await router.push("/");
-                    return undefined;
-                  }}
+                  callback={onDraftCancel}
                   data={undefined}
                   tagRef={`booking-cancel`}
                   title="Are you sure?"
@@ -472,47 +338,7 @@ const Booking = () => {
                   </div>
                 </ActionModal>
 
-                <label className="label">
-                  <span className="label-text text-white">
-                    When are you playing?
-                  </span>
-                </label>
-                <div className="custom-datepicker-wrapper pb-6">
-                  <DatePicker
-                    popperPlacement="top"
-                    id="booking-date-picker"
-                    className={`p-3 ${date && time ? "input-valid" : ""}`}
-                    showTimeSelect
-                    selected={date}
-                    open={true}
-                    fixedHeight={true}
-                    placeholderText="Pick date and time"
-                    timeFormat="HH:mm"
-                    dateFormat="yyyy-MM-dd - HH:mm"
-                    filterTime={filterPassedTime}
-                    includeTimes={getBookableHours()}
-                    includeDateIntervals={[
-                      {
-                        start: today,
-                        end: bookingDateFutureLimit,
-                      },
-                    ]}
-                    onChange={(date: Date) => {
-                      setDate(date);
-
-                      if (date.getHours() < 9 || date.getHours() > 21) {
-                        date.setHours(9);
-                      }
-
-                      setTime(
-                        date.toLocaleTimeString("sv-SE", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      );
-                    }}
-                  />
-                </div>
+                <DateSelector date={date} time={time} callback={onDateSelect} />
                 <SelectInput
                   label="Facility"
                   description="Where are you playing?"
@@ -546,6 +372,7 @@ const Booking = () => {
                     callback={onDurationSelect}
                   />
                 )}
+
                 {!!facility?.courts.length && (
                   <SelectInput
                     label="Court"
@@ -560,32 +387,13 @@ const Booking = () => {
                     callback={onCourtSelect}
                   />
                 )}
-                <div className="flex flex-col align-middle">
-                  <label className="label">
-                    <span className="text-md label-text text-white">
-                      Allow players to join
-                    </span>
-                  </label>
-                  <div className="flex flex-col self-start">
-                    <div>
-                      <label>
-                        <input
-                          type="checkbox"
-                          className={`toggle-accent toggle toggle-md`}
-                          onChange={mutateJoinable}
-                          checked={joinable}
-                        />
-                      </label>
-                    </div>
-                    {isLoading ? (
-                      <div className="self-center">
-                        <BeatLoader size={10} color="purple" />
-                      </div>
-                    ) : (
-                      <div style={{ height: "24px" }}></div>
-                    )}
-                  </div>
-                </div>
+
+                <JoinableToggle
+                  value={joinable}
+                  isLoading={isLoading}
+                  callback={mutateJoinable}
+                />
+
                 <div className="w-100 btn-group btn-group-horizontal mb-40 flex justify-center self-center pt-5">
                   <label
                     htmlFor="action-modal-booking-cancel"
