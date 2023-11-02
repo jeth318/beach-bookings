@@ -364,8 +364,12 @@ export const Bookings = ({ bookings }: Props) => {
                           </div>
                         ) : (
                           <>
-                            {isMainPage && renderPartyLeader()}
-                            {isMainPage ? renderPlayersInBooking() : null}
+                            {!router.query.id && (
+                              <div>
+                                {renderPartyLeader()}
+                                {renderPlayersInBooking()}
+                              </div>
+                            )}
                           </>
                         )}
                       </div>
@@ -484,7 +488,7 @@ export const Bookings = ({ bookings }: Props) => {
                     </div>
                   </div>
                 </div>
-                {!isMainPage && (
+                {router.query.id && (
                   <div className="max-w-lg p-2">
                     <PlayersTable booking={booking} />
                   </div>

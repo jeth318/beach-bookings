@@ -131,7 +131,7 @@ export const PlayersTable = ({ booking }: Props) => {
                     {player.name?.split(" ")[0]}
                   </div>
                   <div
-                    className="text-sm opacity-50"
+                    className="ellips text-sm opacity-50"
                     style={{
                       overflow: "hidden",
                       maxWidth: "150px",
@@ -142,27 +142,50 @@ export const PlayersTable = ({ booking }: Props) => {
                   </div>
                 </div>
               </div>
-              <div className="self-center pr-2" style={{ textAlign: "center" }}>
-                {session.data?.user.id === booking.userId &&
-                playersInBooking.length >= 2 ? (
-                  <label
-                    onClick={() => setPlayerToRemove(player.id)}
-                    className="btn-outline btn-sm btn"
-                    htmlFor="action-modal-player-remove"
-                  >
-                    Kick 👋
-                  </label>
-                ) : (
-                  player.id === booking.userId && (
-                    <div>
-                      <CustomIcon path="/svg/crown.svg" />
-                    </div>
-                  )
+              <div
+                className="flex  items-center justify-between gap-2 self-center pr-2"
+                style={{ textAlign: "center" }}
+              >
+                {player.id === booking.userId && (
+                  <div className="flex items-center gap-2">
+                    <div>Booker</div>
+                    <CustomIcon path="/svg/crown.svg" />
+                  </div>
                 )}
-                <div className="br-3 flex flex-row gap-4">
-                  <div className="text-3xl">✉️</div>
-                  <div className="text-3xl">📞</div>
-                </div>
+                {player.id !== session.data?.user.id && (
+                  <>
+                    <div className="br-3 flex flex-row gap-2">
+                      {player.email && (
+                        <a
+                          className="btn-outline btn-accent btn-sm btn"
+                          href={`sms:${""}`}
+                        >
+                          SMS
+                        </a>
+                      )}
+                      {player.email && (
+                        <a
+                          className="btn-outline btn-info btn-sm btn text-white"
+                          href={`mailto:${
+                            player.email || ""
+                          }?subject=Regarding the booking on ${booking.date.toDateString()}`}
+                        >
+                          EMAIL
+                        </a>
+                      )}
+                    </div>
+                    {session.data?.user.id === booking.userId &&
+                      playersInBooking.length >= 2 && (
+                        <label
+                          onClick={() => setPlayerToRemove(player.id)}
+                          className="btn-outline btn-sm btn"
+                          htmlFor="action-modal-player-remove"
+                        >
+                          Kick 👋
+                        </label>
+                      )}
+                  </>
+                )}
               </div>
             </div>
           );
