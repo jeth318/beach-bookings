@@ -7,7 +7,7 @@ type Props = {
 };
 export const BeforePublishInfo = ({ joinable, isLoading, callback }: Props) => {
   return (
-    <div className="py-4">
+    <div>
       <p>
         All players with notifications enabled will receive an email about the
         new booking.
@@ -19,6 +19,7 @@ export const BeforePublishInfo = ({ joinable, isLoading, callback }: Props) => {
         change this setting later anytime.
       </p>
       <JoinableToggle
+        textColor="black"
         value={joinable}
         isLoading={isLoading}
         callback={callback}

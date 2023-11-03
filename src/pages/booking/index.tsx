@@ -338,7 +338,6 @@ const Booking = () => {
                     </p>
                   </div>
                 </ActionModal>
-
                 <DateSelector date={date} time={time} callback={onDateSelect} />
                 <SelectInput
                   label="Facility"
@@ -390,6 +389,7 @@ const Booking = () => {
                 )}
 
                 <JoinableToggle
+                  textColor="white"
                   value={joinable}
                   isLoading={false}
                   callback={onJoinableChange}

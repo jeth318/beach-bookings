@@ -376,6 +376,7 @@ const Booking = () => {
                 )}
 
                 <JoinableToggle
+                  textColor="white"
                   value={joinable}
                   isLoading={isLoadingJoinable}
                   callback={onJoinableChange}
