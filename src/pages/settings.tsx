@@ -1,14 +1,12 @@
 import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/router";
-import { Bookings } from "~/components/Bookings";
 import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { PageLoader } from "~/components/PageLoader";
 import { EmailConsents } from "~/components/EmailConsents";
-import Head from "next/head";
-import { SharedHead } from "~/components/SharedHead";
+import { RegisterUserInfo } from "~/components/RegisterUserInfo";
 
 export async function getStaticProps() {
   await serverSideHelpers.booking.getAll.prefetch();
@@ -22,6 +20,7 @@ export async function getStaticProps() {
 
 const Settings = () => {
   const router = useRouter();
+  const { data: user, isFetched: isUserFetched } = api.user.get.useQuery();
   const { status: sessionStatus } = useSession();
   const bookingsQuery = api.booking.getAll.useQuery(undefined, {
     refetchOnMount: false,
@@ -37,7 +36,7 @@ const Settings = () => {
     void router.push("/");
   }
 
-  if (sessionStatus === "loading") {
+  if (sessionStatus === "loading" || !isUserFetched || !user) {
     return (
       <PageLoader
         isMainPage={false}
@@ -50,7 +49,10 @@ const Settings = () => {
   return (
     <main className="min-w-sm flex min-w-fit flex-col">
       <SubHeader title="Settings" />
-      <EmailConsents />
+      <div className="smooth-render-in flex flex-col items-center justify-center bg-gradient-to-b from-[#01797391] to-[#000000]">
+        <RegisterUserInfo user={user} />
+        <EmailConsents />
+      </div>
     </main>
   );
 };

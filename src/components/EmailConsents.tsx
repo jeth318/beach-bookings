@@ -11,7 +11,6 @@ import {
   friendlyConsentName,
   getConsentIcon,
 } from "~/utils/consent.util";
-import { SyncLoader } from "react-spinners";
 
 export const EmailConsents = () => {
   const [internalConsentState, setInternalConsentState] = useState<string[]>(
@@ -97,7 +96,7 @@ export const EmailConsents = () => {
   };
 
   return (
-    <div className="settings-container smooth-render-in bg-gradient-to-b from-[#01797391] to-[#000000] p-1">
+    <div style={{ width: "100%" }} className="settings-container p-2">
       {toastMessage && <Toast body={toastMessage} />}
       <div className="flex flex-col justify-center text-center">
         <div className="pb-5 pt-2 text-xl text-white">
