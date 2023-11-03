@@ -31,6 +31,8 @@ const server = z.object({
   EMAIL_DISPATCH_PASSWORD: z.string(),
   EMAIL_DISPATCH_SMTP: z.string(),
   EMAIL_DISPATCH_ACTIVE: z.string(),
+  EMAIL_SERVER: z.string(),
+  EMAIL_FROM: z.string(),
 });
 
 /**
@@ -64,6 +66,8 @@ const processEnv = {
   EMAIL_DISPATCH_SMTP: process.env.EMAIL_DISPATCH_SMTP,
   GMAIL_APP_SPECIFIC_PASSWORD: process.env.GMAIL_APP_SPECIFIC_PASSWORD,
   EMAIL_DISPATCH_ACTIVE: process.env.EMAIL_DISPATCH_ACTIVE,
+  EMAIL_SERVER: process.env.EMAIL_SERVER,
+  EMAIL_FROM: process.env.EMAIL_FROM
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
