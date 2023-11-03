@@ -23,7 +23,7 @@ export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
         </label>
       </div>
       {isLoading ? (
-        <div className="self-center">
+        <div className="self-start">
           <BeatLoader size={10} color="purple" />
         </div>
       ) : (

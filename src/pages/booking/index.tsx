@@ -60,7 +60,7 @@ const Booking = () => {
     api.booking.create.useMutation({});
   const emailerMutation = api.emailer.sendEmail.useMutation();
 
-  const mutateJoinable = () => {
+  const onJoinableChange = () => {
     setJoinable(!joinable);
   };
 
@@ -319,7 +319,7 @@ const Booking = () => {
                   <BeforePublishInfo
                     isLoading={isLoading}
                     joinable={joinable}
-                    callback={mutateJoinable}
+                    callback={onJoinableChange}
                   />
                 </ActionModal>
                 <ActionModal
@@ -391,8 +391,8 @@ const Booking = () => {
 
                 <JoinableToggle
                   value={joinable}
-                  isLoading={isLoading}
-                  callback={mutateJoinable}
+                  isLoading={false}
+                  callback={onJoinableChange}
                 />
 
                 <div className="w-100 btn-group btn-group-horizontal mb-40 flex justify-center self-center pt-5">

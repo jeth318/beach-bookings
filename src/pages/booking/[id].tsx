@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
@@ -377,8 +377,8 @@ const Booking = () => {
 
                 <JoinableToggle
                   value={joinable}
-                  isLoading={false}
-                  callback={() => null}
+                  isLoading={isLoadingJoinable}
+                  callback={onJoinableChange}
                 />
                 {router.query.id && (
                   <>
