@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent, useEffect } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
 import { Toast } from "./Toast";
@@ -8,7 +8,7 @@ type Props = {
   user?: User;
 };
 
-export const RegisterUserInfo = ({ user }: Props) => {
+export const PlayerInfo = ({ user }: Props) => {
   const [toastMessage, setToastMessage] = useState<string>();
 
   const { mutate: mutatePhone, isLoading: isLoadingPhoneMutation } =
@@ -28,7 +28,27 @@ export const RegisterUserInfo = ({ user }: Props) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     user?.name || null
   );
+
+  const phoneRegexPattern = new RegExp(
+    "^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$"
+  );
+
+  const [isNameValid, setIsNameValid] = useState<boolean>(true);
+  const [isPhoneValid, setIsPhoneValid] = useState<boolean>(true);
+
   const isLoading = isLoadingPhoneMutation || isLoadingNameMutation;
+
+  const validPhone =
+    !phoneInput ||
+    (phoneInput?.length > 2 && phoneRegexPattern.test(phoneInput));
+
+  const validName = !!(
+    nameInput &&
+    nameInput?.length > 2 &&
+    nameInput.length < 15
+  );
+
+  console.log({ validPhone });
 
   const renderToast = (body: string) => {
     setToastMessage(body);
@@ -38,16 +58,20 @@ export const RegisterUserInfo = ({ user }: Props) => {
   };
 
   const onNameInputBlur = (event: ChangeEvent<HTMLInputElement>) => {
+    setIsNameValid(validName);
     if (event.target.value.length < 3) {
       console.log("Too short");
-
-      return "";
+      return null;
     }
-    console.log("Lets goo");
+
+    if (event.target.value.length > 15) {
+      console.log("Too long");
+      return null;
+    }
 
     setNameInput(event.target.value);
 
-    if (nameInput && nameInput?.length > 2 && nameInput !== user?.name) {
+    if (nameInput && validName) {
       try {
         mutateName(
           { name: nameInput },
@@ -63,19 +87,15 @@ export const RegisterUserInfo = ({ user }: Props) => {
   };
 
   const onPhoneInputBlur = (event: ChangeEvent<HTMLInputElement>) => {
+    setIsPhoneValid(validPhone);
     if (event.target.value.length < 3) {
-      console.log("Too short");
-
       return "";
     }
-    console.log("Lets goo");
-
     setPhoneInput(event.target.value);
-
-    if (phoneInput && phoneInput?.length > 2 && phoneInput !== user?.phone) {
+    if (validPhone) {
       try {
         mutatePhone(
-          { number: phoneInput },
+          { number: phoneInput || "" },
           {
             onSuccess: () => {
               renderToast(`Phone updated.`);
@@ -106,8 +126,16 @@ export const RegisterUserInfo = ({ user }: Props) => {
                 <BeatLoader color="#36d7b7" size={15} />
               )}
             </label>
-            <label className="input-group">
-              <span style={{ width: "35%" }}>Name</span>
+            <label
+              className={`input-group ${!validName ? "input-invalid " : ""}`}
+            >
+              <span
+                style={{ width: "35%" }}
+                className="label-info-text flex justify-between pr-1"
+              >
+                <div>Name</div>
+                <div className="self-center">{validName && "✅"}</div>
+              </span>
               <input
                 style={{ width: "65%" }}
                 type="text"
@@ -115,6 +143,7 @@ export const RegisterUserInfo = ({ user }: Props) => {
                 value={nameInput || ""}
                 onBlur={onNameInputBlur}
                 onChange={(e) => {
+                  setIsNameValid(true);
                   setNameInput(e.target.value);
                 }}
                 className="input-bordered input"
@@ -128,8 +157,18 @@ export const RegisterUserInfo = ({ user }: Props) => {
                 <BeatLoader color="#36d7b7" size={15} />
               )}
             </label>
-            <label className="input-group">
-              <span style={{ width: "35%" }}>Number</span>
+            <label
+              className={`input-group ${!isPhoneValid ? "input-invalid " : ""}`}
+            >
+              <span
+                style={{ width: "35%" }}
+                className="label-info-text flex justify-between pr-1"
+              >
+                <div>Phone</div>
+                <div className="self-center">
+                  {!phoneInput?.length ? "🔶" : validPhone ? "✅" : ""}
+                </div>
+              </span>
               <input
                 style={{ width: "65%" }}
                 type="tel"
@@ -138,6 +177,7 @@ export const RegisterUserInfo = ({ user }: Props) => {
                 value={phoneInput || ""}
                 onBlur={onPhoneInputBlur}
                 onChange={(e) => {
+                  setIsPhoneValid(true);
                   setPhoneInput(e.target.value);
                 }}
               />
@@ -148,7 +188,13 @@ export const RegisterUserInfo = ({ user }: Props) => {
               </span>
             </label>
             <label className="input-group">
-              <span style={{ width: "35%" }}>E-mail</span>
+              <span
+                style={{ width: "35%" }}
+                className="label-info-text flex justify-between pr-1"
+              >
+                <div>E-mail</div>
+                <div className="self-center">✅</div>
+              </span>
               <input
                 disabled
                 style={{ width: "65%" }}

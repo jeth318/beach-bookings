@@ -18,6 +18,11 @@ main {
   border-radius: 10px; */
 }
 
+.input-invalid {
+  outline: 2px solid red;
+  border-radius: 10px;
+}
+
 .meta-border {
   border: "1px solid white";
 }

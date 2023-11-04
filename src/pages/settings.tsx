@@ -6,7 +6,7 @@ import { SubHeader } from "~/components/SubHeader";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { PageLoader } from "~/components/PageLoader";
 import { EmailConsents } from "~/components/EmailConsents";
-import { RegisterUserInfo } from "~/components/RegisterUserInfo";
+import { PlayerInfo } from "~/components/PlayerInfo";
 
 export async function getStaticProps() {
   await serverSideHelpers.booking.getAll.prefetch();
@@ -50,7 +50,7 @@ const Settings = () => {
     <main className="min-w-sm flex min-w-fit flex-col">
       <SubHeader title="Settings" />
       <div className="smooth-render-in flex flex-col items-center justify-center bg-gradient-to-b from-[#01797391] to-[#000000]">
-        <RegisterUserInfo user={user} />
+        <PlayerInfo user={user} />
         <EmailConsents />
       </div>
     </main>

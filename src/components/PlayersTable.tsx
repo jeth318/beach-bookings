@@ -102,6 +102,12 @@ export const PlayersTable = ({ booking }: Props) => {
         </div>
       ) : (
         playersInBooking?.map((player) => {
+          console.log(player);
+
+          const displayName =
+            player.name && player.name.length > 2
+              ? player.name?.split(" ")[0]
+              : `Player${player.id.slice(0, 3)}`;
           return (
             <div
               key={player.id}
@@ -128,7 +134,7 @@ export const PlayersTable = ({ booking }: Props) => {
                     }}
                     className="font-bold"
                   >
-                    {player.name?.split(" ")[0]}
+                    {displayName}
                   </div>
                   <div
                     className="ellips text-sm opacity-50"

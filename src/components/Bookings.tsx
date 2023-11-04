@@ -74,6 +74,7 @@ export const Bookings = ({ bookings }: Props) => {
     api.user.getAll.useQuery();
 
   const { data: associations = [] } = api.association.getAll.useQuery();
+  const { data: user } = api.user.get.useQuery();
   const { data: facilities = [] } = api.facility.getAll.useQuery();
   const { refetch: refetchBookings } = api.booking.getAll.useQuery(undefined, {
     refetchIntervalInBackground: true,
@@ -165,6 +166,7 @@ export const Bookings = ({ bookings }: Props) => {
     if (!sessionUserId) {
       return null;
     }
+
     setIsJoining({ isWorking: true, bookingId: booking.id });
     const updatedPlayers = [...booking.players, sessionUserId];
     updateBooking.mutate(
@@ -173,10 +175,17 @@ export const Bookings = ({ bookings }: Props) => {
         players: updatedPlayers,
         association: booking.associationId,
         facility: booking.facilityId,
+        userName: user?.name || null,
       },
       {
-        onSuccess: (mutatedBooking: Booking) =>
-          handleMutationSuccess(mutatedBooking, booking, "JOIN"),
+        onSuccess: (mutatedBooking: Booking | null) => {
+          if (mutatedBooking) {
+            handleMutationSuccess(mutatedBooking, booking, "JOIN");
+          }
+        },
+        onError: (error) => {
+          console.log("ERRRRROOOR", error);
+        },
       }
     );
   };
@@ -196,6 +205,7 @@ export const Bookings = ({ bookings }: Props) => {
         players: updatedPlayers,
         association: booking.associationId,
         facility: booking.facilityId,
+        userName: user?.name || null,
       },
       {
         onSuccess: (mutatedBooking: Booking) => {
@@ -232,21 +242,26 @@ export const Bookings = ({ bookings }: Props) => {
         let level = "error";
         let body = "";
         let callback;
+        let emoji = "";
 
         switch (action) {
           case "delete":
             level = "error";
             body = removeBookingText;
+            emoji = "☠️";
             callback = deleteBooking;
+
             break;
           case "leave":
             level = "warning";
             body = leaveBookingText;
+            emoji = "🚪";
             callback = leaveGame;
             break;
           case "join":
             level = "accent";
             body = joinBookingText;
+            emoji = "🫂";
             callback = joinGame;
             break;
           default:
@@ -255,14 +270,29 @@ export const Bookings = ({ bookings }: Props) => {
             };
         }
 
+        let title = `Confirm ${action} ${emoji}`;
+
+        let confirmButtonText =
+          action.charAt(0).toUpperCase() + action.slice(1);
+
+        if (!user?.name || user.name.length < 3) {
+          callback = async () => {
+            await router.push("/settings");
+          };
+          title = "Name missing";
+          confirmButtonText = "Settings";
+          level = "info";
+          body = `Please go to settings and enter your name in order to ${action} this booking.`;
+        }
+
         return (
           <ActionModal
             callback={callback}
             data={bookingToChange}
             tagRef={`${action}-booking`}
-            title={`Confirm ${action}`}
+            title={title}
             body={body}
-            confirmButtonText={action.charAt(0).toUpperCase() + action.slice(1)}
+            confirmButtonText={confirmButtonText}
             cancelButtonText="Cancel"
             level={level}
           />
