@@ -175,13 +175,10 @@ export const Bookings = ({ bookings }: Props) => {
         players: updatedPlayers,
         association: booking.associationId,
         facility: booking.facilityId,
-        userName: user?.name || null,
       },
       {
-        onSuccess: (mutatedBooking: Booking | null) => {
-          if (mutatedBooking) {
+        onSuccess: (mutatedBooking: Booking) => {
             handleMutationSuccess(mutatedBooking, booking, "JOIN");
-          }
         },
         onError: (error) => {
           console.log("ERRRRROOOR", error);
@@ -205,13 +202,10 @@ export const Bookings = ({ bookings }: Props) => {
         players: updatedPlayers,
         association: booking.associationId,
         facility: booking.facilityId,
-        userName: user?.name || null,
       },
       {
-        onSuccess: (mutatedBooking: Booking | null) => {
-          if (mutatedBooking) {
-            handleMutationSuccess(mutatedBooking, booking, "LEAVE");
-          }
+        onSuccess: (mutatedBooking: Booking) => {
+          handleMutationSuccess(mutatedBooking, booking, "LEAVE");
         },
       }
     );

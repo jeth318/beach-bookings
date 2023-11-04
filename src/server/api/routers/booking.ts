@@ -68,19 +68,9 @@ export const bookingRouter = createTRPCRouter({
         facility: z.string().or(z.null()),
         maxPlayers: z.number().or(z.null()),
         joinable: z.boolean(),
-        userName: z.string().or(z.null()),
       })
     )
     .mutation(({ ctx, input }) => {
-      console.log("HEJJA", input.userName);
-
-      if (typeof input.userName !== "string" || input.userName?.length < 3) {
-        console.error(
-          "Validation failed for userName. It's either not a string of too short:",
-          { userName: input.userName }
-        );
-        return null;
-      }
       return ctx.prisma.booking.update({
         where: {
           id: input.id,
