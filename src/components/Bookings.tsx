@@ -208,8 +208,10 @@ export const Bookings = ({ bookings }: Props) => {
         userName: user?.name || null,
       },
       {
-        onSuccess: (mutatedBooking: Booking) => {
-          handleMutationSuccess(mutatedBooking, booking, "LEAVE");
+        onSuccess: (mutatedBooking: Booking | null) => {
+          if (mutatedBooking) {
+            handleMutationSuccess(mutatedBooking, booking, "LEAVE");
+          }
         },
       }
     );
