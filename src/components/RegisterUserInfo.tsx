@@ -28,6 +28,7 @@ export const RegisterUserInfo = ({ user }: Props) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     user?.name || null
   );
+  const isLoading = isLoadingPhoneMutation || isLoadingNameMutation;
 
   const renderToast = (body: string) => {
     setToastMessage(body);
@@ -52,7 +53,7 @@ export const RegisterUserInfo = ({ user }: Props) => {
           { name: nameInput },
           {
             onSuccess: () => {
-              renderToast(`Display name was updated.`);
+              renderToast(`Name updated.`);
               void refetchUser();
             },
           }
@@ -77,7 +78,7 @@ export const RegisterUserInfo = ({ user }: Props) => {
           { number: phoneInput },
           {
             onSuccess: () => {
-              renderToast(`Phone number saved.`);
+              renderToast(`Phone updated.`);
               void refetchUser();
             },
           }
@@ -89,11 +90,12 @@ export const RegisterUserInfo = ({ user }: Props) => {
   return (
     <>
       {toastMessage && <Toast body={toastMessage} />}
-
-      <div
-        style={{ width: "100%" }}
-        className="settings-container flex max-w-md justify-center"
-      >
+      <div className="flex flex-col justify-center text-center">
+        <div className="mb-2 mt-10 text-xl text-white">
+          <strong>Player information</strong>
+        </div>
+      </div>
+      <div style={{ width: "100%" }} className="flex max-w-md justify-center">
         <div style={{ width: "100%" }} className="mb-4 gap-4 p-2">
           <div style={{ width: "100%" }} className="form-control">
             <label className="label">
@@ -109,8 +111,7 @@ export const RegisterUserInfo = ({ user }: Props) => {
               <input
                 style={{ width: "65%" }}
                 type="text"
-                disabled={isLoadingNameMutation}
-                placeholder="Hellvig"
+                disabled={isLoading}
                 value={nameInput || ""}
                 onBlur={onNameInputBlur}
                 onChange={(e) => {
@@ -132,8 +133,8 @@ export const RegisterUserInfo = ({ user }: Props) => {
               <input
                 style={{ width: "65%" }}
                 type="tel"
-                placeholder="0705092234"
                 className="input-bordered input"
+                disabled={isLoading}
                 value={phoneInput || ""}
                 onBlur={onPhoneInputBlur}
                 onChange={(e) => {

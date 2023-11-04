@@ -14,8 +14,8 @@ main {
 }
 
 .input-valid {
-  outline: 2px solid #0fe80f;
-  border-radius: 10px;
+  /*outline: 2px solid #0fe80f;
+  border-radius: 10px; */
 }
 
 .meta-border {

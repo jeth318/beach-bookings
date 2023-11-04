@@ -325,7 +325,6 @@ const Booking = () => {
                     updated booking details.
                   </p>
                 </ActionModal>
-                <DateSelector date={date} time={time} callback={onDateSelect} />
                 <SelectInput
                   label="Facility"
                   description="Where are you playing?"
@@ -381,6 +380,8 @@ const Booking = () => {
                   isLoading={isLoadingJoinable}
                   callback={onJoinableChange}
                 />
+                <DateSelector date={date} time={time} callback={onDateSelect} />
+
                 {router.query.id && (
                   <>
                     <label className="label">

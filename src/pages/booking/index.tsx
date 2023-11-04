@@ -338,7 +338,6 @@ const Booking = () => {
                     </p>
                   </div>
                 </ActionModal>
-                <DateSelector date={date} time={time} callback={onDateSelect} />
                 <SelectInput
                   label="Facility"
                   description="Where are you playing?"
@@ -394,6 +393,7 @@ const Booking = () => {
                   isLoading={false}
                   callback={onJoinableChange}
                 />
+                <DateSelector date={date} time={time} callback={onDateSelect} />
 
                 <div className="w-100 btn-group btn-group-horizontal mb-40 flex justify-center self-center pt-5">
                   <label
