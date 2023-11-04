@@ -73,7 +73,8 @@ model Booking {
     maxPlayers    Int?         @default(4)
     facility      Facility?    @relation(fields: [facilityId], references: [id])
     association   Association? @relation(fields: [associationId], references: [id])
-    creator       User         @relation(fields: [userId], references: [id])
+    // Restrict user removal if user has created an upcoming booking
+    creator       User         @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
     userId        String
     private       Boolean      @default(true)
     associationId String?

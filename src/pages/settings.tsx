@@ -7,6 +7,7 @@ import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { PageLoader } from "~/components/PageLoader";
 import { EmailConsents } from "~/components/EmailConsents";
 import { PlayerInfo } from "~/components/PlayerInfo";
+import { AccountControl } from "~/components/AccountControl";
 
 export async function getStaticProps() {
   await serverSideHelpers.booking.getAll.prefetch();
@@ -52,6 +53,7 @@ const Settings = () => {
       <div className="smooth-render-in flex flex-col items-center justify-center bg-gradient-to-b from-[#01797391] to-[#000000]">
         <PlayerInfo user={user} />
         <EmailConsents />
+        <AccountControl />
       </div>
     </main>
   );

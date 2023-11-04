@@ -18,6 +18,15 @@ export const bookingRouter = createTRPCRouter({
       },
     });
   }),
+  getJoined: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.booking.findMany({
+      where: {
+        players: {
+          has: ctx.session.user.id,
+        },
+      },
+    });
+  }),
   getSingle: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
