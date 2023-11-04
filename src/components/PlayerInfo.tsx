@@ -45,7 +45,7 @@ export const PlayerInfo = ({ user }: Props) => {
   const validName = !!(
     nameInput &&
     nameInput?.length > 2 &&
-    nameInput.length < 15
+    nameInput.length < 20
   );
 
   console.log({ validPhone });

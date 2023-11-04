@@ -19,6 +19,7 @@ import {
   getPrePopulationState,
   setPrePopulateBookingState,
 } from "~/utils/storage";
+import Image from "next/image";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -338,6 +339,30 @@ const Booking = () => {
                     </p>
                   </div>
                 </ActionModal>
+                <div className="alert alert-info mt-4 flex flex-row text-white">
+                  <div>
+                    <Image
+                      className="mr-2 rounded-full shadow-sm shadow-black"
+                      alt="arrogant-frog"
+                      src="/cig-frog.gif"
+                      width={55}
+                      height={55}
+                    />
+                    <p>
+                      <b>Yo!</b> Before publishing a booking here, make sure
+                      that you actually book it first at{" "}
+                      <a
+                        style={{ color: "gold" }}
+                        target="_blank"
+                        className="link"
+                        href="https://gbc.goactivebooking.com/book-service/27?facility=1"
+                      >
+                        GBC official page
+                      </a>{" "}
+                      and receive a confirmation email.
+                    </p>
+                  </div>
+                </div>
                 <SelectInput
                   label="Facility"
                   description="Where are you playing?"
