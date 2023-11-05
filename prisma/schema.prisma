@@ -49,7 +49,6 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    bookings      Booking[]
     emailConsents String[]      @default(["ADD", "DELETE", "LEAVE", "JOIN", "KICK", "MODIFY"])
     Association   Association[]
     Facility      Facility[]
@@ -74,7 +73,6 @@ model Booking {
     facility      Facility?    @relation(fields: [facilityId], references: [id])
     association   Association? @relation(fields: [associationId], references: [id])
     // Restrict user removal if user has created an upcoming booking
-    creator       User         @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
     userId        String
     private       Boolean      @default(true)
     associationId String?

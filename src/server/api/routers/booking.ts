@@ -18,11 +18,33 @@ export const bookingRouter = createTRPCRouter({
       },
     });
   }),
+  getUpcomingForUser: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.booking.findMany({
+      where: {
+        userId: ctx.session.user.id,
+        date: {
+          gte: new Date(),
+        },
+      },
+    });
+  }),
   getJoined: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.booking.findMany({
       where: {
         players: {
           has: ctx.session.user.id,
+        },
+      },
+    });
+  }),
+  getJoinedUpcoming: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.booking.findMany({
+      where: {
+        players: {
+          has: ctx.session.user.id,
+        },
+        date: {
+          gte: new Date(),
         },
       },
     });

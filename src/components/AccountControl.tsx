@@ -6,35 +6,43 @@ import { BeatLoader } from "react-spinners";
 import { useState } from "react";
 
 export const AccountControl = () => {
-  const { mutate: mutateUserDelete, isLoading: isDeleting } =
-    api.user.delete.useMutation();
-  const { data: bookingsCreated } = api.booking.getForUser.useQuery();
-  const { data: bookingsJoined } = api.booking.getJoined.useQuery();
+  const { mutate: mutateUserDelete } = api.user.delete.useMutation();
+  const { data: upcomingBookingsCreated } =
+    api.booking.getUpcomingForUser.useQuery();
+  const { data: upcomingBookingsJoined } =
+    api.booking.getJoinedUpcoming.useQuery();
 
   const [isLoading, setIsLoading] = useState<boolean>();
 
   const onAccountDelete = () => {
     setIsLoading(true);
-    mutateUserDelete(undefined, {
+
+    /*mutateUserDelete(undefined, {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onSuccess: async () => {
         await signOut();
       },
+      onError: () => {
+        setIsLoading(false);
+        alert(
+          "Something went wrong trying to remove the account. Either try again later or contact me at admin@beachbookings.se and I'll check it out."
+        );
+      },
       onSettled: () => {
         setIsLoading(false);
       },
-    });
+    });*/
   };
 
   const leaveJoinedBookingsDialogue = (
     <div>
-      {!!bookingsJoined?.length && (
+      {!!upcomingBookingsJoined?.length && (
         <ul className="mt-4">
           <>
             <Link href="/joined" className="link text-blue-600">
-              <h3>My joined bookings</h3>
+              <h3>Upcoming joined bookings</h3>
             </Link>
-            {bookingsJoined?.map((booking) => {
+            {upcomingBookingsJoined?.map((booking) => {
               return (
                 <li key={booking.id}>
                   {`${booking.date.toLocaleDateString()} - ${booking.date.toLocaleTimeString()}`}
@@ -45,12 +53,12 @@ export const AccountControl = () => {
         </ul>
       )}
 
-      {!!bookingsCreated?.length && (
+      {!!upcomingBookingsCreated?.length && (
         <ul>
           <Link href="/created" className="link text-blue-600">
-            <h3>My created bookings</h3>
+            <h3>Upcoming bookings published by me</h3>
           </Link>
-          {bookingsCreated?.map((booking) => {
+          {upcomingBookingsCreated?.map((booking) => {
             return (
               <li key={booking.id}>
                 {`${booking.date.toLocaleDateString()} - ${booking.date.toLocaleTimeString()}`}
@@ -82,20 +90,23 @@ export const AccountControl = () => {
         data={null}
         tagRef={`remove-account`}
         title={
-          !!bookingsJoined?.length || bookingsCreated?.length
+          !!upcomingBookingsJoined?.length || upcomingBookingsCreated?.length
             ? "Unfinished business 🚫"
             : "Tiiime tooo say goodbye 🎶🥲"
         }
         confirmButtonText={`Remove account`}
         cancelButtonText={
-          !!bookingsJoined?.length || bookingsCreated?.length
+          !!upcomingBookingsJoined?.length || upcomingBookingsCreated?.length
             ? "CLOSE"
             : "STAY AROUND"
         }
         level={"error"}
-        hideConfirm={!!bookingsJoined?.length || !!bookingsCreated?.length}
+        hideConfirm={
+          !!upcomingBookingsJoined?.length || !!upcomingBookingsCreated?.length
+        }
       >
-        {!!bookingsJoined?.length || !!bookingsCreated?.length ? (
+        {!!upcomingBookingsJoined?.length ||
+        !!upcomingBookingsCreated?.length ? (
           <>
             <h3 className="text-sm">
               You have got some bookings that you need to leave or remove before
