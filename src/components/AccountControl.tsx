@@ -11,22 +11,14 @@ export const AccountControl = () => {
     mutateUserDelete();
   };
 
-  console.log({ bookingsCreated, bookingsJoined });
-
   const leaveJoinedBookingsDialogue = (
     <div>
-      <p className="mt-2">
-        You are participating in upcoming bookings.{" "}
-        <Link href="/joined" className="link text-blue-600">
-          Check out your joined bookings
-        </Link>
-        , leave them, and then come back here.
-      </p>
-
-      <ul className="mt-4">
-        {!!bookingsJoined?.length && (
+      {!!bookingsJoined?.length && (
+        <ul className="mt-4">
           <>
-            <h3 className="text-lg">Joined bookings</h3>
+            <Link href="/joined" className="link text-blue-600">
+              <h3>My joined bookings</h3>
+            </Link>
             {bookingsJoined?.map((booking) => {
               return (
                 <li key={booking.id}>
@@ -35,53 +27,44 @@ export const AccountControl = () => {
               );
             })}
           </>
-        )}
-        <h3 className="text-sm">
-          <strong>Upcoming bookings published by you:</strong>
-        </h3>
-        {bookingsCreated?.length &&
-          bookingsCreated?.map((booking) => {
+        </ul>
+      )}
+
+      {!!bookingsCreated?.length && (
+        <ul>
+          <Link href="/joined" className="link text-blue-600">
+            <h3>My created bookings</h3>
+          </Link>
+          {bookingsCreated?.map((booking) => {
             return (
               <li key={booking.id}>
                 {`${booking.date.toLocaleDateString()} - ${booking.date.toLocaleTimeString()}`}
               </li>
             );
           })}
-      </ul>
+        </ul>
+      )}
     </div>
   );
 
   const removeCreatedBookingsDialogue = (
     <div>
       <p className="mt-2">
-        You have one or more created bookings.{" "}
-        <Link href="/joined" className="link text-blue-600">
-          Check out your booked upcoming games and delete them first.
+        You have one or more upcoming bookings published by you.{" "}
+        <Link href="/created" className="link text-blue-600">
+          Check out the games booked by you
         </Link>
-        , leave them, and then come back here.
+        , and remove them first. Then come back here.
       </p>
 
       <ul className="mt-4">
-        {!!bookingsJoined?.length && (
-          <>
-            <h3 className="text-lg">Joined bookings</h3>
-            {bookingsJoined?.map((booking) => {
-              return (
-                <li key={booking.id}>
-                  {`${booking.date.toLocaleDateString()} - ${booking.date.toLocaleTimeString()}`}
-                </li>
-              );
-            })}
-          </>
-        )}
-        <h3 className="text-sm">
-          <strong>Upcoming bookings published by you:</strong>
-        </h3>
         {bookingsCreated?.length &&
           bookingsCreated?.map((booking) => {
             return (
               <li key={booking.id}>
-                {`${booking.date.toLocaleDateString()} - ${booking.date.toLocaleTimeString()}`}
+                <Link href="/created" className="link text-blue-600">
+                  {`${booking.date.toLocaleDateString()} - ${booking.date.toLocaleTimeString()}`}
+                </Link>
               </li>
             );
           })}
@@ -111,7 +94,7 @@ export const AccountControl = () => {
         tagRef={`remove-account`}
         title={
           !!bookingsJoined?.length || bookingsCreated?.length
-            ? "Cannot remove account"
+            ? "Unfinished business 🚫"
             : "Is this goodbye?"
         }
         confirmButtonText={"REMOVE ACCOUNT"}
@@ -123,9 +106,13 @@ export const AccountControl = () => {
         level={"error"}
         hideConfirm={!!bookingsJoined?.length || !!bookingsCreated?.length}
       >
-        {!!bookingsJoined?.length || bookingsCreated?.length
-          ? leaveJoinedBookingsDialogue
-          : removeAccountDialogue}
+        <h3 className="text-sm">
+          You have got some bookings that you need to leave or remove before you
+          can say goodbye.
+        </h3>
+
+        {(!!bookingsJoined?.length || !!bookingsCreated?.length) &&
+          leaveJoinedBookingsDialogue}
       </ActionModal>
       <div className="mb-20 mt-5 flex justify-center">
         <label

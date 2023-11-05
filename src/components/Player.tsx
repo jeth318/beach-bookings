@@ -9,7 +9,7 @@ export type Props = {
 export const Player = ({ user, booking }: Props) => {
   const displayName =
     user.name && user.name.length > 2
-      ? user.name?.split(" ")[0]
+      ? user.name
       : `Player-${user.id.slice(0, 5)}`;
   return (
     <div

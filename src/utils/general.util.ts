@@ -53,16 +53,17 @@ export const menuItems: DropdownItem[] = [
     href: "/created",
     icon: "crown.svg",
   },
-  {
+  /*   {
     text: "History",
     href: "/history",
     icon: "history.svg",
   },
-  // {
-  //   text: "Groups",
-  //   href: "/associations",
-  //   icon: "people.svg",
-  // },
+  {
+     text: "Groups",
+     href: "/associations",
+    icon: "people.svg",
+  },
+  */
 ];
 
 export const getUsersByBooking = (users: User[], booking: Booking) => {
