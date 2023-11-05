@@ -143,7 +143,7 @@ const Booking = () => {
 
     const formattedDate = date?.toLocaleString("sv-SE");
 
-    const recipients = getEmailRecipients({
+    /*const recipients = getEmailRecipients({
       users: [],
       booking: {
         id: "placeholderId",
@@ -160,7 +160,7 @@ const Booking = () => {
       },
       sessionUserId: sessionData.user.id,
       eventType: "ADD",
-    });
+    });*/
 
     mutateBooking(
       {
@@ -176,11 +176,12 @@ const Booking = () => {
       {
         onSuccess: () => {
           if (!joinable) {
-            console.log(
-              "No email sent due to booking being set to joinable when added"
-            );
           } else {
-            emailDispatcher({
+            console.log(
+              "Email dispatch temporarily disabled during booking publish"
+            );
+
+            /*emailDispatcher({
               originalBooking: {
                 id: "placeholderId",
                 associationId: null,
@@ -199,7 +200,7 @@ const Booking = () => {
               bookings: [],
               eventType: "ADD",
               mutation: emailerMutation,
-            });
+            }); */
           }
           void router.push("/");
           setPreventLocalStorageWrite(true);
