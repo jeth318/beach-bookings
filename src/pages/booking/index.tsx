@@ -20,6 +20,7 @@ import {
   setPrePopulateBookingState,
 } from "~/utils/storage";
 import Image from "next/image";
+import Link from "next/link";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -45,17 +46,11 @@ const Booking = () => {
   const [facility, setFacility] = useState<Facility | null>();
   const [maxPlayers, setMaxPlayers] = useState<number>(4);
   const [joinable, setJoinable] = useState<boolean>(true);
-  const [isLoading, setIsLoading] = useState<boolean>();
   const [preventLocalStorageWrite, setPreventLocalStorageWrite] =
     useState<boolean>(false);
 
-  const {
-    data: bookings,
-    refetch: refetchBookings,
-    isInitialLoading: isInitialLoadingBookings,
-  } = api.booking.getAll.useQuery();
-
   const { data: facilities } = api.facility.getAll.useQuery();
+  const { data: user, isFetched: isUserFetched } = api.user.get.useQuery();
 
   const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
     api.booking.create.useMutation({});
@@ -126,7 +121,6 @@ const Booking = () => {
         facility,
         maxPlayers,
         joinable,
-        isLoading,
       });
     }
   }, [
@@ -137,12 +131,10 @@ const Booking = () => {
     facility,
     maxPlayers,
     joinable,
-    isLoading,
     preventLocalStorageWrite,
   ]);
 
-  const isInitialLoading =
-    isInitialLoadingBookings || sessionStatus === "loading";
+  const isInitialLoading = sessionStatus === "loading";
 
   const addBooking = () => {
     if (!validBooking) {
@@ -204,14 +196,12 @@ const Booking = () => {
               },
               recipients,
               bookerName: sessionData.user.name || "Someone",
-              bookings: bookings || [],
+              bookings: [],
               eventType: "ADD",
               mutation: emailerMutation,
             });
           }
-          void refetchBookings().then(() => {
-            void router.push("/");
-          });
+          void router.push("/");
           setPreventLocalStorageWrite(true);
           localStorage.removeItem("booking-state");
         },
@@ -286,11 +276,34 @@ const Booking = () => {
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
 
-  if (!hydrated || isInitialLoading) {
+  if (!hydrated || isInitialLoading || !isUserFetched) {
     return (
       <div className="flex h-screen items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <BeatLoader size={20} color="white" />
       </div>
+    );
+  }
+
+  if (sessionData?.user.id && !user?.name) {
+    return (
+      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        <div className="flex h-screen flex-col items-center p-3">
+          <Image
+            alt="beach-spike"
+            width={300}
+            height={300}
+            src="/beach-spike.png"
+          />
+          <h2 className="mb-4 text-4xl text-white">Hello stranger! 👋</h2>
+          <h3 className="text-center text-xl text-white">
+            If you want to publish or join a booking, you must first add your
+            name in your account.
+          </h3>
+          <Link href="/settings" className="btn-info btn mt-10 text-white">
+            Settings
+          </Link>
+        </div>
+      </main>
     );
   }
 
@@ -318,7 +331,6 @@ const Booking = () => {
                   level="success"
                 >
                   <BeforePublishInfo
-                    isLoading={isLoading}
                     joinable={joinable}
                     callback={onJoinableChange}
                   />
@@ -432,9 +444,7 @@ const Booking = () => {
                   <label
                     style={{ position: "relative" }}
                     className={`${
-                      validBooking && !isInitialLoadingBookings
-                        ? "btn-success"
-                        : "btn-disabled"
+                      validBooking ? "btn-success" : "btn-disabled"
                     } btn text-white`}
                     htmlFor="action-modal-booking"
                   >

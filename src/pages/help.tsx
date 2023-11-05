@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { SubHeader } from "~/components/SubHeader";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 
@@ -18,10 +19,18 @@ const Help = () => {
       <div
         style={{
           padding: 10,
-          paddingTop: 70,
+          paddingTop: 20,
           maxWidth: 600,
         }}
+        className="flex flex-col justify-center"
       >
+        <Image
+          alt="beach-game"
+          className="self-center"
+          width={300}
+          height={300}
+          src="/beach-spike.png"
+        />
         <h1 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
           <span className="bg-gradient-to-r from-sky-400 to-emerald-600 bg-clip-text text-transparent">
             How to beach book

@@ -2,7 +2,7 @@ import { JoinableToggle } from "./JoinableToggle";
 
 type Props = {
   joinable: boolean;
-  isLoading: boolean | undefined;
+  isLoading?: boolean;
   callback: () => void;
 };
 export const BeforePublishInfo = ({ joinable, isLoading, callback }: Props) => {

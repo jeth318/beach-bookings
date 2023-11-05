@@ -214,7 +214,7 @@ export const getFrogText = (path: string) => {
     return "No old bookings yet...";
   }
 
-  return "No bookings found. Either we have to step it up and start playing and adding bookings, or else there is a bug somewhere in the code 🐸";
+  return "There are no upcoming bookings right now";
 };
 
 export const removeBookingText =

@@ -6,21 +6,11 @@ import { SubHeader } from "~/components/SubHeader";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { PageLoader } from "~/components/PageLoader";
 
-export async function getStaticProps() {
-  await serverSideHelpers.booking.getAll.prefetch();
-  return {
-    props: {
-      trpcState: serverSideHelpers.dehydrate(),
-    },
-    revalidate: 1,
-  };
-}
-
 const Joined = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
   const bookingsQuery = api.booking.getAll.useQuery(undefined, {
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
 

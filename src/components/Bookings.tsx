@@ -278,7 +278,7 @@ export const Bookings = ({ bookings }: Props) => {
           title = "What is your name?";
           confirmButtonText = "Settings";
           level = "info";
-          body = `Please go to settings and enter your name in order to ${action} bookings.`;
+          body = `Please go to settings and enter your name in order to ${action} this booking.`;
         }
 
         return (

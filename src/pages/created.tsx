@@ -4,11 +4,11 @@ import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
 import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
-import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { PageLoader } from "~/components/PageLoader";
+import { serverSideHelpers } from "~/utils/staticPropsUtil";
 
 export async function getStaticProps() {
-  await serverSideHelpers.booking.getUpcomingForUser.prefetch();
+  await serverSideHelpers.booking.getAll.prefetch();
   return {
     props: {
       trpcState: serverSideHelpers.dehydrate(),
@@ -21,14 +21,19 @@ const Created = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
 
-  const bookingsQuery = api.booking.getUpcomingForUser.useQuery(undefined, {
-    refetchOnMount: false,
+  const bookingsQuery = api.booking.getAll.useQuery(undefined, {
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
 
   if (bookingsQuery.status !== "success") {
     // won't happen since we're using `fallback: "blocking"`
-    return <>Loading...</>;
+    return (
+      <PageLoader
+        isMainPage={false}
+        bgColor={"bg-gradient-to-b from-[#01797391] to-[#000000]"}
+      />
+    );
   }
   const { data: bookings } = bookingsQuery;
 
