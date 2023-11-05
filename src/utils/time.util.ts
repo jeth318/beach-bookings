@@ -27,6 +27,12 @@ export const months = [
   "Dec",
 ];
 
+export const subtractHours = (date: Date, hours: number) => {
+  const hoursToAdd = hours * 60 * 60 * 1000;
+  date.setTime(date.getTime() - hoursToAdd);
+  return date;
+};
+
 export const parseTime = (booking: Booking) => {
   const endDate = new Date(
     booking.date.getTime() + booking.duration * 60 * 1000

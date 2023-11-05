@@ -6,10 +6,29 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { subtractHours } from "~/utils/time.util";
 
 export const bookingRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.booking.findMany({});
+    const upcomingAndOngoing = subtractHours(new Date(), 1.5);
+    console.log({ upcomingAndOngoing });
+
+    return ctx.prisma.booking.findMany({
+      where: {
+        date: {
+          gte: upcomingAndOngoing,
+        },
+      },
+    });
+  }),
+  getHistorical: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.booking.findMany({
+      where: {
+        date: {
+          lte: new Date(),
+        },
+      },
+    });
   }),
   getForUser: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.booking.findMany({

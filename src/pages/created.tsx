@@ -6,10 +6,9 @@ import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { PageLoader } from "~/components/PageLoader";
-import { SharedHead } from "~/components/SharedHead";
 
 export async function getStaticProps() {
-  await serverSideHelpers.booking.getAll.prefetch();
+  await serverSideHelpers.booking.getUpcomingForUser.prefetch();
   return {
     props: {
       trpcState: serverSideHelpers.dehydrate(),
@@ -22,7 +21,7 @@ const Created = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
 
-  const bookingsQuery = api.booking.getAll.useQuery(undefined, {
+  const bookingsQuery = api.booking.getUpcomingForUser.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
