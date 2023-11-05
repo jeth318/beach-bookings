@@ -15,6 +15,19 @@ export const userRouter = createTRPCRouter({
   getAllWithEmail: publicProcedure.query(async ({ ctx }) => {
     return ctx.prisma.user.findMany({});
   }),
+  getUserIdsWithAddConsent: protectedProcedure.query(async ({ ctx }) => {
+    const users = await ctx.prisma.user.findMany({
+      where: {
+        emailConsents: {
+          has: "ADD",
+        },
+      },
+    });
+    return users.map((user) => ({
+      id: user.id,
+      emailConsents: user.emailConsents,
+    }));
+  }),
   get: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.user.findUnique({
       where: {

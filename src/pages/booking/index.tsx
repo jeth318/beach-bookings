@@ -51,9 +51,13 @@ const Booking = () => {
 
   const { data: facilities } = api.facility.getAll.useQuery();
   const { data: user, isFetched: isUserFetched } = api.user.get.useQuery();
+  const { data: usersWithAddConsent } =
+    api.user.getUserIdsWithAddConsent.useQuery();
 
   const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
     api.booking.create.useMutation({});
+
+  const emailerMutation = api.emailer.sendEmail.useMutation();
 
   const onJoinableChange = () => {
     setJoinable(!joinable);
@@ -137,24 +141,14 @@ const Booking = () => {
 
     const formattedDate = date?.toLocaleString("sv-SE");
 
-    /*const recipients = getEmailRecipients({
-      users: [],
-      booking: {
-        id: "placeholderId",
-        associationId: null,
-        facilityId: null,
-        private: true,
-        userId: sessionData?.user.id,
-        date: new Date(formattedDate.replace(" ", "T")),
-        court: court || null,
-        duration: duration || 0,
-        players: [],
-        maxPlayers: maxPlayers || null,
-        joinable: joinable,
-      },
+    const recipients = getEmailRecipients({
+      users: usersWithAddConsent || [],
+      playersInBooking: [],
       sessionUserId: sessionData.user.id,
       eventType: "ADD",
-    });*/
+    });
+
+    console.log({ recipients });
 
     mutateBooking(
       {
@@ -169,13 +163,12 @@ const Booking = () => {
       },
       {
         onSuccess: () => {
-          if (!joinable) {
-          } else {
-            console.log(
-              "Email dispatch temporarily disabled during booking publish"
-            );
+          console.log(
+            "Email dispatch temporarily disabled during booking publish"
+          );
 
-            /*emailDispatcher({
+          console.log({
+            payloadToDispatcher: {
               originalBooking: {
                 id: "placeholderId",
                 associationId: null,
@@ -194,8 +187,31 @@ const Booking = () => {
               bookings: [],
               eventType: "ADD",
               mutation: emailerMutation,
-            }); */
-          }
+            },
+          });
+
+          emailDispatcher({
+            originalBooking: {
+              id: "placeholderId",
+              associationId: null,
+              facilityId: null,
+              private: true,
+              userId: sessionData?.user.id,
+              date: new Date(formattedDate?.replace(" ", "T")),
+              court: court || null,
+              duration: duration || 0,
+              players: [],
+              maxPlayers: maxPlayers || null,
+              joinable: joinable,
+            },
+            recipients,
+            bookerName: sessionData.user.name || "Someone",
+            bookings: [],
+            eventType: "ADD",
+            mutation: emailerMutation,
+          });
+          console.log("HEJHEJ");
+
           void router.push("/");
           setPreventLocalStorageWrite(true);
           localStorage.removeItem("booking-state");
@@ -294,7 +310,7 @@ const Booking = () => {
             If you want to publish or join a booking, you must first add your
             name in your account.
           </h3>
-          <Link href="/settings" className="btn-info btn mt-10 text-white">
+          <Link href="/settings" className="btn btn-info mt-10 text-white">
             Settings
           </Link>
         </div>
@@ -305,6 +321,7 @@ const Booking = () => {
   return (
     <>
       <SubHeader title={"Publish booking"} />
+      <button className="btn-large btn">SEND TEST EMAIL</button>
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
@@ -430,7 +447,7 @@ const Booking = () => {
                 <div className="w-100 btn-group btn-group-horizontal mb-40 flex justify-center self-center pt-5">
                   <label
                     htmlFor="action-modal-booking-cancel"
-                    className="btn-warning btn text-white"
+                    className="btn btn-warning text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   >
                     Cancel

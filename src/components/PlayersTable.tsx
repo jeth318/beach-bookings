@@ -47,7 +47,7 @@ export const PlayersTable = ({ booking }: Props) => {
 
   const removePlayer = (playerId: string) => {
     const recipients = getEmailRecipients({
-      booking,
+      playersInBooking: booking.players,
       users: users || [],
       sessionUserId: "",
       eventType: "KICK",
@@ -161,7 +161,7 @@ export const PlayersTable = ({ booking }: Props) => {
                     <div className="br-3 flex flex-row gap-2">
                       {player.email && (
                         <a
-                          className="btn-outline btn-accent btn-sm btn"
+                          className="btn-outline btn btn-accent btn-sm"
                           href={`sms:${""}`}
                         >
                           SMS
@@ -169,7 +169,7 @@ export const PlayersTable = ({ booking }: Props) => {
                       )}
                       {player.email && (
                         <a
-                          className="btn-outline btn-info btn-sm btn text-white"
+                          className="btn-outline btn btn-info btn-sm text-white"
                           href={`mailto:${
                             player.email || ""
                           }?subject=Regarding the booking on ${booking.date.toDateString()}`}
@@ -182,7 +182,7 @@ export const PlayersTable = ({ booking }: Props) => {
                       playersInBooking.length >= 2 && (
                         <label
                           onClick={() => setPlayerToRemove(player.id)}
-                          className="btn-outline btn-sm btn"
+                          className="btn-outline btn btn-sm"
                           htmlFor="action-modal-player-remove"
                         >
                           Kick 👋

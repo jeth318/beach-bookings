@@ -60,7 +60,7 @@ export const emailDispatcher = ({
   mutation,
   eventType,
 }: EmailDispatchProps) => {
-  if (!bookings?.[0]) {
+  if (eventType !== "ADD" && !bookings?.[0]) {
     return null;
   }
 
@@ -72,7 +72,6 @@ export const emailDispatcher = ({
     originalBooking,
     bookings,
   });
-
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   mutation.mutate(
     {

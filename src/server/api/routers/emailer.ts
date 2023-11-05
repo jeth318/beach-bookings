@@ -43,9 +43,14 @@ export const emailerRouter = createTRPCRouter({
       try {
         const users = await ctx.prisma.user.findMany({});
 
-        const emailAddresses = users
-          .filter((user) => input.recipients.includes(user.id))
-          .map((user) => user.email);
+        const emailAddresses =
+          input.eventType === "ADD"
+            ? users
+                .filter((user) => user.emailConsents.includes("ADD"))
+                .map((user) => user.email)
+            : users
+                .filter((user) => input.recipients.includes(user.id))
+                .map((user) => user.email);
 
         console.log({ receivingEmailAddresses: emailAddresses });
 

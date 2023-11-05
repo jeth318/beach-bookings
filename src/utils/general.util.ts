@@ -4,8 +4,8 @@ import { type EventType, getTimeWithZeroPadding } from "./booking.util";
 type EmailRecipientsProps = {
   sessionUserId: string;
   eventType: EventType;
-  booking: Booking;
-  users: User[];
+  playersInBooking?: string[];
+  users?: { id: string; emailConsents: string[] }[] | undefined;
 };
 
 type MailOptions = {
@@ -81,24 +81,22 @@ export const getMailOptions = ({ sender, recipients }: MailOptions) => {
 };
 
 export const getEmailRecipients = ({
-  users,
-  booking,
+  users = [],
+  playersInBooking = [],
   sessionUserId,
   eventType,
 }: EmailRecipientsProps) => {
   if (eventType === "ADD") {
-    // Temporary disable email dispatch on ADD event.
-    return [];
-    /*return users
-      .filter((user) => user.id !== sessionUserId)
-      .filter((user) => user.emailConsents.includes("ADD"))
-      .map((user) => user.id);
-      */
+    try {
+      return users
+        .filter((user) => user.id !== sessionUserId)
+        .filter((user) => user.emailConsents.includes("ADD"))
+        .map((user) => user.id);
+    } catch (error) {}
   }
 
   return users
-    .filter((user) => !!user.id)
-    .filter((user) => booking.players.includes(user.id))
+    .filter((user) => playersInBooking.includes(user.id))
     .filter((user) => user?.emailConsents?.includes(eventType))
     .filter((user) => user.id !== sessionUserId)
     .map((user) => user.id);

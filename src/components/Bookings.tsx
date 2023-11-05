@@ -98,7 +98,7 @@ export const Bookings = ({ bookings }: Props) => {
   ) => {
     const recipients = getEmailRecipients({
       users,
-      booking,
+      playersInBooking: booking.players,
       sessionUserId: sessionUserId || "",
       eventType,
     });

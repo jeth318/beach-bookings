@@ -224,7 +224,7 @@ const Booking = () => {
     if (!!bte) {
       const recipients = getEmailRecipients({
         users: users || [],
-        booking: bte,
+        playersInBooking: bte.players,
         sessionUserId: sessionData?.user.id,
         eventType: "MODIFY",
       });
@@ -266,19 +266,7 @@ const Booking = () => {
     } else {
       const recipients = getEmailRecipients({
         users: users || [],
-        booking: {
-          id: "placeholderId",
-          associationId: null,
-          facilityId: null,
-          private: true,
-          userId: sessionData?.user.id,
-          date: new Date(formattedDate.replace(" ", "T")),
-          court: court || null,
-          duration: duration || 0,
-          players: [],
-          maxPlayers: maxPlayers || null,
-          joinable: joinable,
-        },
+        playersInBooking: [],
         sessionUserId: sessionData.user.id,
         eventType: "ADD",
       });
@@ -394,7 +382,7 @@ const Booking = () => {
                       href="/"
                       className={`${
                         validBooking && !isLoadingBookingMutation
-                          ? "btn-warning btn"
+                          ? "btn btn-warning"
                           : "btn-disabled"
                       } btn text-white`}
                     >
