@@ -178,7 +178,7 @@ export const Bookings = ({ bookings }: Props) => {
       },
       {
         onSuccess: (mutatedBooking: Booking) => {
-            handleMutationSuccess(mutatedBooking, booking, "JOIN");
+          handleMutationSuccess(mutatedBooking, booking, "JOIN");
         },
         onError: (error) => {
           console.log("ERRRRROOOR", error);
@@ -275,10 +275,10 @@ export const Bookings = ({ bookings }: Props) => {
           callback = async () => {
             await router.push("/settings");
           };
-          title = "Name missing";
+          title = "What is your name?";
           confirmButtonText = "Settings";
           level = "info";
-          body = `Please go to settings and enter your name in order to ${action} this booking.`;
+          body = `Please go to settings and enter your name in order to ${action} bookings.`;
         }
 
         return (

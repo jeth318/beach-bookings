@@ -1,14 +1,22 @@
 import { api } from "~/utils/api";
 import ActionModal from "./ActionModal";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { signOut } from "next-auth/react";
+import { BeatLoader } from "react-spinners";
 
 export const AccountControl = () => {
-  const { mutate: mutateUserDelete } = api.user.delete.useMutation();
+  const { mutate: mutateUserDelete, isLoading: isDeleting } =
+    api.user.delete.useMutation();
   const { data: bookingsCreated } = api.booking.getForUser.useQuery();
   const { data: bookingsJoined } = api.booking.getJoined.useQuery();
 
   const onAccountDelete = () => {
-    mutateUserDelete();
+    mutateUserDelete(undefined, {
+      onSuccess: () => {
+        void signOut();
+      },
+    });
   };
 
   const leaveJoinedBookingsDialogue = (
@@ -47,41 +55,15 @@ export const AccountControl = () => {
     </div>
   );
 
-  const removeCreatedBookingsDialogue = (
-    <div>
-      <p className="mt-2">
-        You have one or more upcoming bookings published by you.{" "}
-        <Link href="/created" className="link text-blue-600">
-          Check out the games booked by you
-        </Link>
-        , and remove them first. Then come back here.
-      </p>
-
-      <ul className="mt-4">
-        {bookingsCreated?.length &&
-          bookingsCreated?.map((booking) => {
-            return (
-              <li key={booking.id}>
-                <Link href="/created" className="link text-blue-600">
-                  {`${booking.date.toLocaleDateString()} - ${booking.date.toLocaleTimeString()}`}
-                </Link>
-              </li>
-            );
-          })}
-      </ul>
-    </div>
-  );
-
   const removeAccountDialogue = (
     <div>
-      <p className="mt-2">
+      <p className="mb-2 mt-2">
         This action will remove your account data from the Beach Bookings
         database (email, phone and name).
       </p>
-      <br />
       <p>
         Later, if you feel like re-joining, simply log in again using one of the
-        login methods and your back on tracks with a new account.
+        login methods and your back on track with a brand new account.
       </p>
     </div>
   );
@@ -95,9 +77,9 @@ export const AccountControl = () => {
         title={
           !!bookingsJoined?.length || bookingsCreated?.length
             ? "Unfinished business 🚫"
-            : "Is this goodbye?"
+            : "Tiiime tooo say goodbye 🎶🥲"
         }
-        confirmButtonText={"REMOVE ACCOUNT"}
+        confirmButtonText={`Remove account`}
         cancelButtonText={
           !!bookingsJoined?.length || bookingsCreated?.length
             ? "CLOSE"
@@ -106,21 +88,30 @@ export const AccountControl = () => {
         level={"error"}
         hideConfirm={!!bookingsJoined?.length || !!bookingsCreated?.length}
       >
-        <h3 className="text-sm">
-          You have got some bookings that you need to leave or remove before you
-          can say goodbye.
-        </h3>
-
-        {(!!bookingsJoined?.length || !!bookingsCreated?.length) &&
-          leaveJoinedBookingsDialogue}
+        {!!bookingsJoined?.length || !!bookingsCreated?.length ? (
+          <>
+            <h3 className="text-sm">
+              You have got some bookings that you need to leave or remove before
+              you can say goodbye.
+            </h3>
+            {leaveJoinedBookingsDialogue}
+          </>
+        ) : (
+          removeAccountDialogue
+        )}
       </ActionModal>
-      <div className="mb-20 mt-5 flex justify-center">
+      <div className="mb-20 mt-5 flex flex-col items-center justify-center">
         <label
           htmlFor="action-modal-remove-account"
           className="btn-outline btn-error btn-ghost btn-sm btn"
         >
           Remove account
         </label>
+        {isDeleting ? (
+          <BeatLoader className="mt-2" color="red" size={20} />
+        ) : (
+          <span style={{ height: "32px" }} />
+        )}
       </div>
     </div>
   );

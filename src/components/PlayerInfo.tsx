@@ -90,9 +90,6 @@ export const PlayerInfo = ({ user }: Props) => {
 
   const onPhoneInputBlur = (event: ChangeEvent<HTMLInputElement>) => {
     setIsPhoneValid(validPhone);
-    if (event.target.value.length < 3) {
-      return "";
-    }
     setPhoneInput(event.target.value);
     if (validPhone) {
       try {
