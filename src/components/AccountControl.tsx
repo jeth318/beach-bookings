@@ -17,7 +17,7 @@ export const AccountControl = () => {
   const onAccountDelete = () => {
     setIsLoading(true);
 
-    /*mutateUserDelete(undefined, {
+    mutateUserDelete(undefined, {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onSuccess: async () => {
         await signOut();
@@ -31,7 +31,7 @@ export const AccountControl = () => {
       onSettled: () => {
         setIsLoading(false);
       },
-    });*/
+    });
   };
 
   const leaveJoinedBookingsDialogue = (

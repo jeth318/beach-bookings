@@ -42,17 +42,15 @@ model Session {
 }
 
 model User {
-    id            String        @id @default(cuid())
+    id            String    @id @default(cuid())
     name          String?
-    email         String?       @unique
+    email         String?   @unique
     emailVerified DateTime?
     image         String?
+    phone         String?
     accounts      Account[]
     sessions      Session[]
-    emailConsents String[]      @default(["ADD", "DELETE", "LEAVE", "JOIN", "KICK", "MODIFY"])
-    Association   Association[]
-    Facility      Facility[]
-    phone         String?
+    emailConsents String[]  @default(["ADD", "DELETE", "LEAVE", "JOIN", "KICK", "MODIFY"])
 }
 
 model VerificationToken {
@@ -72,7 +70,6 @@ model Booking {
     maxPlayers    Int?         @default(4)
     facility      Facility?    @relation(fields: [facilityId], references: [id])
     association   Association? @relation(fields: [associationId], references: [id])
-    // Restrict user removal if user has created an upcoming booking
     userId        String
     private       Boolean      @default(true)
     associationId String?
@@ -87,7 +84,6 @@ model Association {
     admins      String[]
     members     String[]
     private     Boolean   @default(true)
-    creator     User      @relation(fields: [userId], references: [id])
     userId      String
     Booking     Booking[]
 }
@@ -103,7 +99,6 @@ model Facility {
     lon         String?
     lat         String?
     courts      String[]
-    creator     User      @relation(fields: [userId], references: [id])
     userId      String
     Booking     Booking[]
 }
