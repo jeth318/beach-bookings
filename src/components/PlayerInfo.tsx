@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, useEffect } from "react";
+import { useState, type ChangeEvent } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
 import { Toast } from "./Toast";

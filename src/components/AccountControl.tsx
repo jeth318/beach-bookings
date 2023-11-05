@@ -1,9 +1,9 @@
 import { api } from "~/utils/api";
 import ActionModal from "./ActionModal";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import { BeatLoader } from "react-spinners";
+import { useState } from "react";
 
 export const AccountControl = () => {
   const { mutate: mutateUserDelete, isLoading: isDeleting } =
@@ -11,10 +11,17 @@ export const AccountControl = () => {
   const { data: bookingsCreated } = api.booking.getForUser.useQuery();
   const { data: bookingsJoined } = api.booking.getJoined.useQuery();
 
+  const [isLoading, setIsLoading] = useState<boolean>();
+
   const onAccountDelete = () => {
+    setIsLoading(true);
     mutateUserDelete(undefined, {
-      onSuccess: () => {
-        void signOut();
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      onSuccess: async () => {
+        await signOut();
+      },
+      onSettled: () => {
+        setIsLoading(false);
       },
     });
   };
@@ -107,7 +114,7 @@ export const AccountControl = () => {
         >
           Remove account
         </label>
-        {isDeleting ? (
+        {isLoading ? (
           <BeatLoader className="mt-2" color="red" size={20} />
         ) : (
           <span style={{ height: "32px" }} />
