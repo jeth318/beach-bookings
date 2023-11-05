@@ -48,8 +48,6 @@ export const PlayerInfo = ({ user }: Props) => {
     nameInput.length <= 30
   );
 
-  console.log({ validPhone });
-
   const renderToast = (body: string) => {
     setToastMessage(body);
     setTimeout(() => {

@@ -54,7 +54,6 @@ const Booking = () => {
 
   const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
     api.booking.create.useMutation({});
-  const emailerMutation = api.emailer.sendEmail.useMutation();
 
   const onJoinableChange = () => {
     setJoinable(!joinable);
@@ -63,13 +62,9 @@ const Booking = () => {
   const localStorageState = getPrePopulationState(facilities);
 
   useEffect(() => {
-    console.log("HEJ HEJ HEJ");
     setHydrated(true);
 
-    console.log({ facilities, facility, hydrated });
-
     if (!hydrated) {
-      console.log("NON HYDR");
       return undefined;
     }
 
@@ -80,7 +75,6 @@ const Booking = () => {
     if (localStorageState) {
       setJoinable(localStorageState.joinable);
 
-      console.log({ localStorageStateFacil: localStorageState.facility });
       if (localStorageState.facility) {
         setFacility(localStorageState.facility);
       }

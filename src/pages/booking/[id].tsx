@@ -128,8 +128,6 @@ const Booking = () => {
     } as PrePopulateBookingState);
 
   useEffect(() => {
-    console.log(router.isReady, router.query.id, bte);
-
     if (
       !router.query.id ||
       !isSingleBookingFetched ||

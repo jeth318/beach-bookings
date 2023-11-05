@@ -47,7 +47,7 @@ export const emailerRouter = createTRPCRouter({
           .filter((user) => input.recipients.includes(user.id))
           .map((user) => user.email);
 
-        console.log({ users, emailAddresses });
+        console.log({ receivingEmailAddresses: emailAddresses });
 
         if (isEmailDispatcherActive === "true") {
           console.warn("Email dispatcher is active");
@@ -73,7 +73,6 @@ export const emailerRouter = createTRPCRouter({
             });
           });
 
-          console.log(promises);
           const resolved = await Promise.all([
             verificationPromise,
             ...promises,

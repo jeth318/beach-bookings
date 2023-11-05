@@ -102,8 +102,6 @@ export const PlayersTable = ({ booking }: Props) => {
         </div>
       ) : (
         playersInBooking?.map((player) => {
-          console.log(player);
-
           const displayName =
             player.name && player.name.length > 2
               ? player.name?.split(" ")[0]
