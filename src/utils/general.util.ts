@@ -87,13 +87,17 @@ export const getEmailRecipients = ({
   eventType,
 }: EmailRecipientsProps) => {
   if (eventType === "ADD") {
-    return users
+    // Temporary disable email dispatch on ADD event.
+    return [];
+    /*return users
       .filter((user) => user.id !== sessionUserId)
       .filter((user) => user.emailConsents.includes("ADD"))
       .map((user) => user.id);
+      */
   }
 
   return users
+    .filter((user) => !!user.id)
     .filter((user) => booking.players.includes(user.id))
     .filter((user) => user?.emailConsents?.includes(eventType))
     .filter((user) => user.id !== sessionUserId)
