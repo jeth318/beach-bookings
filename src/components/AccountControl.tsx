@@ -47,7 +47,7 @@ export const AccountControl = () => {
 
       {!!bookingsCreated?.length && (
         <ul>
-          <Link href="/joined" className="link text-blue-600">
+          <Link href="/created" className="link text-blue-600">
             <h3>My created bookings</h3>
           </Link>
           {bookingsCreated?.map((booking) => {
