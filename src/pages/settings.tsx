@@ -48,14 +48,17 @@ const Settings = () => {
   }
 
   return (
-    <main className="min-w-sm flex min-w-fit flex-col">
+    <>
       <SubHeader title="Settings" />
-      <div className="smooth-render-in flex flex-col items-center justify-center bg-gradient-to-b from-[#01797391] to-[#000000]">
-        <PlayerInfo user={user} />
-        <EmailConsents />
-        <AccountControl />
-      </div>
-    </main>
+
+      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#01797391] to-[#000000]">
+        <div className="smooth-render-in container max-w-md p-4">
+          <PlayerInfo user={user} />
+          <EmailConsents />
+          <AccountControl />
+        </div>
+      </main>
+    </>
   );
 };
 

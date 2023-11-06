@@ -1,17 +1,15 @@
 import { useSession } from "next-auth/react";
 
-import { type ChangeEvent, useEffect, useState } from "react";
+import { type ChangeEvent, useState, useEffect } from "react";
 
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { Booking, type Facility } from "@prisma/client";
 import Link from "next/link";
 import { PlayersTable } from "~/components/PlayersTable";
-import DatePicker from "react-datepicker";
 
-import "react-datepicker/dist/react-datepicker.css";
 import { SubHeader } from "~/components/SubHeader";
-import { type EventType, emailDispatcher } from "~/utils/booking.util";
+import { emailDispatcher, maxPlayersToShow } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
 import { BeatLoader } from "react-spinners";
 import ActionModal from "~/components/ActionModal";
@@ -28,57 +26,37 @@ const Booking = () => {
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
   const [facility, setFacility] = useState<Facility | null>();
-  const [eventType] = useState<EventType>("JOIN");
   const [maxPlayers, setMaxPlayers] = useState<number>();
   const [joinable, setJoinable] = useState<boolean>(true);
-
-  type PrePopulateBookingState = {
-    bte: Booking;
-    court?: string;
-    duration?: number;
-    date: Date;
-    time: string;
-    facility: Facility;
-    eventType: EventType;
-    maxPlayers?: number;
-    joinable: boolean;
-  };
-
-  const setHours = (date: Date, hours: number) => {
-    const updated = new Date(date);
-    updated.setHours(hours);
-    return updated;
-  };
-
-  const setMinutes = (minutes: number) => {
-    const now = new Date();
-    const updated = now.setMinutes(minutes);
-    return new Date(updated);
-  };
+  const [eventType, setEventType] = useState<boolean>(true);
 
   const query = Array.isArray(router.query.id)
     ? router?.query?.id[0] || ""
     : router?.query?.id || "";
 
-  const { data: users } = api.user.getAll.useQuery();
-  const { data: facilities, isFetched: isFacilitiesFetched } =
+  const { data: facilities, isFetched: areFacilitiesFetched } =
     api.facility.getAll.useQuery();
 
-  const { data: bte, isFetched: isSingleBookingFetched } =
-    api.booking.getSingle.useQuery({
-      id: query,
+  const { data: booking } = api.booking.getSingle.useQuery({
+    id: query,
+  });
+
+  const { data: users, isFetched: areUsersFetched } =
+    api.user.getMultipleByIds.useQuery({
+      playerIds: booking?.players || [],
     });
 
   const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
     api.booking.update.useMutation({});
+
   const { mutate: mutateJoinable, isLoading: isLoadingJoinable } =
     api.booking.updateJoinable.useMutation({});
   const emailerMutation = api.emailer.sendEmail.useMutation();
 
   const onJoinableChange = () => {
-    if (bte) {
+    if (booking) {
       mutateJoinable(
-        { id: bte.id, joinable: !joinable },
+        { id: booking.id, joinable: !joinable },
         {
           onSuccess: (mutatedBooking: Booking) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -97,76 +75,10 @@ const Booking = () => {
   const facilitiesToShow =
     facilities
       ?.filter((facility) => facility.id === "1")
-      .map((facility) => {
-        return {
-          id: facility.id,
-          name: facility.name,
-        };
-      }) || [];
-
-  const maxPlayersToShow = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
-    (item) => ({
-      id: String(item),
-      name: String(item),
-    })
-  );
-  const getPrePopulationSource = (
-    bte: Booking | null | undefined,
-    facilities: Facility[]
-  ) =>
-    ({
-      court: bte?.court,
-      duration: bte?.duration,
-      maxPlayers: bte?.maxPlayers,
-      date: bte?.date,
-      joinable: Boolean(bte?.joinable),
-      time: bte?.date.toLocaleTimeString("sv-SE", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      facility: facilities.find(({ id }) => id === bte?.facilityId),
-    } as PrePopulateBookingState);
-
-  useEffect(() => {
-    if (
-      !router.query.id ||
-      !isSingleBookingFetched ||
-      !bte ||
-      !isFacilitiesFetched
-    ) {
-      return undefined;
-    }
-
-    const source = getPrePopulationSource(bte, facilities || []);
-
-    if (source) {
-      setJoinable(source.joinable);
-
-      if (source.facility) {
-        setFacility(source.facility);
-      }
-
-      if (Number.isInteger(source.duration)) {
-        setDuration(source.duration);
-      }
-      if (source.maxPlayers) {
-        setMaxPlayers(source.maxPlayers);
-      }
-      if (source.court) {
-        setCourt(source.court);
-      }
-
-      if (source.date !== null && source.date !== undefined) {
-        setDate(new Date(source.date));
-      }
-
-      if (source.time !== null && source.time !== undefined) {
-        setTime(source.time);
-      }
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.isReady, router.query.id, bte, isFacilitiesFetched]);
+      .map((facility) => ({
+        id: facility.id,
+        name: facility.name,
+      })) || [];
 
   const isInitialLoading = sessionStatus === "loading";
 
@@ -214,17 +126,17 @@ const Booking = () => {
     setCourt(event?.target.value);
   };
 
-  const addBooking = () => {
+  const updateBooking = () => {
     if (!validBooking) {
       return null;
     }
 
     const formattedDate = date?.toLocaleString("sv-SE");
 
-    if (!!bte) {
+    if (!!booking) {
       const recipients = getEmailRecipients({
         users: users || [],
-        playersInBooking: bte.players,
+        playersInBooking: booking.players,
         sessionUserId: sessionData?.user.id,
         eventType: "MODIFY",
       });
@@ -234,12 +146,14 @@ const Booking = () => {
         facility.durations.find((dur) => dur === duration?.toString()) !==
           undefined;
 
+      console.log("WILL");
+
       mutateBooking(
         {
-          id: bte.id,
+          id: booking.id,
           date: new Date(formattedDate.replace(" ", "T")),
           court: court || null,
-          players: bte.players,
+          players: booking.players,
           duration: preserveDuration ? duration : 0,
           facility: facility.id || null,
           association: null,
@@ -248,28 +162,22 @@ const Booking = () => {
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
+            console.log("WILL DISPATCH ACCCC");
+
             emailDispatcher({
-              originalBooking: bte,
+              originalBooking: booking,
               mutatedBooking,
               bookerName: sessionData.user.name || "Someone",
               bookings: [],
-              eventType,
+              eventType: "MODIFY",
               recipients,
               mutation: emailerMutation,
             });
-            void router.push("/");
-            /*  void refetchBookings().then(() => {
-            }); */
+            //void router.push("/");
+            //void refetchBookings().then(() => {});
           },
         }
       );
-    } else {
-      const recipients = getEmailRecipients({
-        users: users || [],
-        playersInBooking: [],
-        sessionUserId: sessionData.user.id,
-        eventType: "ADD",
-      });
     }
   };
 
@@ -280,6 +188,57 @@ const Booking = () => {
     !!facility &&
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
+
+  console.log({ validBooking });
+
+  useEffect(() => {
+    if (!areUsersFetched || !areFacilitiesFetched) {
+      return undefined;
+    }
+    if (!facility && !!facilities?.length) {
+      setFacility(facilities.find((facility) => facility.id === "1"));
+    }
+
+    if (facility) {
+      if (!duration) {
+        setDuration(booking?.duration);
+      }
+
+      if (!court) {
+        setCourt(booking?.court);
+      }
+    }
+
+    if (!maxPlayers) {
+      setMaxPlayers(booking?.maxPlayers || 4);
+    }
+
+    if (!date) {
+      setDate(booking?.date);
+    }
+    if (date && !time) {
+      setTime(
+        date?.toLocaleTimeString("sv-SE", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      );
+    }
+  }, [
+    areFacilitiesFetched,
+    areUsersFetched,
+    booking?.court,
+    booking?.date,
+    booking?.duration,
+    booking?.maxPlayers,
+    court,
+    date,
+    duration,
+    facilities,
+    facility,
+    maxPlayers,
+    time,
+  ]);
 
   return (
     <>
@@ -292,11 +251,11 @@ const Booking = () => {
             </h2>
           </div>
         ) : (
-          <div className="container max-w-md p-4">
-            {sessionData?.user.id && bte ? (
+          <div className="smooth-render-in container max-w-md p-4">
+            {sessionData?.user.id && booking?.id && facility ? (
               <div>
                 <ActionModal
-                  callback={addBooking}
+                  callback={updateBooking}
                   data={undefined}
                   tagRef={`booking`}
                   title={`Confirm ${
@@ -373,7 +332,7 @@ const Booking = () => {
                     <label className="label">
                       <span className="label-text text-white">Players</span>
                     </label>
-                    <PlayersTable booking={bte || defaultBooking} />
+                    <PlayersTable booking={booking || defaultBooking} />
                   </>
                 )}
                 <div className="mb-40 flex flex-col justify-center">

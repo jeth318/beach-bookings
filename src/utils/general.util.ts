@@ -173,9 +173,7 @@ export const getEmailIngress = ({
         playerName || "A player"
       } left your party. It's time to find a replacement if you haven't already!`;
     case "KICK":
-      return `${
-        playerName || "A player"
-      } was kindly and respectully kicked from your party by the booking owner. No questions asked, we are still friends.`;
+      return `${"A player"} was kindly and respectfully kicked from your party by the booking owner. No questions asked, we are still friends.`;
     default:
       return "Yo beach player!";
   }
@@ -216,7 +214,7 @@ export const getFrogText = (path: string) => {
     return "No old bookings yet...";
   }
 
-  return "There are no upcoming bookings right now";
+  return "There are no upcoming bookings right now. Head over to GBC, book a court and comeback here and publish.";
 };
 
 export const removeBookingText =

@@ -108,12 +108,12 @@ export const PlayerInfo = ({ user }: Props) => {
     <>
       {toastMessage && <Toast body={toastMessage} />}
       <div className="flex flex-col justify-center text-center">
-        <div className="mb-2 mt-10 text-xl text-white">
-          <strong>Player information</strong>
+        <div className="mb-2 mt-4 text-xl text-white">
+          <strong>Player information 🥇</strong>
         </div>
       </div>
       <div style={{ width: "100%" }} className="flex max-w-md justify-center">
-        <div style={{ width: "100%" }} className="mb-4 gap-4 p-2">
+        <div style={{ width: "100%" }} className="mb-4 gap-4">
           <div style={{ width: "100%" }} className="form-control">
             <label className="label">
               <span className="label-text text-white">What is your name?</span>
@@ -125,14 +125,14 @@ export const PlayerInfo = ({ user }: Props) => {
               className={`input-group ${!validName ? "input-invalid " : ""}`}
             >
               <span
-                style={{ width: "25%" }}
+                style={{ width: "33%" }}
                 className="label-info-text flex justify-between pr-1"
               >
                 <div>Name</div>
                 <div className="self-center">{validName && "✅"}</div>
               </span>
               <input
-                style={{ width: "75%" }}
+                style={{ width: "67%" }}
                 type="text"
                 maxLength={30}
                 disabled={isLoading}
@@ -157,16 +157,16 @@ export const PlayerInfo = ({ user }: Props) => {
               className={`input-group ${!isPhoneValid ? "input-invalid " : ""}`}
             >
               <span
-                style={{ width: "25%" }}
+                style={{ width: "33%" }}
                 className="label-info-text flex justify-between pr-1"
               >
                 <div>Phone</div>
                 <div className="self-center">
-                  {!phoneInput?.length ? "🔶" : validPhone ? "✅" : ""}
+                  {!phoneInput?.length ? "🟠" : validPhone ? "✅" : ""}
                 </div>
               </span>
               <input
-                style={{ width: "75%" }}
+                style={{ width: "67%" }}
                 type="tel"
                 className="input-bordered input"
                 disabled={isLoading}
@@ -185,7 +185,7 @@ export const PlayerInfo = ({ user }: Props) => {
             </label>
             <label className="input-group">
               <span
-                style={{ width: "25%" }}
+                style={{ width: "33%" }}
                 className="label-info-text flex justify-between pr-1"
               >
                 <div>E-mail</div>
@@ -193,7 +193,7 @@ export const PlayerInfo = ({ user }: Props) => {
               </span>
               <input
                 disabled
-                style={{ width: "75%" }}
+                style={{ width: "67%" }}
                 type="text"
                 value={user?.email as string}
                 className="input-bordered input"

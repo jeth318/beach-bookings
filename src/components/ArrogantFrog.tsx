@@ -27,10 +27,17 @@ export const ArrogantFrog = () => {
         />
         <div className="p-4 text-center text-xl text-white">
           <div className="pb-4">{getFrogText(router.asPath)}</div>
+          {main && (
+            <div className="flex items-center justify-center">
+              <Link className="btn btn-info text-white" href="/booking">
+                Publish
+              </Link>
+            </div>
+          )}
           {joined && (
             <div className="flex flex-col items-center">
               <div>
-                <Link className="btn-secondary btn text-white" href="/">
+                <Link className="btn btn-secondary text-white" href="/">
                   Join bookings
                 </Link>
               </div>

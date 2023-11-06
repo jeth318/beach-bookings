@@ -329,22 +329,22 @@ const Booking = () => {
             </h2>
           </div>
         ) : (
-          <div className="container max-w-md p-4">
+          <div className="smooth-render-in container max-w-md p-4">
             {sessionData?.user.id && (
               <div>
                 <ActionModal
                   callback={addBooking}
                   data={undefined}
                   tagRef={`booking`}
-                  title="Confirm new booking"
+                  title="Confirm new booking 🏖️"
                   confirmButtonText={"Publish"}
                   cancelButtonText="Cancel"
                   level="success"
                 >
-                  <BeforePublishInfo
-                    joinable={joinable}
-                    callback={onJoinableChange}
-                  />
+                  <p className="py-4">
+                    All beach bookers with notifications enabled will receive an
+                    email about the new booking.
+                  </p>
                 </ActionModal>
                 <ActionModal
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
