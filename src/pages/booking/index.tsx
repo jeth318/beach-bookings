@@ -329,7 +329,7 @@ const Booking = () => {
             </h2>
           </div>
         ) : (
-          <div className="container max-w-md p-4">
+          <div className="smooth-render-in container max-w-md p-4">
             {sessionData?.user.id && (
               <div>
                 <ActionModal
