@@ -99,12 +99,12 @@ export const EmailConsents = () => {
     <div style={{ width: "100%" }} className="settings-container">
       {toastMessage && <Toast body={toastMessage} />}
       <div className="flex flex-col justify-center text-center">
-        <div className="pb-5 pt-2 text-xl text-white">
+        <div className="pb-5  text-xl text-white">
           <strong>Select email notifications 📥</strong>
         </div>
       </div>
       <div className="flex items-center justify-center pb-4">
-        <button className="btn-sm btn" onClick={() => toggleAll(true)}>
+        <button className="btn btn-sm" onClick={() => toggleAll(true)}>
           All! 🍭
         </button>
         <BeatLoader
@@ -115,7 +115,7 @@ export const EmailConsents = () => {
           size={10}
           color="white"
         />
-        <button className="btn-sm btn" onClick={() => toggleAll(false)}>
+        <button className="btn btn-sm" onClick={() => toggleAll(false)}>
           None ✋
         </button>
       </div>

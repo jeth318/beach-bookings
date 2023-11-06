@@ -37,7 +37,7 @@ export const AccountControl = () => {
   const leaveJoinedBookingsDialogue = (
     <div>
       {!!upcomingBookingsJoined?.length && (
-        <ul className="mt-4">
+        <ul>
           <>
             <Link href="/joined" className="link text-blue-600">
               <h3>Upcoming joined bookings</h3>
@@ -121,7 +121,7 @@ export const AccountControl = () => {
       <div className="mb-20 mt-5 flex flex-col items-center justify-center">
         <label
           htmlFor="action-modal-remove-account"
-          className="btn-outline btn-error btn-ghost btn-sm btn"
+          className="btn-outline btn btn-error btn-ghost btn-sm"
         >
           Remove account
         </label>

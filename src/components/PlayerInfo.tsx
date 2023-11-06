@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent, useReducer, useEffect } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
 import { Toast } from "./Toast";
@@ -19,9 +19,9 @@ export const PlayerInfo = ({ user }: Props) => {
 
   const { refetch: refetchUser } = api.user.get.useQuery();
 
-  const [phoneInput, setPhoneInput] = useState<string | null>(
+  const [phoneInput, setPhoneInput] = useState<string>(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    user?.phone || null
+    user?.phone || ""
   );
 
   const [nameInput, setNameInput] = useState<string | null>(
@@ -29,18 +29,13 @@ export const PlayerInfo = ({ user }: Props) => {
     user?.name || null
   );
 
-  const phoneRegexPattern = new RegExp(
-    "^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$"
-  );
-
   const [isNameValid, setIsNameValid] = useState<boolean>(true);
   const [isPhoneValid, setIsPhoneValid] = useState<boolean>(true);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const isLoading = isLoadingPhoneMutation || isLoadingNameMutation;
 
-  const validPhone =
-    !phoneInput ||
-    (phoneInput?.length > 2 && phoneRegexPattern.test(phoneInput));
+  const validPhone = !phoneInput || phoneInput.length <= 30;
 
   const validName = !!(
     nameInput &&
@@ -57,62 +52,35 @@ export const PlayerInfo = ({ user }: Props) => {
 
   const onNameInputBlur = (event: ChangeEvent<HTMLInputElement>) => {
     setIsNameValid(validName);
-    if (event.target.value.length < 3) {
-      console.log("Too short");
+    if (event.target.value.length < 3 || event.target.value.length > 30) {
       setIsNameValid(false);
-      return null;
-    }
-
-    if (event.target.value.length > 30) {
-      console.log("Too long");
-      setIsNameValid(false);
+      setNameInput(user?.name || "");
       return null;
     }
 
     setNameInput(event.target.value);
-
-    if (nameInput && validName) {
-      try {
-        mutateName(
-          { name: nameInput },
-          {
-            onSuccess: () => {
-              renderToast(`Name updated.`);
-              void refetchUser();
-            },
-          }
-        );
-      } catch (error) {}
-    }
   };
 
   const onPhoneInputBlur = (event: ChangeEvent<HTMLInputElement>) => {
     setIsPhoneValid(validPhone);
     setPhoneInput(event.target.value);
-    if (validPhone) {
-      try {
-        mutatePhone(
-          { number: phoneInput || "" },
-          {
-            onSuccess: () => {
-              renderToast(`Phone updated.`);
-              void refetchUser();
-            },
-          }
-        );
-      } catch (error) {}
-    }
   };
 
+  const hasContactInfoChanged =
+    user?.name !== nameInput || user.phone !== phoneInput;
+
   return (
-    <>
+    <div>
       {toastMessage && <Toast body={toastMessage} />}
       <div className="flex flex-col justify-center text-center">
         <div className="mb-2 mt-4 text-xl text-white">
           <strong>Player information 🥇</strong>
         </div>
       </div>
-      <div style={{ width: "100%" }} className="flex max-w-md justify-center">
+      <div
+        style={{ width: "100%" }}
+        className="flex max-w-md flex-col justify-center"
+      >
         <div style={{ width: "100%" }} className="mb-4 gap-4">
           <div style={{ width: "100%" }} className="form-control">
             <label className="label">
@@ -149,9 +117,6 @@ export const PlayerInfo = ({ user }: Props) => {
               <span className="label-text text-white">
                 When players needs to reach you quickly
               </span>
-              {isLoadingPhoneMutation && (
-                <BeatLoader color="#36d7b7" size={15} />
-              )}
             </label>
             <label
               className={`input-group ${!isPhoneValid ? "input-invalid " : ""}`}
@@ -201,7 +166,47 @@ export const PlayerInfo = ({ user }: Props) => {
             </label>
           </div>
         </div>
+        <div className="flex flex-col items-center gap-2 self-center">
+          <button
+            disabled={!hasContactInfoChanged || !validPhone || !validName}
+            className={`btn-dark btn btn-sm text-white ${
+              hasContactInfoChanged ? "btn-success" : ""
+            }`}
+            onClick={() => {
+              if (nameInput && validName && nameInput !== user?.name) {
+                try {
+                  mutateName(
+                    { name: nameInput },
+                    {
+                      onSuccess: () => {
+                        renderToast(`Name updated.`);
+                        void refetchUser();
+                      },
+                    }
+                  );
+                } catch (error) {}
+              }
+
+              if (validPhone && phoneInput !== user?.phone) {
+                try {
+                  mutatePhone(
+                    { number: phoneInput || "" },
+                    {
+                      onSuccess: () => {
+                        renderToast(`Phone updated.`);
+                        void refetchUser();
+                      },
+                    }
+                  );
+                } catch (error) {}
+              }
+            }}
+          >
+            Save changes
+          </button>
+          {isLoadingPhoneMutation && <BeatLoader color="purple" size={10} />}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
