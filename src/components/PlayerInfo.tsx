@@ -108,7 +108,7 @@ export const PlayerInfo = ({ user }: Props) => {
     <>
       {toastMessage && <Toast body={toastMessage} />}
       <div className="flex flex-col justify-center text-center">
-        <div className="mb-2 mt-10 text-xl text-white">
+        <div className="mb-2 mt-4 text-xl text-white">
           <strong>Player information 🥇</strong>
         </div>
       </div>
@@ -132,7 +132,7 @@ export const PlayerInfo = ({ user }: Props) => {
                 <div className="self-center">{validName && "✅"}</div>
               </span>
               <input
-                style={{ width: "65%" }}
+                style={{ width: "67%" }}
                 type="text"
                 maxLength={30}
                 disabled={isLoading}
@@ -166,7 +166,7 @@ export const PlayerInfo = ({ user }: Props) => {
                 </div>
               </span>
               <input
-                style={{ width: "65%" }}
+                style={{ width: "67%" }}
                 type="tel"
                 className="input-bordered input"
                 disabled={isLoading}
@@ -193,7 +193,7 @@ export const PlayerInfo = ({ user }: Props) => {
               </span>
               <input
                 disabled
-                style={{ width: "65%" }}
+                style={{ width: "67%" }}
                 type="text"
                 value={user?.email as string}
                 className="input-bordered input"

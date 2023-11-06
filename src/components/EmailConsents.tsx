@@ -96,7 +96,7 @@ export const EmailConsents = () => {
   };
 
   return (
-    <div style={{ width: "100%" }} className="settings-container p-2">
+    <div style={{ width: "100%" }} className="settings-container">
       {toastMessage && <Toast body={toastMessage} />}
       <div className="flex flex-col justify-center text-center">
         <div className="pb-5 pt-2 text-xl text-white">
