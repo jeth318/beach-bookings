@@ -50,7 +50,7 @@ model User {
     phone         String?
     accounts      Account[]
     sessions      Session[]
-    emailConsents String[]  @default(["ADD", "DELETE", "LEAVE", "JOIN", "KICK", "MODIFY"])
+    emailConsents String[]  @default(["DELETE", "LEAVE", "JOIN", "KICK", "MODIFY"])
 }
 
 model VerificationToken {
