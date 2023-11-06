@@ -11,6 +11,24 @@ export const userRouter = createTRPCRouter({
 
     return users.map((user) => ({ ...user, email: "" }));
   }),
+  getMultipleByIds: publicProcedure
+    .input(
+      z.object({
+        playerIds: z.string().array(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const users = await ctx.prisma.user.findMany({
+        where: {
+          id: { in: input.playerIds },
+        },
+      });
+
+      return users.map((user) => ({
+        id: user.id,
+        emailConsents: user.emailConsents,
+      }));
+    }),
   // CALL ONLY FROM SERVER
   getAllWithEmail: publicProcedure.query(async ({ ctx }) => {
     return ctx.prisma.user.findMany({});

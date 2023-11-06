@@ -1,4 +1,4 @@
-import { type Facility, type Booking } from "@prisma/client";
+import { type Booking } from "@prisma/client";
 import { type EventType, getTimeWithZeroPadding } from "~/utils/booking.util";
 import {
   getEmailIngress,

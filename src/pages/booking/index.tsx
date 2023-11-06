@@ -321,7 +321,6 @@ const Booking = () => {
   return (
     <>
       <SubHeader title={"Publish booking"} />
-      <button className="btn-large btn">SEND TEST EMAIL</button>
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
@@ -337,15 +336,15 @@ const Booking = () => {
                   callback={addBooking}
                   data={undefined}
                   tagRef={`booking`}
-                  title="Confirm new booking"
+                  title="Confirm new booking 🏖️"
                   confirmButtonText={"Publish"}
                   cancelButtonText="Cancel"
                   level="success"
                 >
-                  <BeforePublishInfo
-                    joinable={joinable}
-                    callback={onJoinableChange}
-                  />
+                  <p className="py-4">
+                    All beach bookers with notifications enabled will receive an
+                    email about the new booking.
+                  </p>
                 </ActionModal>
                 <ActionModal
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises

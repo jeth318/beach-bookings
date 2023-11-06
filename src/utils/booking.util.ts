@@ -50,6 +50,11 @@ export const getTimeWithZeroPadding = (hours: number, minutes: number) => {
   return `${hoursPadded}:${minutesPadded}`;
 };
 
+export const maxPlayersToShow = [4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => ({
+  id: String(item),
+  name: String(item),
+}));
+
 export const emailDispatcher = ({
   bookerName,
   recipients,
@@ -60,10 +65,6 @@ export const emailDispatcher = ({
   mutation,
   eventType,
 }: EmailDispatchProps) => {
-  if (eventType !== "ADD" && !bookings?.[0]) {
-    return null;
-  }
-
   const htmlString = buildHtmlTemplate({
     bookerName,
     playerName,

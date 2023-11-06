@@ -33,15 +33,15 @@ export const SelectInput = ({
       </label>
       <label className={`input-group ${valid ? "input-valid" : ""}`}>
         <span
-          style={{ width: "35%" }}
+          style={{ width: "33%" }}
           className="label-info-text flex justify-between pr-1"
         >
           <div>{label}</div>
-          <div className="self-center">{valid && "✅"}</div>
+          <div className="mr-1 self-center">{valid && "✅"}</div>
         </span>
 
         <select
-          style={{ width: "65%" }}
+          style={{ width: "67%" }}
           className="full-width select-bordered select w-[60%]"
           onChange={(e: ChangeEvent<HTMLSelectElement>) => callback(e)}
           value={value}
