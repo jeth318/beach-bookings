@@ -310,7 +310,7 @@ const Booking = () => {
             If you want to publish or join a booking, you must first add your
             name in your account.
           </h3>
-          <Link href="/settings" className="btn btn-info mt-10 text-white">
+          <Link href="/settings" className="btn-info btn mt-10 text-white">
             Settings
           </Link>
         </div>
@@ -321,7 +321,6 @@ const Booking = () => {
   return (
     <>
       <SubHeader title={"Publish booking"} />
-      <button className="btn-large btn">SEND TEST EMAIL</button>
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
@@ -435,19 +434,20 @@ const Booking = () => {
                     callback={onCourtSelect}
                   />
                 )}
-
-                <JoinableToggle
-                  textColor="white"
-                  value={joinable}
-                  isLoading={false}
-                  callback={onJoinableChange}
-                />
+                <div className="mb-8 mt-8">
+                  <JoinableToggle
+                    textColor="white"
+                    value={joinable}
+                    isLoading={false}
+                    callback={onJoinableChange}
+                  />
+                </div>
                 <DateSelector date={date} time={time} callback={onDateSelect} />
 
                 <div className="w-100 btn-group btn-group-horizontal mb-40 flex justify-center self-center pt-5">
                   <label
                     htmlFor="action-modal-booking-cancel"
-                    className="btn btn-warning text-white"
+                    className="btn-warning btn text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   >
                     Cancel
