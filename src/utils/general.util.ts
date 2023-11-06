@@ -214,7 +214,7 @@ export const getFrogText = (path: string) => {
     return "No old bookings yet...";
   }
 
-  return "There are no upcoming bookings right now";
+  return "There are no upcoming bookings right now. Head over to GBC, book a court and comeback here and publish.";
 };
 
 export const removeBookingText =

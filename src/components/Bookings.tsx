@@ -226,7 +226,11 @@ export const Bookings = ({ bookings }: Props) => {
     (!bookingsToShow?.length && !historyOnly);
 
   if (showArrogantFrog) {
-    return <ArrogantFrog />;
+    return (
+      <div>
+        <ArrogantFrog />
+      </div>
+    );
   }
 
   return (
