@@ -7,7 +7,7 @@ type Props = {
   value: boolean;
   isLoading: boolean | undefined;
   textColor?: string;
-  callback: () => void;
+  callback: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export const JoinableToggle = ({
@@ -16,13 +16,6 @@ export const JoinableToggle = ({
   callback,
   textColor = "",
 }: Props) => {
-  const [joinable, setJoinable] = useState<boolean>();
-
-  const onJoinableChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setJoinable(!!event.target.value);
-    callback();
-  };
-
   return (
     <div
       style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
@@ -44,7 +37,7 @@ export const JoinableToggle = ({
               textOverflow: "n",
             }}
           >
-            Allow players to join. You can change this at anytime.
+            Allow players to join this party. You can change this anytime.
           </div>
         </div>
       </div>
@@ -55,8 +48,8 @@ export const JoinableToggle = ({
             <input
               type="checkbox"
               className={`toggle-success toggle toggle-lg`}
-              onChange={onJoinableChange}
-              checked={joinable}
+              onChange={callback}
+              checked={value}
             />
           </label>
         </div>

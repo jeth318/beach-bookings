@@ -27,7 +27,7 @@ const Booking = () => {
   const [time, setTime] = useState<string>();
   const [facility, setFacility] = useState<Facility | null>();
   const [maxPlayers, setMaxPlayers] = useState<number>();
-  const [joinable, setJoinable] = useState<boolean>(true);
+  const [joinable, setJoinable] = useState<boolean>();
   const [eventType, setEventType] = useState<boolean>(true);
 
   const query = Array.isArray(router.query.id)
@@ -146,8 +146,6 @@ const Booking = () => {
         facility.durations.find((dur) => dur === duration?.toString()) !==
           undefined;
 
-      console.log("WILL");
-
       mutateBooking(
         {
           id: booking.id,
@@ -158,7 +156,7 @@ const Booking = () => {
           facility: facility.id || null,
           association: null,
           maxPlayers: maxPlayers || 0,
-          joinable: joinable,
+          joinable: joinable || false,
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
@@ -195,6 +193,11 @@ const Booking = () => {
     if (!areUsersFetched || !areFacilitiesFetched) {
       return undefined;
     }
+
+    if (booking?.joinable) {
+      setJoinable(booking.joinable);
+    }
+
     if (!facility && !!facilities?.length) {
       setFacility(facilities.find((facility) => facility.id === "1"));
     }
@@ -252,8 +255,17 @@ const Booking = () => {
           </div>
         ) : (
           <div className="smooth-render-in container max-w-md p-4">
-            {sessionData?.user.id && booking?.id && facility ? (
-              <div>
+            {sessionData?.user.id &&
+            booking?.id &&
+            facility &&
+            booking?.joinable !== undefined ? (
+              <div className="mt-4">
+                <JoinableToggle
+                  textColor="white"
+                  value={joinable || false}
+                  isLoading={isLoadingJoinable}
+                  callback={onJoinableChange}
+                />
                 <ActionModal
                   callback={updateBooking}
                   data={undefined}
@@ -318,13 +330,6 @@ const Booking = () => {
                     callback={onCourtSelect}
                   />
                 )}
-
-                <JoinableToggle
-                  textColor="white"
-                  value={joinable}
-                  isLoading={isLoadingJoinable}
-                  callback={onJoinableChange}
-                />
                 <DateSelector date={date} time={time} callback={onDateSelect} />
 
                 {router.query.id && (

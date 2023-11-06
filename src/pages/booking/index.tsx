@@ -310,7 +310,7 @@ const Booking = () => {
             If you want to publish or join a booking, you must first add your
             name in your account.
           </h3>
-          <Link href="/settings" className="btn-info btn mt-10 text-white">
+          <Link href="/settings" className="btn btn-info mt-10 text-white">
             Settings
           </Link>
         </div>
@@ -386,6 +386,15 @@ const Booking = () => {
                     </p>
                   </div>
                 </div>
+                <div className="mb-8 mt-8">
+                  <JoinableToggle
+                    textColor="white"
+                    value={joinable}
+                    isLoading={false}
+                    callback={onJoinableChange}
+                  />
+                </div>
+                <hr />
                 <SelectInput
                   label="Facility"
                   description="Where are you playing?"
@@ -434,20 +443,12 @@ const Booking = () => {
                     callback={onCourtSelect}
                   />
                 )}
-                <div className="mb-8 mt-8">
-                  <JoinableToggle
-                    textColor="white"
-                    value={joinable}
-                    isLoading={false}
-                    callback={onJoinableChange}
-                  />
-                </div>
                 <DateSelector date={date} time={time} callback={onDateSelect} />
 
                 <div className="w-100 btn-group btn-group-horizontal mb-40 flex justify-center self-center pt-5">
                   <label
                     htmlFor="action-modal-booking-cancel"
-                    className="btn-warning btn text-white"
+                    className="btn btn-warning text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   >
                     Cancel
