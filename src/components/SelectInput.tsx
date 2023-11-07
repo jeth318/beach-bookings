@@ -13,6 +13,7 @@ export type Props = {
   valid: boolean;
   optionSuffix?: string;
   value: string | number;
+  disabled?: boolean;
   callback: (e: ChangeEvent<HTMLSelectElement>) => void | undefined;
 };
 
@@ -24,6 +25,7 @@ export const SelectInput = ({
   optionSuffix,
   value,
   items,
+  disabled,
   callback,
 }: Props) => {
   return (
@@ -41,6 +43,7 @@ export const SelectInput = ({
         </span>
 
         <select
+          disabled={disabled}
           style={{ width: "67%" }}
           className="full-width select-bordered select w-[60%]"
           onChange={(e: ChangeEvent<HTMLSelectElement>) => callback(e)}

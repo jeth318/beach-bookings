@@ -45,15 +45,24 @@ type Props = {
   callback: (date: Date) => void;
 };
 
+const onDateTimeChange = (date: Date, cb: (date: Date) => void) => {
+  cb(date);
+};
+
 export const DateSelector = ({ date, time, callback }: Props) => {
   return (
     <>
       <label className="label">
-        <span className="label-text text-white">When are you playing?</span>
+        <span className="label-text text-white">
+          What date and time are you playing?
+        </span>
       </label>
-      <div className="custom-datepicker-wrapper pb-6">
+
+      <div className="custom-datepicker-wrapper">
         <ReactDatePicker
-          popperPlacement="top"
+          disabled
+          inline
+          closeOnScroll={true}
           id="booking-date-picker"
           className={`p-3 ${date && time ? "input-valid" : ""}`}
           showTimeSelect
@@ -71,7 +80,7 @@ export const DateSelector = ({ date, time, callback }: Props) => {
               end: bookingDateFutureLimit,
             },
           ]}
-          onChange={callback}
+          onChange={(date) => onDateTimeChange(date as Date, callback)}
         />
       </div>
     </>

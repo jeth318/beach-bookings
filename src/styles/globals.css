@@ -119,11 +119,15 @@ main {
 
 #booking-date-picker {
   border-radius: 0.5rem;
+  display: none !important;
 }
 
 .react-datepicker-popper {
   position: relative !important;
   transform: none !important;
+  position: absolute;
+  inset: 0px auto auto 0px;
+  transform: translate3d(16px, 669px, 0px);
 }
 
 .react-datepicker {
@@ -140,7 +144,7 @@ main {
 
 .custom-datepicker-wrapper {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
 }
 
 .react-datepicker-popper[data-placement="bottom"] {

@@ -13,7 +13,6 @@ import ActionModal from "~/components/ActionModal";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { SelectInput } from "~/components/SelectInput";
 import { DateSelector } from "~/components/DateSelector";
-import { BeforePublishInfo } from "~/components/BeforePublishInfo";
 import { JoinableToggle } from "~/components/JoinableToggle";
 import {
   getPrePopulationState,
@@ -167,29 +166,6 @@ const Booking = () => {
             "Email dispatch temporarily disabled during booking publish"
           );
 
-          console.log({
-            payloadToDispatcher: {
-              originalBooking: {
-                id: "placeholderId",
-                associationId: null,
-                facilityId: null,
-                private: true,
-                userId: sessionData?.user.id,
-                date: new Date(formattedDate?.replace(" ", "T")),
-                court: court || null,
-                duration: duration || 0,
-                players: [],
-                maxPlayers: maxPlayers || null,
-                joinable: joinable,
-              },
-              recipients,
-              bookerName: sessionData.user.name || "Someone",
-              bookings: [],
-              eventType: "ADD",
-              mutation: emailerMutation,
-            },
-          });
-
           emailDispatcher({
             originalBooking: {
               id: "placeholderId",
@@ -321,7 +297,7 @@ const Booking = () => {
   return (
     <>
       <SubHeader title={"Publish booking"} />
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="min-w-sm pd-3 flex flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
             <h2 className="text-center text-2xl text-white">
@@ -362,7 +338,7 @@ const Booking = () => {
                     </p>
                   </div>
                 </ActionModal>
-                <div className="alert alert-info mt-4 flex flex-row text-white">
+                <div className="alert alert-info mt-2 flex flex-row text-white">
                   <div>
                     <Image
                       className="mr-2 rounded-full shadow-sm shadow-black"
@@ -386,7 +362,7 @@ const Booking = () => {
                     </p>
                   </div>
                 </div>
-                <div className="mb-8 mt-8">
+                <div className="mb-4 mt-4">
                   <JoinableToggle
                     textColor="white"
                     value={joinable}
@@ -394,24 +370,26 @@ const Booking = () => {
                     callback={onJoinableChange}
                   />
                 </div>
-                <hr />
+
                 <SelectInput
+                  disabled
                   label="Facility"
-                  description="Where are you playing?"
+                  description="Where are you playing? (more to come)"
                   valid={!!facility}
                   value={facility?.name || "Pick a place"}
                   items={facilitiesToShow}
                   callback={onFacilitySelect}
                 />
 
-                <SelectInput
+                {/* <SelectInput
+                  disabled
                   label="Players"
                   description="How many players are required/allowed?"
                   valid={!!maxPlayers}
                   value={String(maxPlayers) || "Players"}
                   items={maxPlayersToShow}
                   callback={onMaxPlayersSelect}
-                />
+                /> */}
 
                 {!!facility?.durations?.length && (
                   <SelectInput
@@ -432,10 +410,10 @@ const Booking = () => {
                 {!!facility?.courts.length && (
                   <SelectInput
                     label="Court"
-                    disabledOption="Pick court"
-                    description="What court?"
+                    disabledOption="Select court"
+                    description="Which court?"
                     valid={!!court}
-                    value={court || "Pick court"}
+                    value={court || "Select court"}
                     items={facility.courts.map((item) => ({
                       id: item,
                       name: item,
@@ -443,9 +421,10 @@ const Booking = () => {
                     callback={onCourtSelect}
                   />
                 )}
+
                 <DateSelector date={date} time={time} callback={onDateSelect} />
 
-                <div className="w-100 btn-group btn-group-horizontal mb-40 flex justify-center self-center pt-5">
+                <div className="w-100 btn-group btn-group-horizontal mb-20 mt-10 flex justify-center self-center">
                   <label
                     htmlFor="action-modal-booking-cancel"
                     className="btn btn-warning text-white"

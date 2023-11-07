@@ -276,6 +276,8 @@ const Booking = () => {
                   isLoading={isLoadingJoinable}
                   callback={onJoinableChange}
                 />
+                <PlayersTable booking={booking || defaultBooking} />
+
                 <ActionModal
                   callback={updateBooking}
                   data={undefined}
@@ -293,22 +295,23 @@ const Booking = () => {
                   </p>
                 </ActionModal>
                 <SelectInput
+                  disabled
                   label="Facility"
-                  description="Where are you playing?"
+                  description="Where are you playing? (more to come later)"
                   valid={!!facility}
                   value={facility?.name || "Pick a place"}
                   items={facilitiesToShow}
                   callback={onFacilitySelect}
                 />
 
-                <SelectInput
+                {/*                 <SelectInput
                   label="Players"
                   description="How many players are required/allowed?"
                   valid={!!maxPlayers}
                   value={String(maxPlayers) || "Players"}
                   items={maxPlayersToShow}
                   callback={onMaxPlayersSelect}
-                />
+                /> */}
 
                 {!!facility?.durations?.length && (
                   <SelectInput
@@ -330,7 +333,7 @@ const Booking = () => {
                   <SelectInput
                     label="Court"
                     disabledOption="Pick court"
-                    description="What court?"
+                    description="Which court?"
                     valid={!!court}
                     value={court || "Pick court"}
                     items={facility.courts.map((item) => ({
@@ -342,16 +345,8 @@ const Booking = () => {
                 )}
                 <DateSelector date={date} time={time} callback={onDateSelect} />
 
-                {router.query.id && (
-                  <>
-                    <label className="label">
-                      <span className="label-text text-white">Players</span>
-                    </label>
-                    <PlayersTable booking={booking || defaultBooking} />
-                  </>
-                )}
-                <div className="mb-40 flex flex-col justify-center">
-                  <div className="w-100 btn-group btn-group-horizontal flex justify-center self-center pt-5">
+                <div className="flex flex-col justify-center">
+                  <div className="w-100 btn-group btn-group-horizontal mb-20 mt-10 flex justify-center self-center">
                     <Link
                       href="/"
                       className={`${
