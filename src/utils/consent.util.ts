@@ -16,7 +16,7 @@ export type MailOptions = {
 export type Consent = (typeof consentList)[number];
 
 export const consentList = [
-  //"ADD",
+  "ADD",
   "DELETE",
   "MODIFY",
   "JOIN",

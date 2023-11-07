@@ -9,11 +9,11 @@ import { CheckAvailability } from "./CheckAvailability";
 import { parseDate, parseTime, today } from "~/utils/time.util";
 import { getBgColor } from "~/utils/color.util";
 import {
-  type EventType,
   bookingsByDate,
   emailDispatcher,
   getProgressAccent,
   isOngoingGame,
+  type EventType,
 } from "~/utils/booking.util";
 import {
   getEmailRecipients,
@@ -21,6 +21,7 @@ import {
   joinBookingText,
   leaveBookingText,
   removeBookingText,
+  toastMessages,
 } from "~/utils/general.util";
 import { ArrogantFrog } from "./ArrogantFrog";
 import ActionModal from "./ActionModal";
@@ -28,6 +29,7 @@ import { Player } from "./Player";
 import { OngoingGame } from "./OngoingGame";
 import { CustomIcon } from "./CustomIcon";
 import { PlayersTable } from "./PlayersTable";
+import { Toast } from "./Toast";
 
 type Bookings = {
   data: Booking[];
@@ -69,6 +71,8 @@ export const Bookings = ({ bookings }: Props) => {
     isWorking: false,
     bookingId: "",
   });
+
+  const [toastMessage, setToastMessage] = useState<string>();
 
   const { data: users = [], isInitialLoading: isInitialLoadingUsers } =
     api.user.getAll.useQuery();
@@ -118,6 +122,8 @@ export const Bookings = ({ bookings }: Props) => {
       setLeaving({ isWorking: false, bookingId: undefined });
       setIsJoining({ isWorking: false, bookingId: undefined });
     });
+
+    toastMessages[eventType] && renderToast(toastMessages[eventType]);
   };
 
   const deleteBooking = (booking: Booking | undefined) => {
@@ -206,6 +212,13 @@ export const Bookings = ({ bookings }: Props) => {
         },
       }
     );
+  };
+
+  const renderToast = (body: string) => {
+    setToastMessage(body);
+    setTimeout(() => {
+      setToastMessage(undefined);
+    }, 3000);
   };
 
   const oldBookings = bookings?.filter(
@@ -297,6 +310,8 @@ export const Bookings = ({ bookings }: Props) => {
       })}
 
       <div className={`bg-gradient-to-b ${bgColorDark} bookings-container`}>
+        {toastMessage && <Toast body={toastMessage} />}
+
         {bookingsToShow?.map((booking: Booking) => {
           const maxPlayers = booking.maxPlayers || 0;
 

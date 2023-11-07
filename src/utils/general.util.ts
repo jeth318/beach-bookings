@@ -1,5 +1,6 @@
 import { type User, type Booking } from "@prisma/client";
 import { type EventType, getTimeWithZeroPadding } from "./booking.util";
+import { type Dispatch, type SetStateAction } from "react";
 
 type EmailRecipientsProps = {
   sessionUserId: string;
@@ -11,6 +12,16 @@ type EmailRecipientsProps = {
 type MailOptions = {
   sender?: string;
   recipients: string[];
+};
+
+export const toastMessages = {
+  ADD: "Your booking was published",
+  JOIN: "Booking joined",
+  LEAVE: "Booking left",
+  DELETE: "Booking deleted",
+  MODIFY: "Booking updated",
+  KICK: "Player was kicked",
+  CANCELED: "Something was canceled",
 };
 
 export type DropdownItem = {
@@ -65,6 +76,16 @@ export const menuItems: DropdownItem[] = [
   },
   */
 ];
+
+export const renderToast = (
+  message: string,
+  stateSetter: (value: SetStateAction<string | undefined>) => void
+) => {
+  stateSetter(message);
+  setTimeout(() => {
+    stateSetter(undefined);
+  }, 3000);
+};
 
 export const getUsersByBooking = (users: User[], booking: Booking) => {
   return users.filter((user) => booking.players.includes(user.id));

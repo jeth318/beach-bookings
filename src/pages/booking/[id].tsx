@@ -9,13 +9,18 @@ import Link from "next/link";
 import { PlayersTable } from "~/components/PlayersTable";
 
 import { SubHeader } from "~/components/SubHeader";
-import { emailDispatcher, maxPlayersToShow } from "~/utils/booking.util";
-import { getEmailRecipients } from "~/utils/general.util";
+import {
+  type EventType,
+  emailDispatcher,
+  maxPlayersToShow,
+} from "~/utils/booking.util";
+import { getEmailRecipients, renderToast } from "~/utils/general.util";
 import { BeatLoader } from "react-spinners";
 import ActionModal from "~/components/ActionModal";
 import { JoinableToggle } from "~/components/JoinableToggle";
 import { SelectInput } from "~/components/SelectInput";
 import { DateSelector } from "~/components/DateSelector";
+import { Toast } from "~/components/Toast";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -28,7 +33,8 @@ const Booking = () => {
   const [facility, setFacility] = useState<Facility | null>();
   const [maxPlayers, setMaxPlayers] = useState<number>();
   const [joinable, setJoinable] = useState<boolean>();
-  const [eventType, setEventType] = useState<boolean>(true);
+  const [eventType, setEventType] = useState<EventType>();
+  const [toastMessage, setToastMessage] = useState<string>();
 
   const query = Array.isArray(router.query.id)
     ? router?.query?.id[0] || ""
@@ -61,6 +67,10 @@ const Booking = () => {
           onSuccess: (mutatedBooking: Booking) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             setJoinable(mutatedBooking?.joinable);
+            renderToast(
+              `Booking ${!joinable ? "open for joins" : "closed for joins"}`,
+              setToastMessage
+            );
           },
           onSettled: () => {
             //void refetchBookings();
@@ -160,8 +170,6 @@ const Booking = () => {
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
-            console.log("WILL DISPATCH ACCCC");
-
             emailDispatcher({
               originalBooking: booking,
               mutatedBooking,
@@ -171,8 +179,7 @@ const Booking = () => {
               recipients,
               mutation: emailerMutation,
             });
-            //void router.push("/");
-            //void refetchBookings().then(() => {});
+            renderToast("Booking details updated", setToastMessage);
           },
         }
       );
@@ -245,6 +252,7 @@ const Booking = () => {
 
   return (
     <>
+      {toastMessage && <Toast body={toastMessage} />}
       <SubHeader title="Change booking" />
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
