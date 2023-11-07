@@ -108,6 +108,8 @@ export const buildHtmlTemplate = ({
 
     img {
         border: none;
+        border-radius: none;
+        box-shadow: none;
         -ms-interpolation-mode: bicubic;
         max-width: 100%;
     }
@@ -268,7 +270,6 @@ export const buildHtmlTemplate = ({
     }
 
     .btn a {
-        background-color: #ffffff;
         border: solid 1px #3498db;
         border-radius: 5px;
         box-sizing: border-box;
@@ -278,19 +279,19 @@ export const buildHtmlTemplate = ({
         font-size: 14px;
         font-weight: bold;
         margin: 0;
-        padding: 12px 25px;
+        padding: 7px 15px;
         text-decoration: none;
         text-transform: capitalize;
     }
 
     .btn-primary table td {
-        background-color: #3498db;
+        background-color: rgb(54, 211, 153);
     }
 
     .btn-primary a {
-        background-color: #3498db;
-        border-color: #3498db;
-        color: #ffffff;
+        background-color: rgb(54, 211, 153);
+        border-color: rgb(54, 211, 153);
+        color: #ffffff !important;
     }
 
     /* -------------------------------------
@@ -400,7 +401,8 @@ export const buildHtmlTemplate = ({
         }
 
         table.body .btn table {
-            width: 100% !important;
+            display: flex;
+            justify-content: center;
         }
 
         table.body .btn a {
@@ -449,26 +451,23 @@ export const buildHtmlTemplate = ({
             line-height: inherit;
         }
 
-        .btn-primary table td:hover {
+       /*
+       
+       .btn-primary table td:hover {
             background-color: #34495e !important;
         }
 
         .btn-primary a:hover {
             background-color: #34495e !important;
             border-color: #34495e !important;
-        }
-
-        .cig-frog-image {
-            border-radius: 50%;
-            height: 100px;
-            width: 100px;
-            box-shadow: 0px 2px 2px 2px slategray;
-        }
+        } 
+    
+        */
 
         .body-container {
             display: flex;
             justify-content: center;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
         }
     }
@@ -504,15 +503,13 @@ export const buildHtmlTemplate = ({
                                         <tr>
                                             <td>
                                                 <div class="body-container">
-                                                    <!-- <img class="cig-frog-image" src="cid:unique@nodemailer.com" 
-                                                        alt="cig-frog-still" width="150px" height="150px" /> -->
-                                                      <!--  <div style="height: 150px; width: 150px;"></div> -->
+                                                    <img src="cid:beach-spike-small" 
+                                                        alt="cig-frog-still" width="150px" height="150px" />
                                                 
-                                                    <div style="padding-left: 15px;">
+                                                    <div style="margin-top: 10px; padding-left: 15px;">
                                                         <h2 style="text-align: center; margin-bottom: 15px;">${title}</h2>
                                                             ${ingress}
                                                     </div>
-    
                                                 </div>
                                                 <hr />
                                                 <div style="display: flex; justify-content: space-between;">
@@ -530,7 +527,7 @@ export const buildHtmlTemplate = ({
                                                                     cellspacing="0">
                                                                     <tbody>
                                                                         <tr>
-                                                                            <td> <a href="https://beach.jtdev.se"
+                                                                            <td> <a style="color: white; !important" href="https://www.beachbookings.se"
                                                                                     target="_blank">Bookings</a>
                                                                             </td>
                                                                         </tr>
@@ -540,8 +537,7 @@ export const buildHtmlTemplate = ({
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                                <p><i>Spike hard and do the monster block! <br> / The arrogant beach frog.
-                                                    </i></p>
+              
                                             </td>
                                         </tr>
                                     </table>
@@ -559,7 +555,7 @@ export const buildHtmlTemplate = ({
                                     <td class="content-block">
                                         <span class="apple-link">Beach Bookings News</span>
                                         <br> Don't like these emails? <a
-                                            href="https://beach.jtdev.se/settings">Unsubscribe</a>.
+                                            href="https://www.beachbookings.se/settings">Unsubscribe</a>.
                                     </td>
                                 </tr>
                             </table>

@@ -175,7 +175,6 @@
         }
 
         .btn a {
-            background-color: #ffffff;
             border: solid 1px #3498db;
             border-radius: 5px;
             box-sizing: border-box;
@@ -185,20 +184,27 @@
             font-size: 14px;
             font-weight: bold;
             margin: 0;
-            padding: 12px 25px;
+            padding: 7px 15px;
             text-decoration: none;
             text-transform: capitalize;
         }
 
         .btn-primary table td {
-            background-color: #3498db;
+            background-color: rgb(54, 211, 153);
         }
 
         .btn-primary a {
-            background-color: #3498db;
-            border-color: #3498db;
-            color: #ffffff;
+            background-color: rgb(54, 211, 153);
+            border-color: rgb(54, 211, 153);
+            color: #ffffff !important;
         }
+
+        .btn-primary a:visited {
+            background-color: rgb(54, 211, 153);
+            border-color: rgb(54, 211, 153);
+            color: #ffffff !important;
+        }
+
 
         /* -------------------------------------
           OTHER STYLES THAT MIGHT BE USEFUL
@@ -302,11 +308,8 @@
             }
 
             table.body .btn table {
-                width: 100% !important;
-            }
-
-            table.body .btn a {
-                width: 100% !important;
+                display: flex;
+                justify-content: center;
             }
 
             table.body .img-responsive {
@@ -350,15 +353,15 @@
                 font-weight: inherit;
                 line-height: inherit;
             }
-
+/* 
             .btn-primary table td:hover {
-                background-color: #34495e !important;
+                background-color: #0aad5b;
             }
 
             .btn-primary a:hover {
-                background-color: #34495e !important;
-                border-color: #34495e !important;
-            }
+                background-color: #34495e;
+                border-color: #34495e;
+            } */
 
             .cig-frog-image {
                 border-radius: 50%;
@@ -370,7 +373,7 @@
             .body-container {
                 display: flex;
                 justify-content: center;
-                flex-direction: row;
+                flex-direction: column;
                 align-items: center;
             }
         }
@@ -408,7 +411,7 @@
 </head>
 
 <body>
-    <span class="preheader">PREHEADER</span>
+    <span class="preheader">preheader</span>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
         <tr>
             <td>&nbsp;</td>
@@ -421,30 +424,41 @@
                         <!-- START MAIN CONTENT AREA -->
                         <tr>
                             <td class="wrapper">
-                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                <table class="body-container" role="presentation" border="0" cellpadding="0"
+                                    cellspacing="0">
                                     <tr>
                                         <td>
                                             <div class="body-container">
-                                                <!-- <img class="cig-frog-image" src="cid:unique@nodemailer.com" 
-                                                        alt="cig-frog-still" width="150px" height="150px" /> -->
-                                                <div style="padding-left: 15px;">
-                                                    <h2 style="text-align: left; margin-bottom: 15px;">TITLE</h2>
-                                                </div>
+                                                <img class="cig-frog-image" src="cid:beach-ball-img-id"
+                                                    alt="cig-frog-still" width="150px" height="150px" />
 
+                                                <div style="margin-top: 40px; padding-left: 15px;">
+                                                    <h2 style="text-align: center; margin-bottom: 15px;">A player left
+                                                        the party! 😿</h2>
+                                                    It's time to find a replacement if you
+                                                    haven't already!
+                                                </div>
 
                                             </div>
                                             <hr />
                                             <div style="display: flex; justify-content: space-between;">
-                                                <div class="" style="--value:3; --thickness:3px;">3/4</div>
                                                 <div>
-                                                    <div
-                                                        style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                                        <div style="font-size: 1.5rem;">Joined players</div>
-                                                        <div style="font-size: 3rem;">2 of 4</div>
-                                                    </div>
+
+                                                    <p>
+
+                                                        📅 2023-11-09
+                                                    </p>
+                                                    ⏱️ 12:30
+                                                    ⏳ 90 minutes
+                                                </div>
+                                                <br>
+                                                <div>
+
+                                                    <h3>Players in party</h3>
+                                                    <h1>3 of 4</h1>
                                                 </div>
                                             </div>
-                                            <br>
+                                            <br />
                                             <table role="presentation" border="0" cellpadding="0" cellspacing="0"
                                                 class="btn btn-primary">
                                                 <tbody>
@@ -454,8 +468,9 @@
                                                                 cellspacing="0">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td> <a href="https://beach.jtdev.se"
-                                                                                target="_blank">Beach Bookings</a>
+                                                                        <td> <a style="color: white !important;"
+                                                                                href="https://www.beachbookings.se"
+                                                                                target="_blank">Bookings</a>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
@@ -464,8 +479,7 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                            <p><i>Spike hard and do the monster block! <br> / The arrogant beach frog.
-                                                </i></p>
+
                                         </td>
                                     </tr>
                                 </table>
@@ -483,12 +497,13 @@
                                 <td class="content-block">
                                     <span class="apple-link">Beach Bookings News</span>
                                     <br> Don't like these emails? <a
-                                        href="http://i.imgur.com/CScmqnj.gif">Unsubscribe</a>.
+                                        href="https://beach.jtdev.se/settings">Unsubscribe</a>.
                                 </td>
                             </tr>
                         </table>
                     </div>
                     <!-- END FOOTER -->
+
                 </div>
             </td>
             <td>&nbsp;</td>

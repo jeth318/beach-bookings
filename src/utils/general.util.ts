@@ -1,6 +1,7 @@
 import { type User, type Booking } from "@prisma/client";
 import { type EventType, getTimeWithZeroPadding } from "./booking.util";
-import { type Dispatch, type SetStateAction } from "react";
+import { type SetStateAction } from "react";
+import { beachBookingsSpikeLogoBase64 } from "./image.util";
 
 type EmailRecipientsProps = {
   sessionUserId: string;
@@ -98,6 +99,14 @@ export const getMailOptions = ({ sender, recipients }: MailOptions) => {
       name: "Beach Bookings",
     },
     to: [recipients],
+    attachments: [
+      {
+        // encoded string as an attachment
+        filename: "beach-spike-small.png",
+        cid: "beach-spike-small",
+        path: `data:image/gif;base64,${beachBookingsSpikeLogoBase64}`,
+      },
+    ],
   };
 };
 
@@ -126,7 +135,7 @@ export const getEmailRecipients = ({
 export const getEmailTitle = (eventType: EventType) => {
   switch (eventType) {
     case "ADD":
-      return "New booking added 🟢";
+      return "New booking published 🟢";
     case "MODIFY":
       return "Booking changed 🟠";
     case "DELETE":
@@ -135,7 +144,7 @@ export const getEmailTitle = (eventType: EventType) => {
       return "A player joined the party! 🎉";
     case "KICK":
     case "LEAVE":
-      return "A player left the party! 😿";
+      return "A player left the party 😿";
     default:
       return "Got some updates for you ℹ️";
   }
@@ -179,20 +188,20 @@ export const getEmailIngress = ({
       } added a brand new booking. Let's get a full squad!`;
     case "MODIFY":
       return `${
-        bookerName || "A player"
-      } updated a booking you are in</strong>.`;
+        bookerName || "The booking creator"
+      } updated a booking you are listed in.`;
     case "DELETE":
       return `${
         bookerName || "The booker"
-      } just removed a booking where you were signed up. Sad story!`;
+      } just removed a booking where you were listed in. Sad story!`;
     case "JOIN":
-      return `${
-        playerName || "A player"
-      } joined your party and looks eager to play.`;
+      return `${playerName || "This fellow player"} looks eager to play.`;
     case "LEAVE":
       return `${
-        playerName || "A player"
-      } left your party. It's time to find a replacement if you haven't already!`;
+        playerName
+          ? `${playerName} left your party. It's time to find a replacement if you haven't already!`
+          : "It's time to find a replacement if you haven't already!"
+      }`;
     case "KICK":
       return `${"A player"} was kindly and respectfully kicked from your party by the booking owner. No questions asked, we are still friends.`;
     default:
@@ -203,7 +212,7 @@ export const getEmailIngress = ({
 export const getEmailHeading = (eventType: string) => {
   switch (eventType) {
     case "ADD":
-      return `An oppertunity to play!`;
+      return `An opportunity to play!`;
     case "MODIFY":
       return "Sometimes stuff changes.";
     case "DELETE":
@@ -212,7 +221,7 @@ export const getEmailHeading = (eventType: string) => {
       return `Reinforcements incoming!`;
     case "LEAVE":
     case "KICK":
-      return `We lost a pro.`;
+      return `A player had to leave.`;
     default:
       return "Yo beach player.";
   }
