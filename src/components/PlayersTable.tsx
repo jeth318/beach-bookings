@@ -108,9 +108,6 @@ export const PlayersTable = ({ booking }: Props) => {
               : `Player${player.id.slice(0, 3)}`;
           return (
             <>
-              <label className="label">
-                <span className="label-text text-white">Players</span>
-              </label>
               <div
                 key={player.id}
                 style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
