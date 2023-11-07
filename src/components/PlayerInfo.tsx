@@ -54,7 +54,6 @@ export const PlayerInfo = ({ user }: Props) => {
     setIsNameValid(validName);
     if (event.target.value.length < 3 || event.target.value.length > 30) {
       setIsNameValid(false);
-      setNameInput(user?.name || "");
       return null;
     }
 
@@ -81,13 +80,10 @@ export const PlayerInfo = ({ user }: Props) => {
         style={{ width: "100%" }}
         className="flex max-w-md flex-col justify-center"
       >
-        <div style={{ width: "100%" }} className="mb-4 gap-4">
+        <div style={{ width: "100%" }} className="mb-5 gap-4">
           <div style={{ width: "100%" }} className="form-control">
             <label className="label">
               <span className="label-text text-white">What is your name?</span>
-              {isLoadingNameMutation && (
-                <BeatLoader color="#36d7b7" size={15} />
-              )}
             </label>
             <label
               className={`input-group ${!validName ? "input-invalid " : ""}`}
@@ -97,7 +93,9 @@ export const PlayerInfo = ({ user }: Props) => {
                 className="label-info-text flex justify-between pr-1"
               >
                 <div>Name</div>
-                <div className="self-center">{validName && "✅"}</div>
+                <div className="self-center">
+                  {validName && user?.name === nameInput && "✅"}
+                </div>
               </span>
               <input
                 style={{ width: "67%" }}
@@ -127,7 +125,11 @@ export const PlayerInfo = ({ user }: Props) => {
               >
                 <div>Phone</div>
                 <div className="self-center">
-                  {!phoneInput?.length ? "🟠" : validPhone ? "✅" : ""}
+                  {!phoneInput?.length
+                    ? "🟠"
+                    : validPhone && user?.phone
+                    ? "✅"
+                    : ""}
                 </div>
               </span>
               <input
@@ -169,8 +171,12 @@ export const PlayerInfo = ({ user }: Props) => {
         <div className="flex flex-col items-center gap-2 self-center">
           <button
             disabled={!hasContactInfoChanged || !validPhone || !validName}
-            className={`btn-dark btn btn-sm text-white ${
-              hasContactInfoChanged ? "btn-success" : ""
+            className={`btn btn-md text-white ${
+              hasContactInfoChanged
+                ? validName
+                  ? "btn-success animate-pulse"
+                  : "btn-success"
+                : ""
             }`}
             onClick={() => {
               if (nameInput && validName && nameInput !== user?.name) {
@@ -204,7 +210,7 @@ export const PlayerInfo = ({ user }: Props) => {
           >
             Save changes
           </button>
-          {isLoadingPhoneMutation && <BeatLoader color="purple" size={10} />}
+          {isLoadingPhoneMutation && <BeatLoader color="#36d7b7" size={10} />}
         </div>
       </div>
     </div>
