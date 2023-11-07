@@ -16,11 +16,11 @@ type MailOptions = {
 };
 
 export const toastMessages = {
-  ADD: "Your booking was published",
-  JOIN: "Booking joined",
-  LEAVE: "Booking left",
-  DELETE: "Booking deleted",
-  MODIFY: "Booking updated",
+  ADD: "Your booking was successfully published",
+  JOIN: "You successfully joined the booking",
+  LEAVE: "Successfully left the booking",
+  DELETE: "Your booking was successfully removed",
+  MODIFY: "Your booking was successfully updated",
   KICK: "Player was kicked",
   CANCELED: "Something was canceled",
 };
@@ -185,7 +185,7 @@ export const getEmailIngress = ({
     case "ADD":
       return `${
         bookerName || "A player"
-      } added a brand new booking. Let's get a full squad!`;
+      } just published a booking. Let's get a full squad!`;
     case "MODIFY":
       return `${
         bookerName || "The booking creator"

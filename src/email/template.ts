@@ -6,6 +6,11 @@ import {
   getPreheader,
 } from "~/utils/general.util";
 
+const getEnvironmentSite = () => {
+  const { hostname, protocol, port } = window.location;
+  return `${protocol}//${hostname}${port ? ":" + port : ""}`;
+};
+
 type BuildHtmlTemplateProps = {
   bookerName?: string;
   playerName?: string;
@@ -527,7 +532,7 @@ export const buildHtmlTemplate = ({
                                                                     cellspacing="0">
                                                                     <tbody>
                                                                         <tr>
-                                                                            <td> <a style="color: white; !important" href="https://www.beachbookings.se"
+                                                                            <td> <a style="color: white; !important" href=${getEnvironmentSite()}
                                                                                     target="_blank">Bookings</a>
                                                                             </td>
                                                                         </tr>
@@ -555,7 +560,7 @@ export const buildHtmlTemplate = ({
                                     <td class="content-block">
                                         <span class="apple-link">Beach Bookings News</span>
                                         <br> Don't like these emails? <a
-                                            href="https://www.beachbookings.se/settings">Unsubscribe</a>.
+                                            href=${getEnvironmentSite()}>Unsubscribe</a>.
                                     </td>
                                 </tr>
                             </table>

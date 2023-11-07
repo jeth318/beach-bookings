@@ -68,7 +68,9 @@ const Booking = () => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             setJoinable(mutatedBooking?.joinable);
             renderToast(
-              `Booking ${!joinable ? "open for joins" : "closed for joins"}`,
+              `Your booking is ${
+                !joinable ? "now joinable." : "no longer joinble."
+              }`,
               setToastMessage
             );
           },
@@ -179,7 +181,7 @@ const Booking = () => {
               recipients,
               mutation: emailerMutation,
             });
-            renderToast("Booking details updated", setToastMessage);
+            renderToast("Your booking details were updated", setToastMessage);
           },
         }
       );
