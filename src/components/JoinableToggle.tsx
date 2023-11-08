@@ -10,12 +10,7 @@ type Props = {
   callback: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
-export const JoinableToggle = ({
-  value,
-  isLoading,
-  callback,
-  textColor = "",
-}: Props) => {
+export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
   return (
     <div
       style={{ borderRadius: "0.5rem", marginBottom: "5px" }}

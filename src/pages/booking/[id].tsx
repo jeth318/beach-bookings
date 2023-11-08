@@ -196,14 +196,12 @@ const Booking = () => {
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
 
-  console.log({ validBooking });
-
   useEffect(() => {
     if (!areUsersFetched || !areFacilitiesFetched) {
       return undefined;
     }
 
-    if (booking?.joinable) {
+    if (booking?.joinable !== undefined) {
       setJoinable(booking.joinable);
     }
 

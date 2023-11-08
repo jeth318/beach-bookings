@@ -147,8 +147,6 @@ const Booking = () => {
       eventType: "ADD",
     });
 
-    console.log({ recipients });
-
     mutateBooking(
       {
         userId: sessionData?.user.id,
@@ -186,7 +184,6 @@ const Booking = () => {
             eventType: "ADD",
             mutation: emailerMutation,
           });
-          console.log("HEJHEJ");
 
           void router.push("/");
           setPreventLocalStorageWrite(true);

@@ -11,7 +11,6 @@ import { subtractHours } from "~/utils/time.util";
 export const bookingRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
     const upcomingAndOngoing = subtractHours(new Date(), 1.5);
-    console.log({ upcomingAndOngoing });
 
     return ctx.prisma.booking.findMany({
       where: {
