@@ -12,11 +12,11 @@ type Props = {
 
 export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
   return (
-    <div
+    <label
       style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
       className="smooth-render-in flex flex-row justify-between bg-slate-200 p-2 dark:bg-slate-800"
     >
-      <div className="flex items-center space-x-2">
+      <div className="flex w-max items-center space-x-2">
         <div className="avatar">
           <div className="mask h-10 w-10">
             <CustomIcon height={100} width={100} path={`/svg/group.svg`} />
@@ -39,14 +39,13 @@ export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
       <div className="flex flex-col">
         <div style={{ height: "24px" }}></div>
         <div className="self-center pl-2 pr-2">
-          <label>
-            <input
-              type="checkbox"
-              className={`toggle-success toggle toggle-lg`}
-              onChange={callback}
-              checked={value}
-            />
-          </label>
+          <input
+            id="joinable-input"
+            type="checkbox"
+            className={`toggle-success toggle toggle-lg`}
+            onChange={callback}
+            checked={value}
+          />
         </div>
         {isLoading ? (
           <div className="self-center ">
@@ -56,6 +55,6 @@ export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
           <div style={{ height: "24px" }}></div>
         )}
       </div>
-    </div>
+    </label>
   );
 };
