@@ -337,7 +337,7 @@ export const Bookings = ({ bookings }: Props) => {
               key={booking.id}
               className="smooth-render-in border-b border-zinc-400 last:border-b-0"
             >
-              <div className="card-compact card">
+              <div className="card card-compact">
                 <div
                   className={`card-body flex-row justify-between text-primary-content`}
                 >
@@ -379,11 +379,11 @@ export const Bookings = ({ bookings }: Props) => {
                                   width={20}
                                 />
                               </span>
-                              <Link href="/" passHref>
+                              <div>
                                 <div className="flex flex-row items-center">
                                   {getFacility(booking?.facilityId)?.name}
                                 </div>
-                              </Link>
+                              </div>
                               {!!getFacility(booking?.facilityId)?.durations
                                 .length && (
                                 <span className="pl-2">
@@ -464,7 +464,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn btn-warning btn-sm text-white"
+                                  className="btn-warning btn-sm btn text-white"
                                 >
                                   {leaving.isWorking &&
                                   booking.id === leaving.bookingId ? (
@@ -494,7 +494,7 @@ export const Bookings = ({ bookings }: Props) => {
 
                             {!isMainPage &&
                               session?.data?.user?.id === booking?.userId && (
-                                <button className="btn btn-sm text-white">
+                                <button className="btn-sm btn text-white">
                                   <Link
                                     href={{
                                       pathname: `/booking/${booking.id}`,
@@ -512,7 +512,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn btn-error btn-sm text-white"
+                                  className="btn-error btn-sm btn text-white"
                                 >
                                   {deleting.isWorking &&
                                   booking.id === deleting.bookingId ? (
