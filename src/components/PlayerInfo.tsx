@@ -19,9 +19,9 @@ export const PlayerInfo = ({ user }: Props) => {
 
   const { refetch: refetchUser } = api.user.get.useQuery();
 
-  const [phoneInput, setPhoneInput] = useState<string>(
+  const [phoneInput, setPhoneInput] = useState<string | null>(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    user?.phone || ""
+    user?.phone || null
   );
 
   const [nameInput, setNameInput] = useState<string | null>(
@@ -29,19 +29,24 @@ export const PlayerInfo = ({ user }: Props) => {
     user?.name || null
   );
 
-  const [isNameValid, setIsNameValid] = useState<boolean>(true);
   const [isPhoneValid, setIsPhoneValid] = useState<boolean>(true);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const isLoading = isLoadingPhoneMutation || isLoadingNameMutation;
 
-  const validPhone = !phoneInput || phoneInput.length <= 30;
+  const validPhone = !phoneInput || phoneInput?.length <= 30;
 
   const validName = !!(
     nameInput &&
     nameInput?.length > 2 &&
     nameInput.length <= 30
   );
+
+  console.log({
+    phoneInput,
+    userPhone: user?.phone,
+    nameInput,
+    userName: user?.name,
+  });
 
   const renderToast = (body: string) => {
     setToastMessage(body);
@@ -51,9 +56,7 @@ export const PlayerInfo = ({ user }: Props) => {
   };
 
   const onNameInputBlur = (event: ChangeEvent<HTMLInputElement>) => {
-    setIsNameValid(validName);
     if (event.target.value.length < 3 || event.target.value.length > 30) {
-      setIsNameValid(false);
       return null;
     }
 
@@ -105,7 +108,6 @@ export const PlayerInfo = ({ user }: Props) => {
                 value={nameInput || ""}
                 onBlur={onNameInputBlur}
                 onChange={(e) => {
-                  setIsNameValid(true);
                   setNameInput(e.target.value);
                 }}
                 className="input-bordered input"
@@ -171,7 +173,7 @@ export const PlayerInfo = ({ user }: Props) => {
         <div className="flex flex-col items-center gap-2 self-center">
           <button
             disabled={!hasContactInfoChanged || !validPhone || !validName}
-            className={`btn btn-md text-white ${
+            className={`btn-md btn text-white ${
               hasContactInfoChanged
                 ? validName
                   ? "btn-success animate-pulse"
