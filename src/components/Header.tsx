@@ -8,12 +8,7 @@ import { useEffect, useState } from "react";
 import ActionModal from "./ActionModal";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Toast } from "./Toast";
-import {
-  SettingsIcon,
-  HowToIcon,
-  LogoutIcon,
-  DynamicSvg,
-} from "~/components/DynamicSvg";
+import { DynamicSvg } from "~/components/DynamicSvg";
 
 export const Header = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
