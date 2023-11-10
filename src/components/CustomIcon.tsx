@@ -14,6 +14,7 @@ export const CustomIcon = ({ path, width, height, alt }: Props) => (
     width={width || 20}
     height={height || width || 20}
     alt={alt || path}
+    className="stroke-cyan-500"
     color="white"
   />
 );

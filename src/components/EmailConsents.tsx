@@ -11,6 +11,7 @@ import {
   friendlyConsentName,
   getConsentIcon,
 } from "~/utils/consent.util";
+import { DynamicSvg } from "./DynamicSvg";
 
 export const EmailConsents = () => {
   const [internalConsentState, setInternalConsentState] = useState<string[]>(
@@ -104,7 +105,7 @@ export const EmailConsents = () => {
         </div>
       </div>
       <div className="flex items-center justify-center pb-4">
-        <button className="btn btn-sm" onClick={() => toggleAll(true)}>
+        <button className="btn-sm btn" onClick={() => toggleAll(true)}>
           All! 🍭
         </button>
         <BeatLoader
@@ -115,7 +116,7 @@ export const EmailConsents = () => {
           size={10}
           color="white"
         />
-        <button className="btn btn-sm" onClick={() => toggleAll(false)}>
+        <button className="btn-sm btn" onClick={() => toggleAll(false)}>
           None ✋
         </button>
       </div>
@@ -126,6 +127,7 @@ export const EmailConsents = () => {
       ) : (
         session.status === "authenticated" &&
         allConsents?.map((consent, index) => {
+          const consentIdentifier = getConsentIcon(consent as EventType);
           return (
             <div
               key={consent}
@@ -135,10 +137,11 @@ export const EmailConsents = () => {
               <div className="flex items-center space-x-2">
                 <div className="avatar">
                   <div className="mask h-10 w-10">
-                    <CustomIcon
-                      height={100}
-                      width={100}
-                      path={`/svg/${getConsentIcon(consent as EventType)}`}
+                    <DynamicSvg
+                      name={consentIdentifier}
+                      height="50px"
+                      width="50px"
+                      stroke="stroke-black dark:stroke-white"
                     />
                   </div>
                 </div>

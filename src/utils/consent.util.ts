@@ -31,17 +31,17 @@ export const getUsersByBooking = (users: User[], booking: Booking) => {
 export const getConsentIcon = (consent: EventType) => {
   switch (consent) {
     case "ADD":
-      return `booking-added.svg`;
+      return `booking-added`;
     case "DELETE":
-      return "booking-removed.svg";
+      return "booking-removed";
     case "MODIFY":
-      return "booking-modified.svg";
+      return "booking-modified";
     case "JOIN":
-      return "user-joined.svg";
+      return "user-joined";
     case "LEAVE":
-      return "user-left.svg";
+      return "user-left";
     case "KICK":
-      return "user-kicked.svg";
+      return "user-kicked";
     default:
       return "/";
   }

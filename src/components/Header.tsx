@@ -8,6 +8,12 @@ import { useEffect, useState } from "react";
 import ActionModal from "./ActionModal";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Toast } from "./Toast";
+import {
+  SettingsIcon,
+  HowToIcon,
+  LogoutIcon,
+  DynamicSvg,
+} from "~/components/DynamicSvg";
 
 export const Header = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -211,10 +217,11 @@ export const Header = () => {
                     className="whitespace-nowrap p-1 text-lg"
                     href="/settings"
                   >
-                    <CustomIcon
-                      path="/svg/settings.svg"
-                      width={25}
-                      height={25}
+                    <DynamicSvg
+                      name="settings"
+                      height="25px"
+                      width="25px"
+                      stroke={"stroke-black dark:stroke-white"}
                     />
                     Settings
                   </Link>
@@ -226,7 +233,12 @@ export const Header = () => {
                   }}
                 >
                   <Link className="whitespace-nowrap p-1 text-lg" href="/help">
-                    <CustomIcon path="/svg/help.svg" width={25} height={25} />
+                    <DynamicSvg
+                      name="how-to"
+                      height="25px"
+                      width="25px"
+                      stroke={"stroke-black dark:stroke-white"}
+                    />
                     How to
                   </Link>
                 </li>
@@ -240,7 +252,12 @@ export const Header = () => {
                     className="whitespace-nowrap p-1 text-lg"
                     onClick={() => void signOut()}
                   >
-                    <CustomIcon path="/svg/logout.svg" width={25} height={25} />
+                    <DynamicSvg
+                      name="log-out"
+                      height="25px"
+                      width="25px"
+                      stroke={"stroke-black dark:stroke-white"}
+                    />
                     Log out
                   </a>
                 </li>

@@ -50,14 +50,14 @@ const Groups = () => {
   return (
     <main className="min-w-sm flex min-w-fit flex-col">
       <SubHeader title="Groups" />
-     {/* <div>
+      <div>
         <h2>My groups</h2>
         {joinedAssociations.map((item) => {
           return <div key={item.id}>{item.name}</div>;
         })}
       </div>
 
-       <div>
+      <div>
         <h3>All</h3>
         {associations
           .filter(
@@ -68,7 +68,7 @@ const Groups = () => {
           .map((item) => {
             return <div key={item.id}>{item.name}</div>;
           })}
-      </div> */}
+      </div>
     </main>
   );
 };
