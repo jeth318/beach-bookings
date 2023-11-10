@@ -216,7 +216,7 @@ export const Header = () => {
                       name="settings"
                       height="25px"
                       width="25px"
-                      stroke={"stroke-black dark:stroke-white"}
+                      stroke={"stroke-black dark:stroke-[#A6ADBB]"}
                     />
                     Settings
                   </Link>
@@ -232,7 +232,7 @@ export const Header = () => {
                       name="how-to"
                       height="25px"
                       width="25px"
-                      stroke={"stroke-black dark:stroke-white"}
+                      stroke={"stroke-black dark:stroke-[#A6ADBB]"}
                     />
                     How to
                   </Link>
@@ -251,7 +251,7 @@ export const Header = () => {
                       name="log-out"
                       height="25px"
                       width="25px"
-                      stroke={"stroke-black dark:stroke-white"}
+                      stroke={"stroke-black dark:stroke-[#A6ADBB]"}
                     />
                     Log out
                   </a>

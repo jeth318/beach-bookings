@@ -141,7 +141,7 @@ export const EmailConsents = () => {
                       name={consentIdentifier}
                       height="50px"
                       width="50px"
-                      stroke="stroke-black dark:stroke-white"
+                      stroke="stroke-black dark:stroke-[#A6ADBB]"
                     />
                   </div>
                 </div>
