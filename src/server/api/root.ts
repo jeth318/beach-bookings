@@ -1,3 +1,4 @@
+import { inviteRouter } from "./routers/invite";
 import { userRouter } from "./routers/user";
 import { createTRPCRouter } from "~/server/api/trpc";
 import { bookingRouter } from "./routers/booking";
@@ -13,6 +14,7 @@ import { facilityRouter } from "./routers/facility";
 export const appRouter = createTRPCRouter({
   booking: bookingRouter,
   user: userRouter,
+  invite: inviteRouter,
   emailer: emailerRouter,
   association: associationRouter,
   facility: facilityRouter,

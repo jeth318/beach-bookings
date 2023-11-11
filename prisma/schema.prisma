@@ -48,9 +48,11 @@ model User {
     emailVerified DateTime?
     image         String?
     phone         String?
+    associations  String[]  @default([])
     accounts      Account[]
     sessions      Session[]
     emailConsents String[]  @default(["DELETE", "LEAVE", "JOIN", "KICK", "MODIFY"])
+    Invite        Invite[]
 }
 
 model VerificationToken {
@@ -86,11 +88,21 @@ model Association {
     private     Boolean   @default(true)
     userId      String
     Booking     Booking[]
+    Invite      Invite[]
+}
+
+model Invite {
+    id            String       @id
+    email         String
+    invitedBy     String
+    associationId String
+    user          User         @relation(fields: [invitedBy], references: [id], onDelete: Cascade)
+    association   Association? @relation(fields: [associationId], references: [id])
 }
 
 model Facility {
     id          String    @id
-    name        String    @unique
+    name        String
     description String?
     address     String?
     city        String

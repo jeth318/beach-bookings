@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { useRef, type MutableRefObject, type ReactNode } from "react";
 
 type Props = {
   callback: (data: any) => void;
@@ -8,10 +8,13 @@ type Props = {
   title: string;
   body?: string;
   tagRef: string;
+  modalRef?: MutableRefObject<HTMLInputElement | null>;
   cancelButtonText?: string;
   confirmButtonText?: string;
   level?: string;
+  forceOpen?: boolean;
   hideConfirm?: boolean;
+  hideCancel?: boolean;
 };
 
 export default function ActionModal({
@@ -24,26 +27,35 @@ export default function ActionModal({
   cancelButtonText,
   confirmButtonText,
   hideConfirm,
+  hideCancel,
+  forceOpen,
+  modalRef,
   level = "error",
 }: Props) {
   return (
     <div>
-      {/* Put this part before </body> tag */}
       <input
         type="checkbox"
         id={`action-modal-${tagRef}`}
+        ref={modalRef}
         className="modal-toggle"
       />
-      <div className="modal modal-bottom sm:modal-middle">
+      <div
+        className={`modal modal-bottom sm:modal-middle ${
+          forceOpen ? "modal-open" : ""
+        }`}
+      >
         <div className="modal-box">
           {title && <h3 className="text-lg font-bold">{title}</h3>}
           {body && <p className="py-4">{body}</p>}
           {children && children}
           <div className="modal-action">
             <div className="btn-group">
-              <label htmlFor={`action-modal-${tagRef}`} className="btn ">
-                {cancelButtonText || "Cancel"}
-              </label>
+              {!hideCancel && (
+                <label htmlFor={`action-modal-${tagRef}`} className="btn ">
+                  {cancelButtonText || "Cancel"}
+                </label>
+              )}
               {!hideConfirm && (
                 <label
                   htmlFor={`action-modal-${tagRef}`}

@@ -64,18 +64,18 @@ export const menuItems: DropdownItem[] = [
     text: "Booked",
     href: "/created",
     icon: "crown.svg",
-  },
-  /*   {
+  } /*
+     {
     text: "History",
     href: "/history",
     icon: "history.svg",
   },
+  */,
   {
-     text: "Groups",
-     href: "/associations",
+    text: "Groups",
+    href: "/association",
     icon: "people.svg",
   },
-  */
 ];
 
 export const renderToast = (

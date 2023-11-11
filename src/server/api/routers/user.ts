@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { array, z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -14,10 +14,13 @@ export const userRouter = createTRPCRouter({
   getMultipleByIds: publicProcedure
     .input(
       z.object({
-        playerIds: z.string().array(),
+        playerIds: z.string().array().or(z.null()),
       })
     )
     .query(async ({ ctx, input }) => {
+      if (!input.playerIds?.length) {
+        return [];
+      }
       const users = await ctx.prisma.user.findMany({
         where: {
           id: { in: input.playerIds },
@@ -28,6 +31,75 @@ export const userRouter = createTRPCRouter({
         id: user.id,
         emailConsents: user.emailConsents,
       }));
+    }),
+
+  getGroupUsersByIds: publicProcedure
+    .input(
+      z.object({
+        playerIds: z.string().array().or(z.null()),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      if (!input.playerIds?.length) {
+        return [];
+      }
+
+      const users = await ctx.prisma.user.findMany({
+        where: {
+          id: { in: input.playerIds },
+        },
+      });
+
+      return users.map((user) => ({
+        id: user.id,
+        name: user.name,
+        emailConsents: user.emailConsents,
+      }));
+    }),
+
+  getSingle: protectedProcedure
+    .input(
+      z.object({
+        email: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          email: input.email,
+        },
+      });
+
+      if (!user?.id) {
+        return null;
+      }
+
+      return {
+        id: user?.id,
+        name: user?.name,
+      };
+    }),
+  getById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!user?.id) {
+        return null;
+      }
+
+      return {
+        id: user?.id,
+        name: user?.name,
+      };
     }),
   // CALL ONLY FROM SERVER
   getAllWithEmail: publicProcedure.query(async ({ ctx }) => {
@@ -82,6 +154,22 @@ export const userRouter = createTRPCRouter({
         },
         data: {
           name: input.name,
+        },
+      });
+    }),
+  updateAssociations: protectedProcedure
+    .input(
+      z.object({
+        associations: z.array(z.string()),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+        data: {
+          associations: input.associations,
         },
       });
     }),
