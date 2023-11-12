@@ -73,38 +73,77 @@ const Group = () => {
 
   return (
     <>
-      <SubHeader title="Groups" />
-      <main className="min-w-sm pd-3 flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] text-white">
-        <div className="flex flex-col items-center justify-center">
-          <div className="mb-4 mt-8 flex flex-col justify-center">
-            <h2 className="heading text-center text-3xl ">
-              {association.name}
-            </h2>
-            <h4 className="">{association.description}</h4>
+      <SubHeader title={association.name} />
+      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] text-white">
+        <div className="mb-4 mt-8 flex flex-col justify-center">
+          <h2 className="heading text-center text-3xl ">{association.name}</h2>
+          <h4 className="">{association.description}</h4>
+        </div>
+        <div className=" text-lg">Invite to group</div>
+        {searchQuery}
+        <div className="form-control">
+          <div className="input-group">
+            <input
+              type="text"
+              placeholder="Enter email"
+              value={searchPlayerValue}
+              onChange={(e) => setSearchPlayerValue(e.target.value)}
+              className="input-bordered input text-black"
+            />
+            <button className="btn" onClick={onSearchClicked}>
+              INVITE
+            </button>
           </div>
-          <div className="text-lg">Invite to group</div>
-          {searchQuery}
-          <div className="form-control">
-            <div className="input-group">
-              <input
-                type="text"
-                placeholder="Enter email"
-                value={searchPlayerValue}
-                onChange={(e) => setSearchPlayerValue(e.target.value)}
-                className="input-bordered input text-black"
-              />
-              <button className="btn" onClick={onSearchClicked}>
-                INVITE
-              </button>
-            </div>
-          </div>
+        </div>
 
-          <h4 className="mt-4 text-xl">Members</h4>
-          <div>
-            {members?.map((member) => {
-              return <div key={member?.name}>{member?.name}</div>;
-            })}
-          </div>
+        <div className="mb-8 mt-8 w-[100%] max-w-md overflow-x-auto pl-2 pr-2">
+          <table className="table-zebra table-compact table w-[100%] text-black">
+            {/* head */}
+            <thead>
+              <tr>
+                <th colSpan={3}>Members</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* row 1 */}
+              {members?.map((member) => {
+                return (
+                  <tr key={member.id}>
+                    <td>
+                      <div className="flex items-center space-x-3">
+                        <div className="avatar">
+                          <div className="mask mask-squircle h-12 w-12">
+                            <img
+                              src={member.image || "/user-default.png"}
+                              alt="Avatar Tailwind CSS Component"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      {member.name}
+                      <br />
+                      <span className="badge-ghost badge badge-sm">
+                        Series 7
+                      </span>
+                    </td>
+                    <th>
+                      <button className="btn-ghost btn-xs btn">details</button>
+                    </th>
+                  </tr>
+                );
+              })}
+            </tbody>
+            {/* foot */}
+            <tfoot>
+              <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
         </div>
       </main>
     </>

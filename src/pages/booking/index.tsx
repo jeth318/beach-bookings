@@ -271,7 +271,7 @@ const Booking = () => {
   if (sessionData?.user.id && !user?.name) {
     return (
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="flex h-screen flex-col items-center p-3">
+        <div className="flex flex-col items-center p-3">
           <Image
             alt="beach-spike"
             width={300}
@@ -296,7 +296,7 @@ const Booking = () => {
       <SubHeader title={"Publish booking"} />
       <main className="min-w-sm pd-3 flex flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
-          <div className="flex h-screen flex-col items-center justify-center p-3">
+          <div className="flex flex-col items-center justify-center p-3">
             <h2 className="text-center text-2xl text-white">
               If you want to add or edit bookings, you have to be logged in.
             </h2>

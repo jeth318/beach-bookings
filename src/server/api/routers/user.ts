@@ -72,6 +72,7 @@ export const userRouter = createTRPCRouter({
       return users.map((user) => ({
         id: user.id,
         name: user.name,
+        image: user.image,
         emailConsents: user.emailConsents,
       }));
     }),
