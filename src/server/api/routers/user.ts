@@ -56,6 +56,25 @@ export const userRouter = createTRPCRouter({
         emailConsents: user.emailConsents,
       }));
     }),
+  getUsersByAssociationId: publicProcedure
+    .input(
+      z.object({
+        associationId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const users = await ctx.prisma.user.findMany({
+        where: {
+          associations: { has: input.associationId },
+        },
+      });
+
+      return users.map((user) => ({
+        id: user.id,
+        name: user.name,
+        emailConsents: user.emailConsents,
+      }));
+    }),
 
   getSingle: protectedProcedure
     .input(

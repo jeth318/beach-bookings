@@ -11,12 +11,18 @@ export const associationRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.association.findMany({});
   }),
-  getForUser: protectedProcedure.query(async ({ ctx }) => {
-    const associations = await ctx.prisma.association.findMany({});
-    return associations.filter((item) =>
-      item.members.includes(ctx.session.user.id)
-    );
-  }),
+  getForUser: protectedProcedure
+    .input(z.object({ ids: z.array(z.string()) }))
+    .query(async ({ ctx, input }) => {
+      const associations = await ctx.prisma.association.findMany({
+        where: {
+          id: {
+            in: input.ids,
+          },
+        },
+      });
+      return associations;
+    }),
 
   getSingle: protectedProcedure
     .input(z.object({ id: z.string() }))

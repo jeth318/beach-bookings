@@ -283,7 +283,7 @@ const Booking = () => {
             If you want to publish or join a booking, you must first add your
             name in your account.
           </h3>
-          <Link href="/settings" className="btn btn-info mt-10 text-white">
+          <Link href="/settings" className="btn-info btn mt-10 text-white">
             Settings
           </Link>
         </div>
@@ -424,7 +424,7 @@ const Booking = () => {
                 <div className="w-100 btn-group btn-group-horizontal mb-20 mt-10 flex justify-center self-center">
                   <label
                     htmlFor="action-modal-booking-cancel"
-                    className="btn btn-warning text-white"
+                    className="btn-warning btn text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   >
                     Cancel

@@ -27,8 +27,8 @@ const Group = () => {
     { enabled: !!searchQuery && searchQuery.length > 2 }
   );
 
-  const { data: members } = api.user.getGroupUsersByIds.useQuery({
-    playerIds: association?.members || null,
+  const { data: members } = api.user.getUsersByAssociationId.useQuery({
+    associationId: association?.id || "",
   });
 
   const { mutate: createInvite } = api.invite.create.useMutation({});
@@ -62,7 +62,7 @@ const Group = () => {
       <PageLoader
         isMainPage={false}
         mainBgColor={"mainPageBgColor"}
-        bgColor={"bg-gradient-to-b from-[#005e1ba6] to-[#000000]"}
+        bgColor={"bg-gradient-to-b from-[#a31da1] to-[#000000]"}
       />
     );
   }
@@ -72,55 +72,42 @@ const Group = () => {
   }
 
   return (
-    <main className="min-w-sm flex min-w-fit flex-col">
+    <>
       <SubHeader title="Groups" />
-      <div className="mt-8">
-        <h2 className="heading text-3xl">{association.name}</h2>
-        <h4>{association.description}</h4>
-      </div>
-
-      <div className="text-lg">Add a player to this group</div>
-      {searchQuery}
-      <p>RESULTS: {userSearchResult?.name}</p>
-
-      {userSearchResult === null &&
-        "No user found with that eemail. Click here to invite player"}
-
-      <div className="form-control">
-        <div className="input-group">
-          <input
-            type="text"
-            placeholder="Search…"
-            value={searchPlayerValue}
-            onChange={(e) => setSearchPlayerValue(e.target.value)}
-            className="input-bordered input"
-          />
-          <button className="btn-square btn" onClick={onSearchClicked}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+      <main className="min-w-sm pd-3 flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] text-white">
+        <div className="flex flex-col items-center justify-center">
+          <div className="mb-4 mt-8 flex flex-col justify-center">
+            <h2 className="heading text-center text-3xl ">
+              {association.name}
+            </h2>
+            <h4 className="">{association.description}</h4>
+          </div>
+          <div className="text-lg">Invite to group</div>
+          {searchQuery}
+          <div className="form-control">
+            <div className="input-group">
+              <input
+                type="text"
+                placeholder="Enter email"
+                value={searchPlayerValue}
+                onChange={(e) => setSearchPlayerValue(e.target.value)}
+                className="input-bordered input text-black"
               />
-            </svg>
-          </button>
-        </div>
-      </div>
+              <button className="btn" onClick={onSearchClicked}>
+                INVITE
+              </button>
+            </div>
+          </div>
 
-      <h4 className="">Members</h4>
-      <div>
-        {members?.map((member) => {
-          return <div key={member.id}>{member?.name}</div>;
-        })}
-      </div>
-    </main>
+          <h4 className="mt-4 text-xl">Members</h4>
+          <div>
+            {members?.map((member) => {
+              return <div key={member?.name}>{member?.name}</div>;
+            })}
+          </div>
+        </div>
+      </main>
+    </>
   );
 };
 
