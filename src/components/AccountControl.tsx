@@ -20,7 +20,7 @@ export const AccountControl = () => {
     mutateUserDelete(undefined, {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onSuccess: async () => {
-        await signOut();
+        await signOut({ callbackUrl: "/" });
       },
       onError: () => {
         setIsLoading(false);

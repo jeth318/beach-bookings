@@ -114,22 +114,8 @@ const Invite = () => {
   }
 
   if (user.associations.includes(String(invite.associationId))) {
-    return (
-      <main className="min-w-sm flex min-w-fit flex-col">
-        <SubHeader title="Invitation" />
-        <div
-          className={`bookings-container flex min-h-[400px] flex-col items-center justify-center bg-gradient-to-b from-[#005e1ba6] to-[#000000]`}
-        >
-          <div className="flex flex-col items-center justify-center">
-            <h2 className="text-2xl">{association.name}</h2>
-            <h4>You are already a member of this group</h4>
-            <Link href="/" className="btn-outline btn mt-4 text-white">
-              Show Groups
-            </Link>
-          </div>
-        </div>
-      </main>
-    );
+    void router.push(`/association/${invite.associationId}`);
+    return null;
   }
 
   return (

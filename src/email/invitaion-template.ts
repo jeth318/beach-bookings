@@ -7,11 +7,13 @@ const getEnvironmentSite = () => {
 
 type BuildHtmlTemplateInviteProps = {
   inviterName: string;
+  emailInvited: string;
   association: Association;
 };
 
 export const buildHtmlInvitationTemplate = ({
   inviterName,
+  emailInvited,
   association,
 }: BuildHtmlTemplateInviteProps) => {
   /*   const title = "Invitation to join";
@@ -409,7 +411,7 @@ export const buildHtmlInvitationTemplate = ({
     </head>
     
     <body>
-        <span class="preheader">Invite</span>
+        <span class="preheader">Hello there 👥</span>
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
         <tr>
             <td>&nbsp;</td>
@@ -432,18 +434,19 @@ export const buildHtmlInvitationTemplate = ({
                                                 <div style="margin-top: 10px; padding-left: 15px;">
                                                     <h2 style="text-align: center; margin-bottom: 15px;">You've been
                                                         invited!</h2>
-                                                    ${
-                                                      inviterName ||
-                                                      "A kind member"
-                                                    } has invited you to join they group ${
-    association.name
-  }
+                                                        ${
+                                                          inviterName ||
+                                                          "A kind member"
+                                                        } 
+                                                    has invited you to join the group <b> ${
+                                                      association.name
+                                                    }</b>.
                                                 </div>
                                             </div>
                                             <hr />
 
                                             <table role="presentation" cellpadding="0" cellspacing="0"
-                                                class="btn btn-primary">
+                                                class="btn btn-primary btn-lg">
                                                 <tbody>
                                                     <tr style="display: flex; justify-content: center;">
                                                         <td>
@@ -454,8 +457,7 @@ export const buildHtmlInvitationTemplate = ({
                                                                             <a style="color: white !important;" href="${getEnvironmentSite()}/invite/${
     association.id
   }"
-                                                                                target="_blank">Open
-                                                                                invitation</a>
+                                                                                target="_blank">OPEN INVITE</a>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>

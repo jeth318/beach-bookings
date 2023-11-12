@@ -74,6 +74,7 @@ export const emailInviteDispatcher = ({
 }: EmailInviteDispatchProps) => {
   const htmlString = buildHtmlInvitationTemplate({
     inviterName,
+    emailInvited: email,
     association,
   });
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
