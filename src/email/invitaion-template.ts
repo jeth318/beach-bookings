@@ -164,7 +164,7 @@ export const buildHtmlInvitationTemplate = ({
   }
 
   a {
-      color: #3498db;
+      color: white;
       text-decoration: underline;
   }
 
@@ -457,7 +457,7 @@ export const buildHtmlInvitationTemplate = ({
                                                                             <a style="color: white !important;" href="${getEnvironmentSite()}/invite/${
     association.id
   }"
-                                                                                target="_blank">OPEN INVITE</a>
+                                                                                target="_blank">Open invite</a>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>

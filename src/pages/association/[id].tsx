@@ -98,7 +98,7 @@ const Group = () => {
       {errorToastMessage && <Toast level="warning" body={errorToastMessage} />}
 
       <main className="min-w-sm pd-3  flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] dark:text-white ">
-        <div className="mb-8 mt-8 flex flex-row items-center justify-center text-white">
+        <div className="4 mt-4 flex flex-row items-center justify-center text-white">
           <Image
             alt="beach-game"
             width={100}
@@ -114,33 +114,40 @@ const Group = () => {
         </div>
         <div className="flex w-screen max-w-md flex-col p-4">
           <form className="flex flex-col" onSubmit={onInviteClicked}>
-            <input
-              disabled={isCreatingInvite}
-              name="email"
-              id="email"
-              type="email"
-              placeholder="Send an email invite"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="input-bordered input w-[100%] max-w-md"
-            />
-            <input
-              type="submit"
-              disabled={isCreatingInvite}
-              className="btn mt-2 self-center"
-              value="SEND INVITE"
-            />
-            {isCreatingInvite ? (
-              <div className="self-center">
-                <BeatLoader size={10} color="white" />
-              </div>
-            ) : (
-              <div className="h-[24px]"></div>
-            )}
+            <div className="join flex justify-between">
+              <input
+                disabled={isCreatingInvite}
+                name="email"
+                id="email"
+                type="email"
+                placeholder="Enter email to invite..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="join-item input-bordered input w-[100%]"
+              />
+
+              <button
+                type="submit"
+                className="join-item btn-accent btn rounded-r-full"
+                disabled={
+                  isCreatingInvite ||
+                  !searchQuery?.length ||
+                  searchQuery?.length < 5
+                }
+              >
+                {isCreatingInvite ? (
+                  <div className="flex items-center self-center">
+                    <BeatLoader className="w-[46px]" size={10} color="white" />
+                  </div>
+                ) : (
+                  <span>Invite</span>
+                )}
+              </button>
+            </div>
           </form>
         </div>
 
-        <div className="mb-8 mt-8 w-[100%] max-w-md overflow-x-auto p-4">
+        <div className="mb-14 mt-2 w-[100%] max-w-md overflow-x-auto p-4">
           <table className="table-compact table w-[100%]">
             {/* head */}
             <thead>
@@ -171,7 +178,7 @@ const Group = () => {
                         association.userId !== member.id && (
                           <>
                             <br />
-                            <span className="badge badge-ghost badge-sm">
+                            <span className="badge-ghost badge badge-sm">
                               administrator
                             </span>
                           </>
@@ -179,14 +186,14 @@ const Group = () => {
                       {association.userId === member.id && (
                         <>
                           <br />
-                          <span className="badge badge-ghost badge-sm">
+                          <span className="badge-ghost badge badge-sm">
                             group owner
                           </span>
                         </>
                       )}
                     </td>
                     <th>
-                      <button className="btn btn-ghost btn-xs">details</button>
+                      <button className="btn-ghost btn-xs btn">details</button>
                     </th>
                   </tr>
                 );

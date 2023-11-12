@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { PlayersTable } from "~/components/PlayersTable";
 import { SubHeader } from "~/components/SubHeader";
 import { api } from "~/utils/api";
@@ -9,6 +10,7 @@ const Association = () => {
   const sessionData = useSession();
 
   const { data: user } = api.user.get.useQuery();
+  const router = useRouter();
 
   const { data: joinedAssociations, isFetched: hasFetchedUserAssociations } =
     api.association.getForUser.useQuery(
@@ -18,7 +20,20 @@ const Association = () => {
       }
     );
 
-  if (hasFetchedUserAssociations && !joinedAssociations?.length) {
+  const isWithoutGroup =
+    hasFetchedUserAssociations && !joinedAssociations?.length;
+
+  const isMultiGroupMember =
+    !!sessionData.data?.user.id &&
+    joinedAssociations?.length &&
+    joinedAssociations?.length > 1;
+
+  const isOneGroupMember =
+    !!sessionData.data?.user.id &&
+    joinedAssociations?.length === 1 &&
+    !!joinedAssociations[0]?.id !== undefined;
+
+  if (isWithoutGroup) {
     return (
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c]">
         <div className="flex h-screen flex-col items-center p-3">
@@ -41,7 +56,7 @@ const Association = () => {
     );
   }
 
-  if (!!sessionData.data?.user.id && !!joinedAssociations?.length) {
+  if (isMultiGroupMember) {
     return (
       <>
         <SubHeader title="Groups" />
@@ -72,6 +87,11 @@ const Association = () => {
         </main>
       </>
     );
+  }
+
+  if (isOneGroupMember) {
+    void router.push(`/association/${joinedAssociations[0]?.id as string}`);
+    return null;
   }
 };
 
