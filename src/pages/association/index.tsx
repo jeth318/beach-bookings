@@ -33,7 +33,7 @@ const Association = () => {
             You are not a part of a group yet. Group members can invite you.
             Meanwhile, you can join public bookings from the home page.
           </h3>
-          <Link href="/settings" className="btn-info btn mt-10 text-white">
+          <Link href="/" className="btn-info btn mt-10 text-white">
             Home
           </Link>
         </div>

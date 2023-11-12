@@ -4,6 +4,7 @@ import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
 import { PageLoader } from "~/components/PageLoader";
 import { useState } from "react";
+import Image from "next/image";
 
 const Group = () => {
   const router = useRouter();
@@ -73,22 +74,31 @@ const Group = () => {
 
   return (
     <>
-      <SubHeader title={association.name} />
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] text-white">
-        <div className="mb-4 mt-8 flex flex-col justify-center">
-          <h2 className="heading text-center text-3xl ">{association.name}</h2>
-          <h4 className="">{association.description}</h4>
+      {/* <SubHeader title={association.name} /> */}
+      <main className="min-w-sm pd-3  flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] dark:text-white ">
+        <div className="mb-8 mt-8 flex flex-row items-center justify-center text-white">
+          <Image
+            alt="beach-game"
+            width={100}
+            height={100}
+            src="/beach-game.png"
+          />
+          <div className="flex flex-col items-start">
+            <h2 className="heading text-center text-3xl ">
+              {association.name}
+            </h2>
+            <h4 className="">{association.description}</h4>
+          </div>
         </div>
-        <div className=" text-lg">Invite to group</div>
-        {searchQuery}
-        <div className="form-control">
+
+        <div className="form-control ">
           <div className="input-group">
             <input
               type="text"
-              placeholder="Enter email"
+              placeholder="Send an email invite"
               value={searchPlayerValue}
               onChange={(e) => setSearchPlayerValue(e.target.value)}
-              className="input-bordered input text-black"
+              className="input-bordered input "
             />
             <button className="btn" onClick={onSearchClicked}>
               INVITE
@@ -96,8 +106,8 @@ const Group = () => {
           </div>
         </div>
 
-        <div className="mb-8 mt-8 w-[100%] max-w-md overflow-x-auto pl-2 pr-2">
-          <table className="table-zebra table-compact table w-[100%] text-black">
+        <div className="mb-8 mt-8 w-[100%] max-w-md overflow-x-auto p-4">
+          <table className="table-compact table w-[100%]">
             {/* head */}
             <thead>
               <tr>
@@ -123,10 +133,23 @@ const Group = () => {
                     </td>
                     <td>
                       {member.name}
-                      <br />
-                      <span className="badge-ghost badge badge-sm">
-                        Series 7
-                      </span>
+                      {association.admins.includes(member.id) &&
+                        association.userId !== member.id && (
+                          <>
+                            <br />
+                            <span className="badge badge-ghost badge-sm">
+                              administrator
+                            </span>
+                          </>
+                        )}
+                      {association.userId === member.id && (
+                        <>
+                          <br />
+                          <span className="badge badge-ghost badge-sm">
+                            group owner
+                          </span>
+                        </>
+                      )}
                     </td>
                     <th>
                       <button className="btn-ghost btn-xs btn">details</button>

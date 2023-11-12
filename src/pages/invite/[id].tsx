@@ -133,7 +133,7 @@ const Invite = () => {
   }
 
   return (
-    <main className="min-w-sm flex min-w-fit flex-col">
+    <main className="min-w-sm flex min-w-fit flex-col text-white">
       <SubHeader title="Invitation" />
       <div
         className={`bookings-container flex min-h-[400px] flex-col items-center justify-center bg-gradient-to-b from-[#005e1ba6] to-[#000000]`}

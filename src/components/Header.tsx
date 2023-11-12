@@ -18,7 +18,8 @@ export const Header = () => {
 
   const router = useRouter();
 
-  const noBoxShadow = router.asPath !== "/";
+  const noBoxShadow =
+    router.asPath !== "/" && !router.asPath.includes("/association/");
 
   const renderToast = (body: string) => {
     setToastMessage(body);
