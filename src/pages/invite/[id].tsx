@@ -122,7 +122,7 @@ const Invite = () => {
     <main className="min-w-sm flex min-w-fit flex-col text-white">
       <SubHeader title="Invitation" />
       <div
-        className={`bookings-container flex min-h-[400px] flex-col items-center justify-center bg-gradient-to-b from-[#005e1ba6] to-[#000000]`}
+        className={`smooth-render-in bookings-container flex min-h-[400px] flex-col items-center justify-center bg-gradient-to-b from-[#005e1ba6] to-[#000000]`}
       >
         <ActionModal
           title={"Group invitation"}
@@ -146,7 +146,7 @@ const Invite = () => {
           <button
             onClick={onJoinConfirmed}
             disabled={isAcceptingInvite}
-            className="btn btn-primary mb-4 mt-4 animate-pulse text-white"
+            className="btn-primary btn mb-4 mt-4 animate-pulse text-white"
           >
             Accept invite
           </button>

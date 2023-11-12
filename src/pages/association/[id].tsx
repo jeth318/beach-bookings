@@ -11,25 +11,26 @@ import { Toast } from "~/components/Toast";
 
 const Group = () => {
   const router = useRouter();
+  const { status: sessionStatus, data: sessionData } = useSession();
   const [errorToastMessage, setErrorToastMessage] = useState<string>();
   const [toastMessage, setToastMessage] = useState<string>();
-
-  const { status: sessionStatus, data: sessionData } = useSession();
-  const emailerMutation = api.emailer.sendInvitationEmail.useMutation();
-
-  const { data: association, status } = api.association.getSingle.useQuery(
-    { id: typeof router?.query?.id === "string" ? router?.query?.id : "" },
-    {
-      refetchOnMount: true,
-      refetchOnWindowFocus: true,
-    }
-  );
-
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
 
-  const { data: members } = api.user.getUsersByAssociationId.useQuery({
-    associationId: association?.id || "",
-  });
+  const emailerMutation = api.emailer.sendInvitationEmail.useMutation();
+
+  const { data: association, isFetched: isAssociationFetched } =
+    api.association.getSingle.useQuery(
+      { id: typeof router?.query?.id === "string" ? router?.query?.id : "" },
+      {
+        refetchOnMount: true,
+        refetchOnWindowFocus: true,
+      }
+    );
+
+  const { data: members, isFetched: isMembersFetched } =
+    api.user.getUsersByAssociationId.useQuery({
+      associationId: association?.id || "",
+    });
 
   const { mutate: createInvite, isLoading: isCreatingInvite } =
     api.invite.create.useMutation({});
@@ -77,7 +78,11 @@ const Group = () => {
     return null;
   };
 
-  if (sessionStatus === "loading") {
+  if (
+    sessionStatus === "loading" ||
+    !isAssociationFetched ||
+    !isMembersFetched
+  ) {
     return (
       <PageLoader
         isMainPage={false}
@@ -88,7 +93,7 @@ const Group = () => {
   }
 
   if (!association) {
-    return null;
+    return <div>No association found</div>;
   }
 
   return (
@@ -97,7 +102,7 @@ const Group = () => {
       {toastMessage && <Toast body={toastMessage} />}
       {errorToastMessage && <Toast level="warning" body={errorToastMessage} />}
 
-      <main className="min-w-sm pd-3  flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] dark:text-white ">
+      <main className="min-w-sm pd-3 smooth-render-in flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] dark:text-white ">
         <div className="4 mt-4 flex flex-row items-center justify-center text-white">
           <Image
             alt="beach-game"
