@@ -337,7 +337,7 @@ export const Bookings = ({ bookings }: Props) => {
               key={booking.id}
               className="smooth-render-in border-b border-zinc-400 last:border-b-0"
             >
-              <div className="card card-compact">
+              <div className="card-compact card">
                 <div
                   className={`card-body flex-row justify-between text-primary-content`}
                 >

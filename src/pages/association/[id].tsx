@@ -1,14 +1,19 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
-import { SubHeader } from "~/components/SubHeader";
 import { PageLoader } from "~/components/PageLoader";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import Image from "next/image";
-import { emailDispatcher, emailInviteDispatcher } from "~/utils/booking.util";
+import { emailInviteDispatcher } from "~/utils/booking.util";
+import { BeatLoader } from "react-spinners";
+import { renderToast } from "~/utils/general.util";
+import { Toast } from "~/components/Toast";
 
 const Group = () => {
   const router = useRouter();
+  const [errorToastMessage, setErrorToastMessage] = useState<string>();
+  const [toastMessage, setToastMessage] = useState<string>();
+
   const { status: sessionStatus, data: sessionData } = useSession();
   const emailerMutation = api.emailer.sendInvitationEmail.useMutation();
 
@@ -21,26 +26,16 @@ const Group = () => {
   );
 
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
-  const [searchPlayerValue, setSearchPlayerValue] = useState<
-    string | undefined
-  >(undefined);
-  const { data: userSearchResult } = api.user.getSingle.useQuery(
-    {
-      email: searchQuery || "",
-    },
-    { enabled: !!searchQuery && searchQuery.length > 2 }
-  );
 
   const { data: members } = api.user.getUsersByAssociationId.useQuery({
     associationId: association?.id || "",
   });
 
-  const { mutate: createInvite } = api.invite.create.useMutation({});
+  const { mutate: createInvite, isLoading: isCreatingInvite } =
+    api.invite.create.useMutation({});
 
-  console.log({ userSearchResult });
-
-  const onInviteClicked = () => {
-    setSearchQuery(searchPlayerValue?.trim());
+  const onInviteClicked = (event: FormEvent<HTMLFormElement> | undefined) => {
+    event && event.preventDefault();
 
     if (searchQuery?.length && typeof router.query.id === "string") {
       createInvite(
@@ -59,22 +54,28 @@ const Group = () => {
               email: searchQuery,
               association: association || null,
             });
+            renderToast("Invitation email sent", setToastMessage);
+            setSearchQuery("");
+          },
+          onError: (e) => {
+            if (e.message === "INVITED_EMAIL_ALREADY_MEMBER") {
+              renderToast(
+                "Already a member of this group",
+                setErrorToastMessage
+              );
+            }
+            if (e.message === "EMAIL_HAS_PENDING_INVITE") {
+              renderToast(
+                "This player has already been invited.",
+                setErrorToastMessage
+              );
+            }
           },
         }
       );
     }
     return null;
   };
-
-  if (status !== "success") {
-    // won't happen since we're using `fallback: "blocking"`
-
-    return <>FAILLoading...</>;
-  }
-
-  if (sessionStatus === "unauthenticated") {
-    void router.push("/");
-  }
 
   if (sessionStatus === "loading") {
     return (
@@ -93,6 +94,9 @@ const Group = () => {
   return (
     <>
       {/* <SubHeader title={association.name} /> */}
+      {toastMessage && <Toast body={toastMessage} />}
+      {errorToastMessage && <Toast level="warning" body={errorToastMessage} />}
+
       <main className="min-w-sm pd-3  flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] dark:text-white ">
         <div className="mb-8 mt-8 flex flex-row items-center justify-center text-white">
           <Image
@@ -108,20 +112,32 @@ const Group = () => {
             <h4 className="">{association.description}</h4>
           </div>
         </div>
-
-        <div className="form-control ">
-          <div className="input-group">
+        <div className="flex w-screen max-w-md flex-col p-4">
+          <form className="flex flex-col" onSubmit={onInviteClicked}>
             <input
-              type="text"
+              disabled={isCreatingInvite}
+              name="email"
+              id="email"
+              type="email"
               placeholder="Send an email invite"
-              value={searchPlayerValue}
-              onChange={(e) => setSearchPlayerValue(e.target.value)}
-              className="input-bordered input "
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="input-bordered input w-[100%] max-w-md"
             />
-            <button className="btn" onClick={onInviteClicked}>
-              INVITE
-            </button>
-          </div>
+            <input
+              type="submit"
+              disabled={isCreatingInvite}
+              className="btn mt-2 self-center"
+              value="SEND INVITE"
+            />
+            {isCreatingInvite ? (
+              <div className="self-center">
+                <BeatLoader size={10} color="white" />
+              </div>
+            ) : (
+              <div className="h-[24px]"></div>
+            )}
+          </form>
         </div>
 
         <div className="mb-8 mt-8 w-[100%] max-w-md overflow-x-auto p-4">

@@ -56,7 +56,7 @@ export const userRouter = createTRPCRouter({
         emailConsents: user.emailConsents,
       }));
     }),
-  getUsersByAssociationId: publicProcedure
+  getUsersByAssociationId: protectedProcedure
     .input(
       z.object({
         associationId: z.string(),
@@ -97,6 +97,7 @@ export const userRouter = createTRPCRouter({
       return {
         id: user?.id,
         name: user?.name,
+        associations: user?.associations,
       };
     }),
   getById: protectedProcedure
