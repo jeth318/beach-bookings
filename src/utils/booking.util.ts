@@ -1,5 +1,6 @@
-import { type Association, type Booking } from "@prisma/client";
+import { type User, type Association, type Booking } from "@prisma/client";
 import { today } from "./time.util";
+import { buildHtmlInvitationTemplate } from "~/email/invitaion-template";
 import { buildHtmlTemplate } from "~/email/template";
 
 type BookingsByDateProps = {
@@ -22,6 +23,16 @@ type EmailDispatchProps = {
   };
 };
 
+type EmailInviteDispatchProps = {
+  email: string;
+  association: Association;
+  inviterName: string;
+  recipients?: string[];
+  mutation: {
+    mutate: ({}: any, {}: any) => void;
+  };
+};
+
 export const isOngoingGame = (booking: Booking) => {
   const start = booking.date.getTime();
   const end = getBookingEndDate(booking);
@@ -36,7 +47,6 @@ export type EventType =
   | "LEAVE"
   | "KICK"
   | "CANCELED";
-
 
 function padZero(value: number) {
   return value < 10 ? `0${value}` : value;
@@ -55,6 +65,28 @@ export const maxPlayersToShow = [4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => ({
   id: String(item),
   name: String(item),
 }));
+
+export const emailInviteDispatcher = ({
+  email,
+  inviterName,
+  mutation,
+  association,
+}: EmailInviteDispatchProps) => {
+  const htmlString = buildHtmlInvitationTemplate({
+    inviterName,
+    association,
+  });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  mutation.mutate(
+    {
+      emailAddresses: [email],
+      htmlString,
+    },
+    {
+      onSuccess: () => null,
+    }
+  );
+};
 
 export const emailDispatcher = ({
   bookerName,

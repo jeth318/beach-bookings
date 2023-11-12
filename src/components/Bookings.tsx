@@ -464,7 +464,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn-warning btn-sm btn text-white"
+                                  className="btn btn-warning btn-sm text-white"
                                 >
                                   {leaving.isWorking &&
                                   booking.id === leaving.bookingId ? (
@@ -494,7 +494,7 @@ export const Bookings = ({ bookings }: Props) => {
 
                             {!isMainPage &&
                               session?.data?.user?.id === booking?.userId && (
-                                <button className="btn-sm btn text-white">
+                                <button className="btn btn-sm text-white">
                                   <Link
                                     href={{
                                       pathname: `/booking/${booking.id}`,
@@ -512,7 +512,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn-error btn-sm btn text-white"
+                                  className="btn btn-error btn-sm text-white"
                                 >
                                   {deleting.isWorking &&
                                   booking.id === deleting.bookingId ? (

@@ -160,7 +160,7 @@ const Invite = () => {
           <button
             onClick={onJoinConfirmed}
             disabled={isAcceptingInvite}
-            className="btn-primary btn mb-4 mt-4 animate-pulse text-white"
+            className="btn btn-primary mb-4 mt-4 animate-pulse text-white"
           >
             Accept invite
           </button>

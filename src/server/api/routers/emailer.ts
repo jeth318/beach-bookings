@@ -89,4 +89,53 @@ export const emailerRouter = createTRPCRouter({
         console.error("Emailer had issues:", error);
       }
     }),
+  sendInvitationEmail: protectedProcedure
+    .input(
+      z.object({
+        emailAddresses: z.string().array(),
+        htmlString: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const subject = "Group invitation";
+
+      try {
+        if (isEmailDispatcherActive === "true") {
+          console.warn("Email dispatcher is active");
+          const promises = input.emailAddresses.map((recipient, index) => {
+            return new Promise((resolve, reject) => {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              transporter.sendMail(
+                {
+                  ...getMailOptions({
+                    sender,
+                    recipients: [recipient || ""],
+                  }),
+                  html: input.htmlString,
+                  subject,
+                },
+                (err: unknown, info: unknown) => {
+                  if (err) {
+                    console.error(err);
+                    reject(err);
+                  } else {
+                    console.log(`Email was sent successfully ${index}`);
+                    resolve(info);
+                  }
+                }
+              );
+            });
+          });
+
+          const resolved = await Promise.all([
+            verificationPromise,
+            ...promises,
+          ]);
+          console.log({ resolved });
+          return true;
+        }
+      } catch (error) {
+        console.error("Emailer had issues:", error);
+      }
+    }),
 });

@@ -5,10 +5,13 @@ import { SubHeader } from "~/components/SubHeader";
 import { PageLoader } from "~/components/PageLoader";
 import { useState } from "react";
 import Image from "next/image";
+import { emailDispatcher, emailInviteDispatcher } from "~/utils/booking.util";
 
 const Group = () => {
   const router = useRouter();
   const { status: sessionStatus, data: sessionData } = useSession();
+  const emailerMutation = api.emailer.sendInvitationEmail.useMutation();
+
   const { data: association, status } = api.association.getSingle.useQuery(
     { id: typeof router?.query?.id === "string" ? router?.query?.id : "" },
     {
@@ -36,14 +39,29 @@ const Group = () => {
 
   console.log({ userSearchResult });
 
-  const onSearchClicked = () => {
+  const onInviteClicked = () => {
     setSearchQuery(searchPlayerValue?.trim());
 
     if (searchQuery?.length && typeof router.query.id === "string") {
-      createInvite({
-        email: searchQuery,
-        associationId: router.query.id,
-      });
+      createInvite(
+        {
+          email: searchQuery,
+          associationId: router.query.id,
+        },
+        {
+          onSuccess: () => {
+            if (!association) {
+              return null;
+            }
+            emailInviteDispatcher({
+              mutation: emailerMutation,
+              inviterName: sessionData?.user.name || "",
+              email: searchQuery,
+              association: association || null,
+            });
+          },
+        }
+      );
     }
     return null;
   };
@@ -100,7 +118,7 @@ const Group = () => {
               onChange={(e) => setSearchPlayerValue(e.target.value)}
               className="input-bordered input "
             />
-            <button className="btn" onClick={onSearchClicked}>
+            <button className="btn" onClick={onInviteClicked}>
               INVITE
             </button>
           </div>
@@ -152,7 +170,7 @@ const Group = () => {
                       )}
                     </td>
                     <th>
-                      <button className="btn-ghost btn-xs btn">details</button>
+                      <button className="btn btn-ghost btn-xs">details</button>
                     </th>
                   </tr>
                 );

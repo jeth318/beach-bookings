@@ -25,7 +25,7 @@ export const PlayersTable = ({ booking }: Props) => {
     isInitialLoading: isInitialLodaingBookings,
   } = api.booking.getAll.useQuery();
 
-  const emailerMutation = api.emailer.sendEmail.useMutation();
+  const emailerMutation = api.emailer.sendEmail.useMutation({});
 
   const updateBooking = api.booking.update.useMutation();
   const { data: users, isInitialLoading: isInitialLodaingUsers } =
