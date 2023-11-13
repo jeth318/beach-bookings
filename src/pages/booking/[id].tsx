@@ -4,7 +4,7 @@ import { type ChangeEvent, useState, useEffect } from "react";
 
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
-import { Booking, type Facility } from "@prisma/client";
+import { type Association, Booking, type Facility } from "@prisma/client";
 import Link from "next/link";
 import { PlayersTable } from "~/components/PlayersTable";
 
@@ -31,6 +31,7 @@ const Booking = () => {
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
   const [facility, setFacility] = useState<Facility | null>();
+  const [association, setAssociation] = useState<Association | null>();
   const [maxPlayers, setMaxPlayers] = useState<number>();
   const [joinable, setJoinable] = useState<boolean>();
   const [eventType, setEventType] = useState<EventType>();
@@ -40,17 +41,29 @@ const Booking = () => {
     ? router?.query?.id[0] || ""
     : router?.query?.id || "";
 
-  const { data: facilities, isFetched: areFacilitiesFetched } =
-    api.facility.getAll.useQuery();
-
   const { data: booking } = api.booking.getSingle.useQuery({
     id: query,
   });
+
+  const { data: user, isFetched: isUserFetched } = api.user.get.useQuery();
 
   const { data: users, isFetched: areUsersFetched } =
     api.user.getMultipleByIds.useQuery({
       playerIds: booking?.players || [],
     });
+
+  const { data: facilities, isFetched: areFacilitiesFetched } =
+    api.facility.getAll.useQuery();
+
+  const { data: userAssociations, isFetched: hasFetchedUserAssociations } =
+    api.association.getForUser.useQuery(
+      {
+        ids: user?.associations || [],
+      },
+      {
+        enabled: !!sessionData?.user.id,
+      }
+    );
 
   const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
     api.booking.update.useMutation({});
@@ -92,6 +105,21 @@ const Booking = () => {
         name: facility.name,
       })) || [];
 
+  const associationsMapped =
+    userAssociations?.map((association) => {
+      console.log(association);
+
+      return {
+        id: association.id,
+        name: association.name,
+      };
+    }) || [];
+
+  const associationsToShow = [
+    { id: "99", name: "None" },
+    ...associationsMapped,
+  ];
+
   const isInitialLoading = sessionStatus === "loading";
 
   const defaultBooking = {
@@ -124,6 +152,15 @@ const Booking = () => {
     setFacility(facilityToSelect);
     setCourt(null);
     setDuration(null);
+  };
+
+  const onAssociationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selected = event.target.options[event.target.selectedIndex];
+    const associationId = selected?.dataset["id"];
+    const associationToSelect = userAssociations?.find(
+      (f) => f.id === associationId
+    );
+    setAssociation(associationToSelect);
   };
 
   const onDurationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -166,7 +203,7 @@ const Booking = () => {
           players: booking.players,
           duration: preserveDuration ? duration : 0,
           facility: facility.id || null,
-          association: null,
+          association: association?.id || null,
           maxPlayers: maxPlayers || 0,
           joinable: joinable || false,
         },
@@ -207,6 +244,14 @@ const Booking = () => {
 
     if (!facility && !!facilities?.length) {
       setFacility(facilities.find((facility) => facility.id === "1"));
+    }
+
+    if (!association && hasFetchedUserAssociations && userAssociations) {
+      setAssociation(
+        userAssociations.find(
+          (association) => association.id === booking?.associationId
+        )
+      );
     }
 
     if (facility) {
@@ -293,6 +338,14 @@ const Booking = () => {
                   </p>
                 </ActionModal>
                 <SelectInput
+                  label="Group"
+                  description="With what group do you want to play?"
+                  valid={true}
+                  value={association?.name || "Pick a group"}
+                  items={associationsToShow}
+                  callback={onAssociationSelect}
+                />
+                <SelectInput
                   disabled
                   label="Facility"
                   description="Where are you playing? (more to come later)"
@@ -302,14 +355,14 @@ const Booking = () => {
                   callback={onFacilitySelect}
                 />
 
-                {/*                 <SelectInput
+                <SelectInput
                   label="Players"
                   description="How many players are required/allowed?"
                   valid={!!maxPlayers}
                   value={String(maxPlayers) || "Players"}
                   items={maxPlayersToShow}
                   callback={onMaxPlayersSelect}
-                /> */}
+                />
 
                 {!!facility?.durations?.length && (
                   <SelectInput

@@ -13,6 +13,10 @@ main {
   margin: 0 auto;
 }
 
+.transparent-background-grey {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
 .input-valid {
   /*outline: 2px solid #0fe80f;
   border-radius: 10px; */

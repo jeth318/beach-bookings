@@ -4,7 +4,7 @@ import { type ChangeEvent, useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
-import { type Facility } from "@prisma/client";
+import { type Association, type Facility } from "@prisma/client";
 import { SubHeader } from "~/components/SubHeader";
 import { emailDispatcher } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
@@ -43,13 +43,23 @@ const Booking = () => {
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>();
   const [facility, setFacility] = useState<Facility | null>();
+  const [association, setAssociation] = useState<Association | null>();
   const [maxPlayers, setMaxPlayers] = useState<number>(4);
   const [joinable, setJoinable] = useState<boolean>(true);
   const [preventLocalStorageWrite, setPreventLocalStorageWrite] =
     useState<boolean>(false);
 
-  const { data: facilities } = api.facility.getAll.useQuery();
   const { data: user, isFetched: isUserFetched } = api.user.get.useQuery();
+  const { data: facilities } = api.facility.getAll.useQuery();
+  const { data: userAssociations, isFetched: hasFetchedUserAssociations } =
+    api.association.getForUser.useQuery(
+      {
+        ids: user?.associations || [],
+      },
+      {
+        enabled: !!sessionData?.user.id,
+      }
+    );
   const { data: usersWithAddConsent } =
     api.user.getUserIdsWithAddConsent.useQuery();
 
@@ -153,7 +163,7 @@ const Booking = () => {
         date: new Date(formattedDate.replace(" ", "T")),
         court: court || null,
         facilityId: facility.id || null,
-        associationId: null,
+        associationId: association?.id || null,
         duration: duration || null,
         maxPlayers: maxPlayers === undefined ? 0 : maxPlayers,
         joinable: joinable,
@@ -167,7 +177,7 @@ const Booking = () => {
           emailDispatcher({
             originalBooking: {
               id: "placeholderId",
-              associationId: null,
+              associationId: association?.id || null,
               facilityId: null,
               private: true,
               userId: sessionData?.user.id,
@@ -211,11 +221,25 @@ const Booking = () => {
   const onFacilitySelect = (event: ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.options[event.target.selectedIndex];
 
-    const facilityId = selected?.dataset["facilityId"];
+    const facilityId = selected?.dataset["id"];
     const facilityToSelect = facilities?.find((f) => f.id === facilityId);
     setFacility(facilityToSelect);
     setCourt(null);
     setDuration(null);
+  };
+
+  const onAssociationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selected = event.target.options[event.target.selectedIndex];
+
+    console.log({ selectedDataset: selected?.dataset });
+
+    const associationId = selected?.dataset["id"];
+    console.log({ associationId });
+
+    const associationToSelect = userAssociations?.find(
+      (f) => f.id === associationId
+    );
+    setAssociation(associationToSelect);
   };
 
   const onDurationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -245,6 +269,20 @@ const Booking = () => {
         };
       }) || [];
 
+  const associationsMapped =
+    userAssociations?.map((association) => {
+      console.log(association);
+
+      return {
+        id: association.id,
+        name: association.name,
+      };
+    }) || [];
+
+  const associationsToShow = [
+    { id: "99", name: "None" },
+    ...associationsMapped,
+  ];
   const maxPlayersToShow = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
     (item) => ({
       id: String(item),
@@ -283,7 +321,7 @@ const Booking = () => {
             If you want to publish or join a booking, you must first add your
             name in your account.
           </h3>
-          <Link href="/settings" className="btn-info btn mt-10 text-white">
+          <Link href="/settings" className="btn btn-info mt-10 text-white">
             Settings
           </Link>
         </div>
@@ -369,6 +407,24 @@ const Booking = () => {
                 </div>
 
                 <SelectInput
+                  label="Group"
+                  description="With what group do you want to play?"
+                  valid={true}
+                  value={association?.name || "Pick a group"}
+                  items={associationsToShow}
+                  callback={onAssociationSelect}
+                />
+
+                <SelectInput
+                  label="Players"
+                  description="How many players are required/allowed?"
+                  valid={!!maxPlayers}
+                  value={String(maxPlayers) || "Players"}
+                  items={maxPlayersToShow}
+                  callback={onMaxPlayersSelect}
+                />
+
+                <SelectInput
                   disabled
                   label="Facility"
                   description="Where are you playing? (more to come)"
@@ -377,16 +433,6 @@ const Booking = () => {
                   items={facilitiesToShow}
                   callback={onFacilitySelect}
                 />
-
-                {/* <SelectInput
-                  disabled
-                  label="Players"
-                  description="How many players are required/allowed?"
-                  valid={!!maxPlayers}
-                  value={String(maxPlayers) || "Players"}
-                  items={maxPlayersToShow}
-                  callback={onMaxPlayersSelect}
-                /> */}
 
                 {!!facility?.durations?.length && (
                   <SelectInput
@@ -424,7 +470,7 @@ const Booking = () => {
                 <div className="w-100 btn-group btn-group-horizontal mb-20 mt-10 flex justify-center self-center">
                   <label
                     htmlFor="action-modal-booking-cancel"
-                    className="btn-warning btn text-white"
+                    className="btn btn-warning text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   >
                     Cancel

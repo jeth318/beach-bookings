@@ -229,6 +229,7 @@ export const Bookings = ({ bookings }: Props) => {
 
   const bookingsToShow = bookingsByDate({
     associations,
+    user,
     bookings,
     path: router.asPath,
     sessionUserId,
@@ -349,22 +350,28 @@ export const Bookings = ({ bookings }: Props) => {
                         {booking.players.length === 4 && !historyOnly && " ✅"}
                       </h2>
                       <div className="flex flex-col pb-1 font-medium">
-                        <div className="flex flex-row self-start pb-2">
-                          <CustomIcon path="/svg/duration.svg" width={20} />
-                          <div className="pl-1 text-lg">
-                            {parseTime(booking)}
-                          </div>
-                        </div>
-
                         <div
-                          style={{ maxWidth: "150px" }}
-                          className="self-start rounded-lg border border-slate-600 bg-gray-800 p-1"
+                          style={{ maxWidth: "200px" }}
+                          className="transparent-background-grey self-start rounded-lg border border-slate-600 p-1"
                         >
+                          <div className="flex flex-row items-center self-start pb-1 ">
+                            <span className="pr-1">
+                              <CustomIcon path="/svg/duration.svg" width={20} />
+                            </span>
+                            <div
+                              style={{ maxWidth: 180 }}
+                              className="overflow-dots"
+                            >
+                              {parseTime(booking)}
+                            </div>
+                          </div>
                           {booking.associationId && (
                             <div className="flex flex-row items-center self-start pb-1 ">
-                              <CustomIcon path="/svg/people.svg" width={18} />
+                              <span className="pr-1">
+                                <CustomIcon path="/svg/people.svg" width={18} />
+                              </span>
                               <div
-                                style={{ maxWidth: 150 }}
+                                style={{ maxWidth: 180 }}
                                 className="overflow-dots"
                               >
                                 {getAssociation(booking?.associationId)?.name}

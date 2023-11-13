@@ -5,6 +5,7 @@ import { buildHtmlTemplate } from "~/email/template";
 
 type BookingsByDateProps = {
   associations: Association[];
+  user?: User | null | undefined;
   bookings?: Booking[];
   path: string;
   sessionUserId?: string;
@@ -122,6 +123,7 @@ export const emailDispatcher = ({
 
 export const bookingsByDate = ({
   associations,
+  user,
   bookings,
   path,
   sessionUserId,
@@ -152,13 +154,9 @@ export const bookingsByDate = ({
         : a.date.getTime() - b.date.getTime()
     )
     .filter((booking) => {
-      const association = associations.find(
-        (item) => item.id === booking.associationId
-      );
-
-      return association?.private
-        ? !!association.members.includes(sessionUserId)
-        : true;
+      console.log("booking?.associationId", booking?.associationId);
+      console.log("user?.associations", user?.associations);
+      return booking.associationId ? user?.associations.includes(booking.associationId) : true;
     })
     .filter((booking) => {
       const bookingEnd = getBookingEndDate(booking);

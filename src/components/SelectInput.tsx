@@ -28,6 +28,8 @@ export const SelectInput = ({
   disabled,
   callback,
 }: Props) => {
+  console.log({ items, label });
+
   return (
     <>
       <label className="label">
@@ -51,7 +53,7 @@ export const SelectInput = ({
         >
           <option disabled>{disabledOption || label}</option>
           {items.map((item) => (
-            <option key={item.id} value={item.name} data-facility-id={item.id}>
+            <option key={item.id} value={item.name} data-id={item.id}>
               {item.name} {!!optionSuffix && optionSuffix}
             </option>
           ))}

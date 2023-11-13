@@ -3,7 +3,7 @@ Mixer Tools -->
 <svg width="800px" height="800px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1"
     xmlns="http://www.w3.org/2000/svg">
     <defs>
-        <style>.cls-1{fill:none;stroke:#020202;stroke-miterlimit:10;stroke-width:1;}</style>
+        <style>.cls-1{fill:none;stroke:#020202;stroke-miterlimit:10;strokeWidth:1;}</style>
     </defs>
     <circle class="cls-1" cx="9.61" cy="5.8" r="4.3" />
     <path class="cls-1" d="M1.5,19.64l.7-3.47a7.56,7.56,0,0,1,7.41-6.08,7.43,7.43,0,0,1,4.59,1.57" />
