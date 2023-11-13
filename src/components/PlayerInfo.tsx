@@ -1,14 +1,24 @@
-import { useState, type ChangeEvent, useEffect } from "react";
+import { useState, type ChangeEvent } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
 import { Toast } from "./Toast";
 import { type User } from "@prisma/client";
 
 type Props = {
+  hideTitle?: boolean;
+  refetchUser: any;
   user?: User;
+  hideEmail?: boolean;
+  hidePhone?: boolean;
 };
 
-export const PlayerInfo = ({ user }: Props) => {
+export const PlayerInfo = ({
+  user,
+  hideTitle,
+  refetchUser,
+  hideEmail,
+  hidePhone,
+}: Props) => {
   const [toastMessage, setToastMessage] = useState<string>();
 
   const { mutate: mutatePhone, isLoading: isLoadingPhoneMutation } =
@@ -16,8 +26,6 @@ export const PlayerInfo = ({ user }: Props) => {
 
   const { mutate: mutateName, isLoading: isLoadingNameMutation } =
     api.user.updateName.useMutation({});
-
-  const { refetch: refetchUser } = api.user.get.useQuery();
 
   const [phoneInput, setPhoneInput] = useState<string | null>(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -40,13 +48,6 @@ export const PlayerInfo = ({ user }: Props) => {
     nameInput?.length > 2 &&
     nameInput.length <= 30
   );
-
-  console.log({
-    phoneInput,
-    userPhone: user?.phone,
-    nameInput,
-    userName: user?.name,
-  });
 
   const renderToast = (body: string) => {
     setToastMessage(body);
@@ -71,14 +72,19 @@ export const PlayerInfo = ({ user }: Props) => {
   const hasContactInfoChanged =
     user?.name !== nameInput || user.phone !== phoneInput;
 
+  console.log({ user, nameInput, phoneInput, validPhone });
+
   return (
     <div>
       {toastMessage && <Toast body={toastMessage} />}
-      <div className="flex flex-col justify-center text-center">
-        <div className="mb-2 mt-4 text-xl text-white">
-          <strong>Player information 🥇</strong>
+      {!hideTitle && (
+        <div className="flex flex-col justify-center text-center">
+          <div className="mb-2 mt-4 text-xl text-white">
+            <strong>Player information 🥇</strong>
+          </div>
         </div>
-      </div>
+      )}
+
       <div
         style={{ width: "100%" }}
         className="flex max-w-md flex-col justify-center"
@@ -113,61 +119,71 @@ export const PlayerInfo = ({ user }: Props) => {
                 className="input-bordered input"
               />
             </label>
-            <label className="label">
-              <span className="label-text text-white">
-                When players needs to reach you quickly
-              </span>
-            </label>
-            <label
-              className={`input-group ${!isPhoneValid ? "input-invalid " : ""}`}
-            >
-              <span
-                style={{ width: "33%" }}
-                className="label-info-text flex justify-between pr-1"
-              >
-                <div>Phone</div>
-                <div className="self-center">
-                  {!phoneInput?.length
-                    ? "🟠"
-                    : validPhone && user?.phone
-                    ? "✅"
-                    : ""}
-                </div>
-              </span>
-              <input
-                style={{ width: "67%" }}
-                type="tel"
-                className="input-bordered input"
-                disabled={isLoading}
-                value={phoneInput || ""}
-                onBlur={onPhoneInputBlur}
-                onChange={(e) => {
-                  setIsPhoneValid(true);
-                  setPhoneInput(e.target.value);
-                }}
-              />
-            </label>
-            <label className="label">
-              <span className="label-text text-white">
-                Your email (can not be changed)
-              </span>
-            </label>
-            <label className="input-group">
-              <span
-                style={{ width: "33%" }}
-                className="label-info-text flex justify-between pr-1"
-              >
-                <div>E-mail</div>
-                <div className="self-center">✅</div>
-              </span>
-              <input
-                disabled
-                style={{ width: "67%" }}
-                type="text"
-                value={user?.email as string}
-                className="input-bordered input"
-              />
-            </label>
+            {!hidePhone && (
+              <>
+                <label className="label">
+                  <span className="label-text text-white">
+                    When players needs to reach you quickly
+                  </span>
+                </label>
+                <label
+                  className={`input-group ${
+                    !isPhoneValid ? "input-invalid " : ""
+                  }`}
+                >
+                  <span
+                    style={{ width: "33%" }}
+                    className="label-info-text flex justify-between pr-1"
+                  >
+                    <div>Phone</div>
+                    <div className="self-center">
+                      {!phoneInput?.length
+                        ? "🟠"
+                        : validPhone && user?.phone
+                        ? "✅"
+                        : ""}
+                    </div>
+                  </span>
+                  <input
+                    style={{ width: "67%" }}
+                    type="tel"
+                    className="input-bordered input"
+                    disabled={isLoading}
+                    value={phoneInput || ""}
+                    onBlur={onPhoneInputBlur}
+                    onChange={(e) => {
+                      setIsPhoneValid(true);
+                      setPhoneInput(e.target.value);
+                    }}
+                  />
+                </label>
+              </>
+            )}
+            {!hideEmail && (
+              <>
+                <label className="label">
+                  <span className="label-text text-white">
+                    Your email (can not be changed)
+                  </span>
+                </label>
+                <label className="input-group">
+                  <span
+                    style={{ width: "33%" }}
+                    className="label-info-text flex justify-between pr-1"
+                  >
+                    <div>E-mail</div>
+                    <div className="self-center">✅</div>
+                  </span>
+                  <input
+                    disabled
+                    style={{ width: "67%" }}
+                    type="text"
+                    value={user?.email as string}
+                    className="input-bordered input"
+                  />
+                </label>
+              </>
+            )}
           </div>
         </div>
         <div className="flex flex-col items-center gap-2 self-center">
@@ -188,6 +204,7 @@ export const PlayerInfo = ({ user }: Props) => {
                     {
                       onSuccess: () => {
                         renderToast(`Name updated.`);
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                         void refetchUser();
                       },
                     }
@@ -202,6 +219,7 @@ export const PlayerInfo = ({ user }: Props) => {
                     {
                       onSuccess: () => {
                         renderToast(`Phone updated.`);
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                         void refetchUser();
                       },
                     }

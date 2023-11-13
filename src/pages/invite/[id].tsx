@@ -8,6 +8,7 @@ import { type User } from "@prisma/client";
 import { useState } from "react";
 import Link from "next/link";
 import { BeatLoader } from "react-spinners";
+import { PlayerInfo } from "~/components/PlayerInfo";
 
 const Invite = () => {
   const router = useRouter();
@@ -20,6 +21,7 @@ const Invite = () => {
         associationId: (router.query.id as string) || "",
       },
       {
+        refetchOnWindowFocus: false,
         enabled:
           typeof sessionData?.user.email === "string" &&
           typeof router?.query?.id === "string",
@@ -32,6 +34,7 @@ const Invite = () => {
         id: (router.query.id as string) || "",
       },
       {
+        refetchOnWindowFocus: false,
         enabled: !!invite,
       }
     );
@@ -42,16 +45,20 @@ const Invite = () => {
         id: (invite?.invitedBy as string) || "",
       },
       {
+        refetchOnWindowFocus: false,
         enabled: !!association && !!invite,
       }
     );
 
-  const { data: user, isFetching: isFetchingUser } = api.user.get.useQuery(
-    undefined,
-    {
-      enabled: !!sessionData?.user,
-    }
-  );
+  const {
+    data: user,
+    isFetching: isFetchingUser,
+    isFetched: hasFetchedUser,
+    refetch: refetchUser,
+  } = api.user.get.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    enabled: !!sessionData?.user,
+  });
 
   const { mutate: mutateUserAssociations } =
     api.user.updateAssociations.useMutation();
@@ -124,36 +131,50 @@ const Invite = () => {
       <div
         className={`smooth-render-in bookings-container flex min-h-[400px] flex-col items-center justify-center bg-gradient-to-b from-[#005e1ba6] to-[#000000]`}
       >
-        <ActionModal
-          title={"Group invitation"}
-          callback={onJoinConfirmed}
-          tagRef="invite"
-          cancelButtonText="No thanks"
-          confirmButtonText="JOIN group"
-          level="success"
-        >
-          <p className="py-4">
-            {inviter?.name || "A player"} has invited you to join their group{" "}
-            <strong>{association?.name}</strong>
-          </p>
-        </ActionModal>
-        <div className="flex flex-col items-center justify-center">
+        <div className="mt-4 flex flex-col items-center justify-center">
           <h4>
             {inviter?.name || "A player"} has invited you to join their group{" "}
           </h4>
           <h2 className="text-2xl">{association.name}</h2>
 
-          <button
-            onClick={onJoinConfirmed}
-            disabled={isAcceptingInvite}
-            className="btn-primary btn mb-4 mt-4 animate-pulse text-white"
-          >
-            Accept invite
-          </button>
-          {isAcceptingInvite ? (
-            <BeatLoader color="white" size={20} />
-          ) : (
-            <div className="h-[24px]"></div>
+          {!user.name && hasFetchedUser && (
+            <div className="m-4">
+              <div className="stack">
+                <div className="card card-compact mb-4 bg-primary text-primary-content shadow-md">
+                  <div className="card-body">
+                    <p>
+                      Before you can accept the invite, please submit your name
+                      (you can edit this later in settings).
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <PlayerInfo
+                user={user}
+                hideTitle
+                hidePhone
+                hideEmail
+                refetchUser={refetchUser}
+              />
+            </div>
+          )}
+          {user.name && (
+            <div className="mb-4 mt-4 flex flex-col items-center">
+              <button
+                onClick={onJoinConfirmed}
+                disabled={isAcceptingInvite || !user?.name}
+                className={`btn-primary btn ${
+                  !!user?.name ? "animate-pulse" : ""
+                } text-white`}
+              >
+                Accept invite
+              </button>
+              {isAcceptingInvite ? (
+                <BeatLoader className="mt-2" color="white" size={15} />
+              ) : (
+                <div className="h-[27px]"></div>
+              )}
+            </div>
           )}
         </div>
       </div>

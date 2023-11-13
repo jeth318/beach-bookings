@@ -21,7 +21,11 @@ export async function getStaticProps() {
 
 const Settings = () => {
   const router = useRouter();
-  const { data: user, isFetched: isUserFetched } = api.user.get.useQuery();
+  const {
+    data: user,
+    isFetched: isUserFetched,
+    refetch: refetchUser,
+  } = api.user.get.useQuery();
   const { status: sessionStatus } = useSession();
   const bookingsQuery = api.booking.getAll.useQuery(undefined, {
     refetchOnMount: false,
@@ -53,7 +57,7 @@ const Settings = () => {
 
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#01797391] to-[#000000]">
         <div className="smooth-render-in container max-w-md p-4">
-          <PlayerInfo user={user} />
+          <PlayerInfo user={user} refetchUser={refetchUser} />
           <hr className="mb-4 mt-6" />
           <EmailConsents />
           <hr className="mb-4 mt-6" />
