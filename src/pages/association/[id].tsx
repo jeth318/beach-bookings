@@ -100,7 +100,7 @@ const Group = () => {
     <>
       {/* <SubHeader title={association.name} /> */}
       {toastMessage && <Toast body={toastMessage} />}
-      {errorToastMessage && <Toast level="warning" body={errorToastMessage} />}
+      {errorToastMessage && <Toast level="error" body={errorToastMessage} />}
 
       <main className="min-w-sm pd-3 smooth-render-in flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] dark:text-white ">
         <div className="4 mt-4 flex flex-row items-center justify-center text-white">

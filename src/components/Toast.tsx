@@ -8,7 +8,7 @@ export const Toast = ({ body, level = "info" }: Props) => {
       <div
         className={`alert alert-${level} w-max text-white shadow-md shadow-black`}
       >
-        <p>{body || "hjkowkdjfklsd"}</p>
+        <p>{body || ""}</p>
       </div>
     </div>
   );
