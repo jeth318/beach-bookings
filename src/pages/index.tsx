@@ -28,11 +28,6 @@ const Home = () => {
     refetchOnWindowFocus: false,
   });
 
-  api.association.getForUser.useQuery(undefined, {
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-
   api.facility.getAll.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
