@@ -1,41 +1,19 @@
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { PlayersTable } from "~/components/PlayersTable";
 import { SubHeader } from "~/components/SubHeader";
 import { api } from "~/utils/api";
+import { useJoinedAssociations } from "../hooks/useAssociations";
 
 const Association = () => {
-  const sessionData = useSession();
-
-  const { data: user } = api.user.get.useQuery();
   const router = useRouter();
-
-  const { data: joinedAssociations, isFetched: hasFetchedUserAssociations } =
-    api.association.getForUser.useQuery(
-      { ids: user?.associations || [] },
-      {
-        enabled: !!sessionData?.data?.user.id && !!user?.associations,
-      }
-    );
-
-  const joinedAssociationsWithoutPublic = joinedAssociations?.filter(
-    (association) => association.id === "public"
-  );
-
-  const isWithoutGroup =
-    hasFetchedUserAssociations && !joinedAssociationsWithoutPublic?.length;
-
-  const isMultiGroupMember =
-    !!sessionData.data?.user.id &&
-    joinedAssociationsWithoutPublic?.length &&
-    joinedAssociationsWithoutPublic?.length > 1;
-
-  const isOneGroupMember =
-    !!sessionData.data?.user.id &&
-    joinedAssociationsWithoutPublic?.length === 1 &&
-    !!joinedAssociationsWithoutPublic[0]?.id !== undefined;
+  const { data: user } = api.user.get.useQuery();
+  const {
+    joinedAssociationsWithoutPublic,
+    isMultiGroupMember,
+    isWithoutGroup,
+    isOneGroupMember,
+  } = useJoinedAssociations(user?.email || "");
 
   if (isWithoutGroup) {
     return (
@@ -75,7 +53,7 @@ const Association = () => {
             <h2 className="mb-4 text-4xl text-white">My groups</h2>
 
             <div className="flex flex-col items-center justify-center">
-              {joinedAssociationsWithoutPublic.map((association) => {
+              {joinedAssociationsWithoutPublic?.map((association) => {
                 return (
                   <Link
                     key={association.id}
@@ -95,7 +73,7 @@ const Association = () => {
 
   if (isOneGroupMember) {
     void router.push(
-      `/association/${joinedAssociationsWithoutPublic[0]?.id as string}`
+      `/association/${joinedAssociationsWithoutPublic?.[0]?.id as string}`
     );
     return null;
   }
