@@ -361,19 +361,23 @@ export const Bookings = ({ bookings }: Props) => {
                           style={{ maxWidth: "150px" }}
                           className="transparent-background-grey self-start rounded-lg border border-slate-600 p-1"
                         >
-                          {booking.associationId && (
-                            <div className="flex flex-row items-center self-start pb-1 ">
-                              <span className="pr-1">
-                                <CustomIcon path="/svg/people.svg" width={18} />
-                              </span>
-                              <div
-                                style={{ maxWidth: 100 }}
-                                className="overflow-dots"
-                              >
-                                {getAssociation(booking?.associationId)?.name}
+                          {booking.associationId &&
+                            booking.associationId !== "public" && (
+                              <div className="flex flex-row items-center self-start pb-1 ">
+                                <span className="pr-1">
+                                  <CustomIcon
+                                    path="/svg/people.svg"
+                                    width={18}
+                                  />
+                                </span>
+                                <div
+                                  style={{ maxWidth: 100 }}
+                                  className="overflow-dots"
+                                >
+                                  {getAssociation(booking?.associationId)?.name}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
                           {booking.facilityId && (
                             <div className="flex flex-row items-center justify-start">
                               <span className="pr-1">

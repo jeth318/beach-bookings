@@ -90,6 +90,10 @@ export const bookingRouter = createTRPCRouter({
       })
     )
     .mutation(({ ctx, input }) => {
+      console.log("**********");
+      console.log(input.associationId);
+      console.log("**********");
+
       return ctx.prisma.booking.create({
         data: {
           id: crypto.randomBytes(10).toString("hex"),

@@ -76,12 +76,7 @@ const Booking = () => {
   const localStorageState = getPrePopulationState(facilities);
 
   const defaultAssociation = {
-    id: "0",
-    admins: [],
-    members: [],
-    userId: "",
-    private: false,
-    description: "",
+    id: "public",
     name: "None",
   } as Association;
 
@@ -291,10 +286,7 @@ const Booking = () => {
       };
     }) || [];
 
-  const associationsToShow = [
-    { id: "99", name: "None" },
-    ...associationsMapped,
-  ];
+  const associationsToShow = [defaultAssociation, ...associationsMapped];
   const maxPlayersToShow = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
     (item) => ({
       id: String(item),
@@ -307,6 +299,7 @@ const Booking = () => {
     !!date &&
     !!time &&
     !!facility &&
+    !!association &&
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
 
@@ -333,7 +326,7 @@ const Booking = () => {
             If you want to publish or join a booking, you must first add your
             name in your account.
           </h3>
-          <Link href="/settings" className="btn-info btn mt-10 text-white">
+          <Link href="/settings" className="btn btn-info mt-10 text-white">
             Settings
           </Link>
         </div>
@@ -485,7 +478,7 @@ const Booking = () => {
                 <div className="w-100 btn-group btn-group-horizontal mb-20 mt-10 flex justify-center self-center">
                   <label
                     htmlFor="action-modal-booking-cancel"
-                    className="btn-warning btn text-white"
+                    className="btn btn-warning text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   >
                     Cancel

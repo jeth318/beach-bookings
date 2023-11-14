@@ -48,7 +48,7 @@ model User {
     emailVerified DateTime?
     image         String?
     phone         String?
-    associations  String[]  @default([])
+    associations  String[]  @default(["public"])
     accounts      Account[]
     sessions      Session[]
     emailConsents String[]  @default(["DELETE", "LEAVE", "JOIN", "KICK", "MODIFY"])

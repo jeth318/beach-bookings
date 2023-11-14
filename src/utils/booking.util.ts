@@ -155,7 +155,8 @@ export const bookingsByDate = ({
     )
     .filter((booking) => {
       return booking.associationId
-        ? user?.associations.includes(booking.associationId)
+        ? booking.associationId === "public" ||
+            user?.associations.includes(booking.associationId)
         : true;
     })
     .filter((booking) => {

@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
 import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
-import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { PageLoader } from "~/components/PageLoader";
 
 const Joined = () => {
