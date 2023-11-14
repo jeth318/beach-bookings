@@ -140,10 +140,10 @@ const Invite = () => {
           </h4>
           <h2 className="text-2xl">{association?.name}</h2>
 
-          {!user?.name && hasFetchedUser && (
+          {user && !user?.name && hasFetchedUser && (
             <div className="m-4">
               <div className="stack">
-                <div className="card card-compact mb-4 bg-primary text-primary-content shadow-md">
+                <div className="card-compact card mb-4 bg-primary text-primary-content shadow-md">
                   <div className="card-body">
                     <p>
                       Before you can accept the invite, please submit your name
@@ -166,7 +166,7 @@ const Invite = () => {
               <button
                 onClick={onJoinConfirmed}
                 disabled={isAcceptingInvite || !user?.name}
-                className={`btn-primary btn ${
+                className={`btn btn-primary ${
                   !!user?.name ? "animate-pulse" : ""
                 } text-white`}
               >
