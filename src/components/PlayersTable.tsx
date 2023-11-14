@@ -25,7 +25,7 @@ export const PlayersTable = ({ booking }: Props) => {
     isInitialLoading: isInitialLodaingBookings,
   } = api.booking.getAll.useQuery();
 
-  const emailerMutation = api.emailer.sendEmail.useMutation({});
+  const mutateEmail = api.emailer.sendEmail.useMutation({});
 
   const updateBooking = api.booking.update.useMutation();
   const { data: users, isInitialLoading: isInitialLodaingUsers } =
@@ -71,7 +71,7 @@ export const PlayersTable = ({ booking }: Props) => {
             originalBooking: booking,
             mutatedBooking,
             eventType: "KICK",
-            mutation: emailerMutation,
+            mutateEmail,
           });
           renderToast(`Player was removed from the booking.`);
           void refetchBookings();

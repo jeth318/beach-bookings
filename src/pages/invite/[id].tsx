@@ -86,6 +86,8 @@ const Invite = () => {
     }
   };
 
+  console.log({ sessionStatus });
+
   if (sessionStatus === "loading") {
     return (
       <PageLoader
@@ -101,7 +103,11 @@ const Invite = () => {
     return null;
   }
 
-  if (hasFetchedInvite && invite === null) {
+  if (
+    sessionStatus === "authenticated" &&
+    hasFetchedInvite &&
+    invite === null
+  ) {
     return <ArrogantFrog />;
   }
 

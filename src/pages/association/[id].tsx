@@ -8,8 +8,9 @@ import { emailInviteDispatcher } from "~/utils/booking.util";
 import { BeatLoader } from "react-spinners";
 import { renderToast } from "~/utils/general.util";
 import { Toast } from "~/components/Toast";
-import { userAgent } from "next/server";
 import { ArrogantFrog } from "~/components/ArrogantFrog";
+import { useSingleAssociations } from "../hooks/useSingleAssociation";
+import { useEmail } from "../hooks/useEmail";
 
 const Group = () => {
   const router = useRouter();
@@ -18,23 +19,15 @@ const Group = () => {
   const [toastMessage, setToastMessage] = useState<string>();
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
 
-  const emailerMutation = api.emailer.sendInvitationEmail.useMutation();
-
-  const { data: association, isFetched: hasFetchedAssociation } =
-    api.association.getSingle.useQuery(
-      { id: typeof router?.query?.id === "string" ? router?.query?.id : "" },
-      {
-        refetchOnMount: true,
-        refetchOnWindowFocus: true,
-      }
-    );
+  const { mutateInviteEmail } = useEmail();
+  const { data: user, isFetched: hasFetchedUser } = api.user.get.useQuery();
+  const { association, hasFetchedSingleAssociation } =
+    useSingleAssociations(router);
 
   const { data: members, isFetched: hasFetchedMembers } =
     api.user.getUsersByAssociationId.useQuery({
       associationId: association?.id || "",
     });
-
-  const { data: user, isFetched: hasFetchedUser } = api.user.get.useQuery();
 
   const { mutate: createInvite, isLoading: isCreatingInvite } =
     api.invite.create.useMutation({});
@@ -42,49 +35,52 @@ const Group = () => {
   const onInviteClicked = (event: FormEvent<HTMLFormElement> | undefined) => {
     event && event.preventDefault();
 
-    if (searchQuery?.length && typeof router.query.id === "string") {
-      createInvite(
-        {
-          email: searchQuery,
-          associationId: router.query.id,
-        },
-        {
-          onSuccess: () => {
-            if (!association) {
-              return null;
-            }
-            emailInviteDispatcher({
-              mutation: emailerMutation,
-              inviterName: sessionData?.user.name || "",
-              email: searchQuery,
-              association: association || null,
-            });
-            renderToast("Invitation email sent", setToastMessage);
-            setSearchQuery("");
-          },
-          onError: (e) => {
-            if (e.message === "INVITED_EMAIL_ALREADY_MEMBER") {
-              renderToast(
-                "Already a member of this group",
-                setErrorToastMessage
-              );
-            }
-            if (e.message === "EMAIL_HAS_PENDING_INVITE") {
-              renderToast(
-                "This player has already been invited.",
-                setErrorToastMessage
-              );
-            }
-          },
-        }
-      );
+    const onInviteError = (e: { message: string }) => {
+      if (e.message === "INVITED_EMAIL_ALREADY_MEMBER") {
+        renderToast("Already a member of this group", setErrorToastMessage);
+      }
+      if (e.message === "EMAIL_HAS_PENDING_INVITE") {
+        renderToast(
+          "This player has already been invited.",
+          setErrorToastMessage
+        );
+      }
+    };
+
+    const onInviteSuccess = () => {
+      if (!association || typeof searchQuery !== "string") {
+        return null;
+      }
+
+      emailInviteDispatcher({
+        mutateEmail: mutateInviteEmail,
+        inviterName: sessionData?.user.name || "",
+        email: searchQuery,
+        association: association,
+      });
+      renderToast("Invitation email sent", setToastMessage);
+      setSearchQuery("");
+    };
+
+    if (!searchQuery?.length || typeof router.query.id !== "string") {
+      return null;
     }
-    return null;
+
+    createInvite(
+      {
+        email: searchQuery,
+        associationId: router.query.id,
+      },
+      {
+        onSuccess: onInviteSuccess,
+        onError: onInviteError,
+      }
+    );
   };
 
   if (
     sessionStatus === "loading" ||
-    !hasFetchedAssociation ||
+    !hasFetchedSingleAssociation ||
     !hasFetchedMembers ||
     !hasFetchedUser
   ) {
@@ -142,7 +138,7 @@ const Group = () => {
 
               <button
                 type="submit"
-                className="join-item btn-accent btn rounded-r-full"
+                className="join-item btn btn-accent rounded-r-full"
                 disabled={
                   isCreatingInvite ||
                   !searchQuery?.length ||
@@ -192,7 +188,7 @@ const Group = () => {
                         association.userId !== member.id && (
                           <>
                             <br />
-                            <span className="badge-ghost badge badge-sm">
+                            <span className="badge badge-ghost badge-sm">
                               administrator
                             </span>
                           </>
@@ -200,7 +196,7 @@ const Group = () => {
                       {association.userId === member.id && (
                         <>
                           <br />
-                          <span className="badge-ghost badge badge-sm">
+                          <span className="badge badge-ghost badge-sm">
                             group owner
                           </span>
                         </>

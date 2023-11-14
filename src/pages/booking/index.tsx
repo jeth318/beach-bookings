@@ -21,6 +21,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { setUncaughtExceptionCaptureCallback } from "process";
+import { useEmail } from "../hooks/useEmail";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -67,7 +68,7 @@ const Booking = () => {
   const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
     api.booking.create.useMutation({});
 
-  const emailerMutation = api.emailer.sendEmail.useMutation();
+  const { mutateEmail } = useEmail();
 
   const onJoinableChange = () => {
     setJoinable(!joinable);
@@ -188,6 +189,8 @@ const Booking = () => {
             "Email dispatch temporarily disabled during booking publish"
           );
 
+          console.log({ mutateEmail });
+
           emailDispatcher({
             originalBooking: {
               id: "placeholderId",
@@ -206,7 +209,7 @@ const Booking = () => {
             bookerName: sessionData.user.name || "Someone",
             bookings: [],
             eventType: "ADD",
-            mutation: emailerMutation,
+            mutateEmail,
           });
 
           void router.push("/");

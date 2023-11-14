@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useUser } from "./useUser";
 
-export const useJoinedAssociations = (email: string) => {
+export const useAssociations = (email: string) => {
   const { user } = useUser(email);
   const { data, isFetched } = api.association.getForUser.useQuery(
     { ids: user?.associations || [] },
@@ -11,7 +11,7 @@ export const useJoinedAssociations = (email: string) => {
   );
 
   const joinedAssociationsWithoutPublic = data?.filter(
-    (association) => association.id === "public"
+    (association) => association.id !== "public"
   );
 
   const isWithoutGroup = isFetched && !joinedAssociationsWithoutPublic?.length;
@@ -26,9 +26,16 @@ export const useJoinedAssociations = (email: string) => {
     joinedAssociationsWithoutPublic?.length === 1 &&
     !!joinedAssociationsWithoutPublic[0]?.id !== undefined;
 
+  console.log({
+    joinedAssociations: joinedAssociationsWithoutPublic,
+    hasFetchedJoinedAssociations: isFetched,
+    isWithoutGroup,
+    isOneGroupMember,
+    isMultiGroupMember,
+  });
+
   return {
-    joinedAssociations: data,
-    joinedAssociationsWithoutPublic,
+    joinedAssociations: joinedAssociationsWithoutPublic,
     hasFetchedJoinedAssociations: isFetched,
     isWithoutGroup,
     isOneGroupMember,

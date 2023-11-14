@@ -30,6 +30,7 @@ import { OngoingGame } from "./OngoingGame";
 import { CustomIcon } from "./CustomIcon";
 import { PlayersTable } from "./PlayersTable";
 import { Toast } from "./Toast";
+import { useEmail } from "~/pages/hooks/useEmail";
 
 type Bookings = {
   data: Booking[];
@@ -85,7 +86,7 @@ export const Bookings = ({ bookings }: Props) => {
     refetchInterval: 15000,
   });
 
-  const emailerMutation = api.emailer.sendEmail.useMutation();
+  const { mutateEmail } = useEmail();
 
   const getAssociation = (id: string) => {
     return associations.find((item) => item.id === id);
@@ -114,7 +115,7 @@ export const Bookings = ({ bookings }: Props) => {
       mutatedBooking,
       bookings: bookings || [],
       eventType,
-      mutation: emailerMutation,
+      mutateEmail,
     });
 
     void refetchBookings().then(() => {

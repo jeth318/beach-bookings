@@ -9,11 +9,7 @@ import Link from "next/link";
 import { PlayersTable } from "~/components/PlayersTable";
 
 import { SubHeader } from "~/components/SubHeader";
-import {
-  type EventType,
-  emailDispatcher,
-  maxPlayersToShow,
-} from "~/utils/booking.util";
+import { emailDispatcher, maxPlayersToShow } from "~/utils/booking.util";
 import { getEmailRecipients, renderToast } from "~/utils/general.util";
 import { BeatLoader } from "react-spinners";
 import ActionModal from "~/components/ActionModal";
@@ -21,10 +17,13 @@ import { JoinableToggle } from "~/components/JoinableToggle";
 import { SelectInput } from "~/components/SelectInput";
 import { DateSelector } from "~/components/DateSelector";
 import { Toast } from "~/components/Toast";
+import { useUser } from "../hooks/useUser";
+import { useAssociations } from "../hooks/useAssociations";
+import { useBooking } from "../hooks/useBooking";
+import { useEmail } from "../hooks/useEmail";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
-
   const router = useRouter();
   const [court, setCourt] = useState<string | null>();
   const [duration, setDuration] = useState<number | null>();
@@ -34,7 +33,6 @@ const Booking = () => {
   const [association, setAssociation] = useState<Association | null>();
   const [maxPlayers, setMaxPlayers] = useState<number>();
   const [joinable, setJoinable] = useState<boolean>();
-  const [eventType, setEventType] = useState<EventType>();
   const [toastMessage, setToastMessage] = useState<string>();
 
   const query = Array.isArray(router.query.id)
@@ -45,56 +43,45 @@ const Booking = () => {
     id: query,
   });
 
-  const { data: user, isFetched: isUserFetched } = api.user.get.useQuery();
-
-  const { data: users, isFetched: areUsersFetched } =
-    api.user.getMultipleByIds.useQuery({
-      playerIds: booking?.players || [],
-    });
+  const { usersInBooking, hasFetchedUsersInBooking } = useUser(
+    sessionData?.user.email || ""
+  );
 
   const { data: facilities, isFetched: areFacilitiesFetched } =
     api.facility.getAll.useQuery();
 
-  const { data: userAssociations, isFetched: hasFetchedUserAssociations } =
-    api.association.getForUser.useQuery(
-      {
-        ids: user?.associations || [],
-      },
-      {
-        enabled: !!sessionData?.user.id,
-      }
+  const { joinedAssociations, hasFetchedJoinedAssociations } = useAssociations(
+    sessionData?.user.email || ""
+  );
+
+  const {
+    mutateBooking,
+    mutateJoinable,
+    isLoadingJoinable,
+    isLoadingBookingMutation,
+  } = useBooking();
+  const { mutateEmail } = useEmail();
+
+  const onJoinableMutationSuccess = (mutatedBooking: Booking) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    setJoinable(mutatedBooking?.joinable);
+    renderToast(
+      `Your booking is ${!joinable ? "now joinable." : "no longer joinble."}`,
+      setToastMessage
     );
-
-  const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
-    api.booking.update.useMutation({});
-
-  const { mutate: mutateJoinable, isLoading: isLoadingJoinable } =
-    api.booking.updateJoinable.useMutation({});
-  const emailerMutation = api.emailer.sendEmail.useMutation();
+  };
 
   const onJoinableChange = () => {
-    if (booking) {
-      mutateJoinable(
-        { id: booking.id, joinable: !joinable },
-        {
-          onSuccess: (mutatedBooking: Booking) => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            setJoinable(mutatedBooking?.joinable);
-            renderToast(
-              `Your booking is ${
-                !joinable ? "now joinable." : "no longer joinble."
-              }`,
-              setToastMessage
-            );
-          },
-          onSettled: () => {
-            //void refetchBookings();
-          },
-        }
-      );
-    } else {
+    if (!booking) {
       setJoinable(!joinable);
+      return null;
     }
+    mutateJoinable(
+      { id: booking.id, joinable: !joinable },
+      {
+        onSuccess: onJoinableMutationSuccess,
+      }
+    );
   };
 
   const facilitiesToShow =
@@ -106,14 +93,12 @@ const Booking = () => {
       })) || [];
 
   const associationsMapped =
-    userAssociations
-      ?.map((association) => {
-        return {
-          id: association.id,
-          name: association.name,
-        };
-      })
-      .filter((association) => association.id !== "public") || [];
+    joinedAssociations?.map((association) => {
+      return {
+        id: association.id,
+        name: association.name,
+      };
+    }) || [];
 
   const associationsToShow = [
     { id: "public", name: "No group" },
@@ -157,7 +142,7 @@ const Booking = () => {
   const onAssociationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.options[event.target.selectedIndex];
     const associationId = selected?.dataset["id"];
-    const associationToSelect = userAssociations?.find(
+    const associationToSelect = joinedAssociations?.find(
       (f) => f.id === associationId
     );
     setAssociation(associationToSelect);
@@ -184,7 +169,7 @@ const Booking = () => {
 
     if (!!booking) {
       const recipients = getEmailRecipients({
-        users: users || [],
+        users: usersInBooking || [],
         playersInBooking: booking.players,
         sessionUserId: sessionData?.user.id,
         eventType: "MODIFY",
@@ -209,6 +194,8 @@ const Booking = () => {
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
+            console.log(mutateEmail);
+
             emailDispatcher({
               originalBooking: booking,
               mutatedBooking,
@@ -216,7 +203,7 @@ const Booking = () => {
               bookings: [],
               eventType: "MODIFY",
               recipients,
-              mutation: emailerMutation,
+              mutateEmail,
             });
             renderToast("Your booking details were updated", setToastMessage);
           },
@@ -234,7 +221,7 @@ const Booking = () => {
     (facility?.durations.length ? !!duration : true);
 
   useEffect(() => {
-    if (!areUsersFetched || !areFacilitiesFetched) {
+    if (!hasFetchedUsersInBooking || !areFacilitiesFetched) {
       return undefined;
     }
 
@@ -246,9 +233,9 @@ const Booking = () => {
       setFacility(facilities.find((facility) => facility.id === "1"));
     }
 
-    if (!association && hasFetchedUserAssociations && userAssociations) {
+    if (!association && hasFetchedJoinedAssociations && joinedAssociations) {
       setAssociation(
-        userAssociations.find(
+        joinedAssociations.find(
           (association) => association.id === booking?.associationId
         )
       );
@@ -281,7 +268,6 @@ const Booking = () => {
     }
   }, [
     areFacilitiesFetched,
-    areUsersFetched,
     booking?.court,
     booking?.date,
     booking?.duration,

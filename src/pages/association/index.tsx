@@ -3,17 +3,17 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { SubHeader } from "~/components/SubHeader";
 import { api } from "~/utils/api";
-import { useJoinedAssociations } from "../hooks/useAssociations";
+import { useAssociations } from "../hooks/useAssociations";
 
 const Association = () => {
   const router = useRouter();
   const { data: user } = api.user.get.useQuery();
   const {
-    joinedAssociationsWithoutPublic,
+    joinedAssociations,
     isMultiGroupMember,
     isWithoutGroup,
     isOneGroupMember,
-  } = useJoinedAssociations(user?.email || "");
+  } = useAssociations(user?.email || "");
 
   if (isWithoutGroup) {
     return (
@@ -30,7 +30,7 @@ const Association = () => {
             You are not a part of a group yet. Group members can invite you.
             Meanwhile, you can join public bookings from the home page.
           </h3>
-          <Link href="/" className="btn btn-info mt-10 text-white">
+          <Link href="/" className="btn-info btn mt-10 text-white">
             Home
           </Link>
         </div>
@@ -53,12 +53,12 @@ const Association = () => {
             <h2 className="mb-4 text-4xl text-white">My groups</h2>
 
             <div className="flex flex-col items-center justify-center">
-              {joinedAssociationsWithoutPublic?.map((association) => {
+              {joinedAssociations?.map((association) => {
                 return (
                   <Link
                     key={association.id}
                     href={`/association/${association.id}`}
-                    className="mt-10text-white btn btn-primary"
+                    className="mt-10text-white btn-primary btn"
                   >
                     <div className="">{association.name}</div>
                   </Link>
@@ -72,9 +72,7 @@ const Association = () => {
   }
 
   if (isOneGroupMember) {
-    void router.push(
-      `/association/${joinedAssociationsWithoutPublic?.[0]?.id as string}`
-    );
+    void router.push(`/association/${joinedAssociations?.[0]?.id as string}`);
     return null;
   }
 };
