@@ -28,8 +28,6 @@ export const SelectInput = ({
   disabled,
   callback,
 }: Props) => {
-  console.log({ items, label });
-
   return (
     <>
       <label className="label">

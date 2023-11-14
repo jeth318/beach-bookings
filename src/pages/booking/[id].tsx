@@ -107,8 +107,6 @@ const Booking = () => {
 
   const associationsMapped =
     userAssociations?.map((association) => {
-      console.log(association);
-
       return {
         id: association.id,
         name: association.name,
@@ -402,7 +400,7 @@ const Booking = () => {
                       href="/"
                       className={`${
                         validBooking && !isLoadingBookingMutation
-                          ? "btn btn-warning"
+                          ? "btn-warning btn"
                           : "btn-disabled"
                       } btn text-white`}
                     >

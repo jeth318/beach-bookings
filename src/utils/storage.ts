@@ -1,4 +1,4 @@
-import { type Facility } from "@prisma/client";
+import { type Association, type Facility } from "@prisma/client";
 import { type EventType } from "~/utils/booking.util";
 
 type PrePopulateBookingState = {
@@ -7,6 +7,7 @@ type PrePopulateBookingState = {
   date: Date;
   time: string;
   facility: Facility;
+  association: Association;
   eventType: EventType;
   maxPlayers?: number;
   joinable: boolean;
@@ -22,6 +23,7 @@ type Props = {
   duration?: number | null;
   time?: string;
   date?: Date;
+  association?: Association | null;
   facility?: Facility | null;
   maxPlayers: number | string;
   joinable: boolean;
@@ -88,6 +90,7 @@ export const getPrePopulationState = (facilities: Facility[] | undefined) => {
   if (ls) {
     return {
       court: ls?.court,
+      association: ls?.association,
       duration: Number(ls?.duration),
       maxPlayers: ls?.maxPlayers,
       date: ls?.date,

@@ -20,6 +20,7 @@ import {
 } from "~/utils/storage";
 import Image from "next/image";
 import Link from "next/link";
+import { setUncaughtExceptionCaptureCallback } from "process";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -74,6 +75,16 @@ const Booking = () => {
 
   const localStorageState = getPrePopulationState(facilities);
 
+  const defaultAssociation = {
+    id: "0",
+    admins: [],
+    members: [],
+    userId: "",
+    private: false,
+    description: "",
+    name: "None",
+  } as Association;
+
   useEffect(() => {
     setHydrated(true);
 
@@ -87,6 +98,12 @@ const Booking = () => {
 
     if (localStorageState) {
       setJoinable(localStorageState.joinable);
+
+      if (localStorageState.association) {
+        console.log("setting");
+
+        // setAssociation(localStorageState.association);
+      }
 
       if (localStorageState.facility) {
         setFacility(localStorageState.facility);
@@ -122,6 +139,7 @@ const Booking = () => {
     if (hydrated && !isInitialLoading && !preventLocalStorageWrite) {
       setPrePopulateBookingState({
         court,
+        association,
         duration,
         time,
         date,
@@ -133,6 +151,7 @@ const Booking = () => {
   }, [
     court,
     duration,
+    association,
     time,
     date,
     facility,
@@ -230,16 +249,11 @@ const Booking = () => {
 
   const onAssociationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.options[event.target.selectedIndex];
-
-    console.log({ selectedDataset: selected?.dataset });
-
     const associationId = selected?.dataset["id"];
-    console.log({ associationId });
-
     const associationToSelect = userAssociations?.find(
       (f) => f.id === associationId
     );
-    setAssociation(associationToSelect);
+    setAssociation(associationToSelect || defaultAssociation);
   };
 
   const onDurationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -271,8 +285,6 @@ const Booking = () => {
 
   const associationsMapped =
     userAssociations?.map((association) => {
-      console.log(association);
-
       return {
         id: association.id,
         name: association.name,
@@ -321,13 +333,15 @@ const Booking = () => {
             If you want to publish or join a booking, you must first add your
             name in your account.
           </h3>
-          <Link href="/settings" className="btn btn-info mt-10 text-white">
+          <Link href="/settings" className="btn-info btn mt-10 text-white">
             Settings
           </Link>
         </div>
       </main>
     );
   }
+
+  console.log({ aN: association?.name });
 
   return (
     <>
@@ -408,9 +422,10 @@ const Booking = () => {
 
                 <SelectInput
                   label="Group"
+                  disabledOption="Select group"
                   description="With what group do you want to play?"
-                  valid={true}
-                  value={association?.name || "Pick a group"}
+                  valid={!!association}
+                  value={association?.name || "Select group"}
                   items={associationsToShow}
                   callback={onAssociationSelect}
                 />
@@ -470,7 +485,7 @@ const Booking = () => {
                 <div className="w-100 btn-group btn-group-horizontal mb-20 mt-10 flex justify-center self-center">
                   <label
                     htmlFor="action-modal-booking-cancel"
-                    className="btn btn-warning text-white"
+                    className="btn-warning btn text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   >
                     Cancel

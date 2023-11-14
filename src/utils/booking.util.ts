@@ -154,9 +154,9 @@ export const bookingsByDate = ({
         : a.date.getTime() - b.date.getTime()
     )
     .filter((booking) => {
-      console.log("booking?.associationId", booking?.associationId);
-      console.log("user?.associations", user?.associations);
-      return booking.associationId ? user?.associations.includes(booking.associationId) : true;
+      return booking.associationId
+        ? user?.associations.includes(booking.associationId)
+        : true;
     })
     .filter((booking) => {
       const bookingEnd = getBookingEndDate(booking);
