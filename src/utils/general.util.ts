@@ -231,6 +231,8 @@ export const getFrogText = (path: string) => {
   const history = path === "/history";
   const joined = path === "/joined";
   const created = path === "/created";
+  const invite = path.startsWith("/invite");
+  const association = path.startsWith("/association");
 
   if (joined) {
     return "Ey, this is looking quite lonely.";
@@ -242,6 +244,14 @@ export const getFrogText = (path: string) => {
 
   if (history) {
     return "No old bookings yet...";
+  }
+
+  if (invite) {
+    return "Hmm, looks like this invite link is invalid. Talk to the inviter.";
+  }
+
+  if (association) {
+    return "You are not a member of the requested group. An existing group member can invite you. Talk to them.";
   }
 
   return "There are no upcoming bookings right now. Head over to GBC, book a court and comeback here and publish.";

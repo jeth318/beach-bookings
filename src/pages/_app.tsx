@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import { Layout } from "~/components/Layout";
 import "~/styles/globals.css";
 import { SharedHead } from "~/components/SharedHead";
+import Head from "next/head";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -13,6 +14,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <Head>
+        <link rel="stylesheet" href="https://use.typekit.net/cxl1pgb.css" />
+      </Head>
       <SharedHead />
       <Layout>
         <Component {...pageProps} />

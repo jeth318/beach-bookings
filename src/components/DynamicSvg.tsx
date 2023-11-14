@@ -236,7 +236,7 @@ const PlayerKickedIcon = ({ stroke, width, height, fill = "none" }: Props) => {
       height={height}
       fill={fill}
       viewBox="0 0 52 52"
-      enable-background="new 0 0 52 52"
+      enableBackground="new 0 0 52 52"
     >
       <g>
         <path

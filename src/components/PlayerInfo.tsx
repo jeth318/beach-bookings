@@ -72,8 +72,6 @@ export const PlayerInfo = ({
   const hasContactInfoChanged =
     user?.name !== nameInput || user.phone !== phoneInput;
 
-  console.log({ user, nameInput, phoneInput, validPhone });
-
   return (
     <div>
       {toastMessage && <Toast body={toastMessage} />}

@@ -8,6 +8,8 @@ import { emailInviteDispatcher } from "~/utils/booking.util";
 import { BeatLoader } from "react-spinners";
 import { renderToast } from "~/utils/general.util";
 import { Toast } from "~/components/Toast";
+import { userAgent } from "next/server";
+import { ArrogantFrog } from "~/components/ArrogantFrog";
 
 const Group = () => {
   const router = useRouter();
@@ -18,7 +20,7 @@ const Group = () => {
 
   const emailerMutation = api.emailer.sendInvitationEmail.useMutation();
 
-  const { data: association, isFetched: isAssociationFetched } =
+  const { data: association, isFetched: hasFetchedAssociation } =
     api.association.getSingle.useQuery(
       { id: typeof router?.query?.id === "string" ? router?.query?.id : "" },
       {
@@ -27,10 +29,12 @@ const Group = () => {
       }
     );
 
-  const { data: members, isFetched: isMembersFetched } =
+  const { data: members, isFetched: hasFetchedMembers } =
     api.user.getUsersByAssociationId.useQuery({
       associationId: association?.id || "",
     });
+
+  const { data: user, isFetched: hasFetchedUser } = api.user.get.useQuery();
 
   const { mutate: createInvite, isLoading: isCreatingInvite } =
     api.invite.create.useMutation({});
@@ -80,8 +84,9 @@ const Group = () => {
 
   if (
     sessionStatus === "loading" ||
-    !isAssociationFetched ||
-    !isMembersFetched
+    !hasFetchedAssociation ||
+    !hasFetchedMembers ||
+    !hasFetchedUser
   ) {
     return (
       <PageLoader
@@ -94,6 +99,10 @@ const Group = () => {
 
   if (!association) {
     return <div>No association found</div>;
+  }
+
+  if (!user?.associations.includes(association.id)) {
+    return <ArrogantFrog />;
   }
 
   return (
@@ -197,9 +206,9 @@ const Group = () => {
                         </>
                       )}
                     </td>
-                    <th>
+                    {/*  <th>
                       <button className="btn-ghost btn-xs btn">details</button>
-                    </th>
+                    </th> */}
                   </tr>
                 );
               })}
@@ -209,7 +218,7 @@ const Group = () => {
               <tr>
                 <th></th>
                 <th></th>
-                <th></th>
+                {/* <th></th> */}
               </tr>
             </tfoot>
           </table>

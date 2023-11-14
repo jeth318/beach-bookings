@@ -3,32 +3,32 @@ import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
 import { PageLoader } from "~/components/PageLoader";
-import ActionModal from "~/components/ActionModal";
 import { type User } from "@prisma/client";
 import { useState } from "react";
-import Link from "next/link";
 import { BeatLoader } from "react-spinners";
 import { PlayerInfo } from "~/components/PlayerInfo";
+import { ArrogantFrog } from "~/components/ArrogantFrog";
 
 const Invite = () => {
   const router = useRouter();
   const [isAcceptingInvite, setIsAcceptingInvite] = useState<boolean>(false);
   const { status: sessionStatus, data: sessionData } = useSession();
-  const { data: invite, isFetching: isFetchingInvite } =
-    api.invite.get.useQuery(
-      {
-        email: sessionData?.user.email || "",
-        associationId: (router.query.id as string) || "",
-      },
-      {
-        refetchOnWindowFocus: false,
-        enabled:
-          typeof sessionData?.user.email === "string" &&
-          typeof router?.query?.id === "string",
-      }
-    );
+  const { data: invite, isFetched: hasFetchedInvite } = api.invite.get.useQuery(
+    {
+      email: sessionData?.user.email || "",
+      associationId: (router.query.id as string) || "",
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled:
+        typeof sessionData?.user.email === "string" &&
+        typeof router?.query?.id === "string",
+    }
+  );
 
-  const { data: association, isFetching: isFetchingAssociation } =
+  const { mutate: mutateInviteDelete } = api.invite.delete.useMutation({});
+
+  const { data: association, isFetched: hasFetchedAssociation } =
     api.association.getSingle.useQuery(
       {
         id: (router.query.id as string) || "",
@@ -39,7 +39,7 @@ const Invite = () => {
       }
     );
 
-  const { data: inviter, isFetching: isFetchingInviter } =
+  const { data: inviter, isFetched: hasFetchedInviter } =
     api.user.getById.useQuery(
       {
         id: (invite?.invitedBy as string) || "",
@@ -52,7 +52,6 @@ const Invite = () => {
 
   const {
     data: user,
-    isFetching: isFetchingUser,
     isFetched: hasFetchedUser,
     refetch: refetchUser,
   } = api.user.get.useQuery(undefined, {
@@ -77,6 +76,7 @@ const Invite = () => {
           onSuccess: (mutatedUser: User) => {
             console.log("SUCCESSFULLY UPDATED ASSO", mutatedUser.associations);
             void router.push(`/association/${association.id}`);
+            invite?.id && mutateInviteDelete({ id: invite?.id });
           },
           onError: () => {
             setIsAcceptingInvite(false);
@@ -91,7 +91,7 @@ const Invite = () => {
       <PageLoader
         isMainPage={false}
         mainBgColor={"mainPageBgColor"}
-        bgColor={"bg-gradient-to-b from-[#161b22] to-[#000000]"}
+        bgColor={"bg-gradient-to-b from-[#a31da1] to-[#000000]"}
       />
     );
   }
@@ -101,26 +101,29 @@ const Invite = () => {
     return null;
   }
 
+  if (hasFetchedInvite && invite === null) {
+    return <ArrogantFrog />;
+  }
+
   if (
-    isFetchingAssociation ||
-    isFetchingUser ||
-    isFetchingInviter ||
-    isFetchingInvite
+    !hasFetchedAssociation ||
+    !hasFetchedUser ||
+    !hasFetchedInviter ||
+    !hasFetchedInvite
   ) {
     return (
       <PageLoader
         isMainPage={false}
         mainBgColor={"mainPageBgColor"}
-        bgColor={"bg-gradient-to-b from-[#005e1ba6] to-[#000000]"}
+        bgColor={"bg-gradient-to-b from-[#a31da1] to-[#000000]"}
       />
     );
   }
 
-  if (!invite || !user || !association || !inviter) {
-    return <div>could not find invite</div>;
-  }
-
-  if (user.associations.includes(String(invite.associationId))) {
+  if (
+    invite?.associationId &&
+    user?.associations?.includes(String(invite?.associationId))
+  ) {
     void router.push(`/association/${invite.associationId}`);
     return null;
   }
@@ -129,15 +132,15 @@ const Invite = () => {
     <main className="min-w-sm flex min-w-fit flex-col text-white">
       <SubHeader title="Invitation" />
       <div
-        className={`smooth-render-in bookings-container flex min-h-[400px] flex-col items-center justify-center bg-gradient-to-b from-[#005e1ba6] to-[#000000]`}
+        className={`smooth-render-in bookings-container flex min-h-[400px] flex-col items-center justify-center bg-gradient-to-b from-[#a31da1] to-[#000000]`}
       >
         <div className="mt-4 flex flex-col items-center justify-center">
           <h4>
             {inviter?.name || "A player"} has invited you to join their group{" "}
           </h4>
-          <h2 className="text-2xl">{association.name}</h2>
+          <h2 className="text-2xl">{association?.name}</h2>
 
-          {!user.name && hasFetchedUser && (
+          {!user?.name && hasFetchedUser && (
             <div className="m-4">
               <div className="stack">
                 <div className="card card-compact mb-4 bg-primary text-primary-content shadow-md">
@@ -158,7 +161,7 @@ const Invite = () => {
               />
             </div>
           )}
-          {user.name && (
+          {user?.name && (
             <div className="mb-4 mt-4 flex flex-col items-center">
               <button
                 onClick={onJoinConfirmed}
