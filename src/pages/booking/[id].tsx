@@ -106,15 +106,17 @@ const Booking = () => {
       })) || [];
 
   const associationsMapped =
-    userAssociations?.map((association) => {
-      return {
-        id: association.id,
-        name: association.name,
-      };
-    }) || [];
+    userAssociations
+      ?.map((association) => {
+        return {
+          id: association.id,
+          name: association.name,
+        };
+      })
+      .filter((association) => association.id !== "public") || [];
 
   const associationsToShow = [
-    { id: "99", name: "None" },
+    { id: "public", name: "No group" },
     ...associationsMapped,
   ];
 
@@ -400,7 +402,7 @@ const Booking = () => {
                       href="/"
                       className={`${
                         validBooking && !isLoadingBookingMutation
-                          ? "btn-warning btn"
+                          ? "btn btn-warning"
                           : "btn-disabled"
                       } btn text-white`}
                     >

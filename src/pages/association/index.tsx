@@ -20,18 +20,22 @@ const Association = () => {
       }
     );
 
+  const joinedAssociationsWithoutPublic = joinedAssociations?.filter(
+    (association) => association.id === "public"
+  );
+
   const isWithoutGroup =
-    hasFetchedUserAssociations && !joinedAssociations?.length;
+    hasFetchedUserAssociations && !joinedAssociationsWithoutPublic?.length;
 
   const isMultiGroupMember =
     !!sessionData.data?.user.id &&
-    joinedAssociations?.length &&
-    joinedAssociations?.length > 1;
+    joinedAssociationsWithoutPublic?.length &&
+    joinedAssociationsWithoutPublic?.length > 1;
 
   const isOneGroupMember =
     !!sessionData.data?.user.id &&
-    joinedAssociations?.length === 1 &&
-    !!joinedAssociations[0]?.id !== undefined;
+    joinedAssociationsWithoutPublic?.length === 1 &&
+    !!joinedAssociationsWithoutPublic[0]?.id !== undefined;
 
   if (isWithoutGroup) {
     return (
@@ -48,7 +52,7 @@ const Association = () => {
             You are not a part of a group yet. Group members can invite you.
             Meanwhile, you can join public bookings from the home page.
           </h3>
-          <Link href="/" className="btn-info btn mt-10 text-white">
+          <Link href="/" className="btn btn-info mt-10 text-white">
             Home
           </Link>
         </div>
@@ -71,12 +75,12 @@ const Association = () => {
             <h2 className="mb-4 text-4xl text-white">My groups</h2>
 
             <div className="flex flex-col items-center justify-center">
-              {joinedAssociations.map((association) => {
+              {joinedAssociationsWithoutPublic.map((association) => {
                 return (
                   <Link
                     key={association.id}
                     href={`/association/${association.id}`}
-                    className="mt-10text-white btn-primary btn"
+                    className="mt-10text-white btn btn-primary"
                   >
                     <div className="">{association.name}</div>
                   </Link>
@@ -90,7 +94,9 @@ const Association = () => {
   }
 
   if (isOneGroupMember) {
-    void router.push(`/association/${joinedAssociations[0]?.id as string}`);
+    void router.push(
+      `/association/${joinedAssociationsWithoutPublic[0]?.id as string}`
+    );
     return null;
   }
 };

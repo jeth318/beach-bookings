@@ -77,7 +77,7 @@ const Booking = () => {
 
   const defaultAssociation = {
     id: "public",
-    name: "None",
+    name: "No group",
   } as Association;
 
   useEffect(() => {
@@ -279,12 +279,14 @@ const Booking = () => {
       }) || [];
 
   const associationsMapped =
-    userAssociations?.map((association) => {
-      return {
-        id: association.id,
-        name: association.name,
-      };
-    }) || [];
+    userAssociations
+      ?.map((association) => {
+        return {
+          id: association.id,
+          name: association.name,
+        };
+      })
+      .filter((association) => association.id !== "public") || [];
 
   const associationsToShow = [defaultAssociation, ...associationsMapped];
   const maxPlayersToShow = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
