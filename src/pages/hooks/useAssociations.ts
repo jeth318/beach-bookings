@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useUser } from "./useUser";
 
-export const useAssociations = (email: string) => {
+export const useAssociations = (email: string, associationId?: string) => {
   const { user } = useUser(email);
   const { data, isFetched } = api.association.getForUser.useQuery(
     { ids: user?.associations || [] },
@@ -9,6 +9,12 @@ export const useAssociations = (email: string) => {
       enabled: !!user?.id && !!user?.associations,
     }
   );
+
+  const { data: singleAssociation, isFetched: hasFetchedSingleAssociation } =
+    api.association.getSingle.useQuery(
+      { id: associationId || "" },
+
+    );
 
   const joinedAssociationsWithoutPublic = data?.filter(
     (association) => association.id !== "public"
@@ -40,5 +46,7 @@ export const useAssociations = (email: string) => {
     isWithoutGroup,
     isOneGroupMember,
     isMultiGroupMember,
+    singleAssociation,
+    hasFetchedSingleAssociation,
   };
 };

@@ -8,10 +8,18 @@ export const useUser = (
 ) => {
   const {
     data: user,
-    isFetched: isUserFetched,
+    isFetched: hasFetchedUser,
     isError: isUserError,
+    refetch: refetchUser,
     isLoading: isUserLoading,
   } = api.user.getSingle.useQuery({ email: email }, { enabled: enabled });
+
+  const {
+    data: sessionUser = undefined,
+    isFetched: hasFetchedSessionUser,
+    isError: isSessionUserError,
+    isLoading: isSessionUserLoading,
+  } = api.user.get.useQuery();
 
   const { data: usersInBooking, isFetched: hasFetchedUsersInBooking } =
     api.user.getMultipleByIds.useQuery({
@@ -20,10 +28,15 @@ export const useUser = (
 
   return {
     user,
-    isUserFetched,
+    sessionUser,
+    hasFetchedSessionUser,
+    isSessionUserError,
+    isSessionUserLoading,
+    hasFetchedUser,
     isUserError,
     isUserLoading,
     usersInBooking,
     hasFetchedUsersInBooking,
+    refetchUser,
   };
 };

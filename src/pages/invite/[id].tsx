@@ -8,36 +8,26 @@ import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { PlayerInfo } from "~/components/PlayerInfo";
 import { ArrogantFrog } from "~/components/ArrogantFrog";
+import { useInvite } from "../hooks/useInvite";
+import { useAssociations } from "../hooks/useAssociations";
+import { useUser } from "../hooks/useUser";
 
 const Invite = () => {
   const router = useRouter();
   const [isAcceptingInvite, setIsAcceptingInvite] = useState<boolean>(false);
   const { status: sessionStatus, data: sessionData } = useSession();
-  const { data: invite, isFetched: hasFetchedInvite } = api.invite.get.useQuery(
-    {
-      email: sessionData?.user.email || "",
-      associationId: (router.query.id as string) || "",
-    },
-    {
-      refetchOnWindowFocus: false,
-      enabled:
-        typeof sessionData?.user.email === "string" &&
-        typeof router?.query?.id === "string",
-    }
+
+  const { user, sessionUser, refetchUser, hasFetchedUser } = useUser(
+    sessionData?.user.email || ""
+  );
+  const { invite, mutateInviteDelete, hasFetchedInvite } = useInvite(
+    router,
+    sessionData?.user.email || ""
   );
 
-  const { mutate: mutateInviteDelete } = api.invite.delete.useMutation({});
-
-  const { data: association, isFetched: hasFetchedAssociation } =
-    api.association.getSingle.useQuery(
-      {
-        id: (router.query.id as string) || "",
-      },
-      {
-        refetchOnWindowFocus: false,
-        enabled: !!invite,
-      }
-    );
+  const { singleAssociation, hasFetchedSingleAssociation } = useAssociations(
+    sessionData?.user.email || ""
+  );
 
   const { data: inviter, isFetched: hasFetchedInviter } =
     api.user.getById.useQuery(
@@ -46,28 +36,22 @@ const Invite = () => {
       },
       {
         refetchOnWindowFocus: false,
-        enabled: !!association && !!invite,
+        enabled: !!singleAssociation && !!invite,
       }
     );
-
-  const {
-    data: user,
-    isFetched: hasFetchedUser,
-    refetch: refetchUser,
-  } = api.user.get.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-    enabled: !!sessionData?.user,
-  });
 
   const { mutate: mutateUserAssociations } =
     api.user.updateAssociations.useMutation();
 
   const onJoinConfirmed = () => {
-    if (association?.id && !user?.associations?.includes(association?.id)) {
+    if (
+      singleAssociation?.id &&
+      !user?.associations?.includes(singleAssociation?.id)
+    ) {
       setIsAcceptingInvite(true);
       const updatedAssociationList = !!user?.associations.length
-        ? [...user?.associations, association.id]
-        : [association.id];
+        ? [...user?.associations, singleAssociation.id]
+        : [singleAssociation.id];
       mutateUserAssociations(
         {
           associations: updatedAssociationList,
@@ -75,7 +59,7 @@ const Invite = () => {
         {
           onSuccess: (mutatedUser: User) => {
             console.log("SUCCESSFULLY UPDATED ASSO", mutatedUser.associations);
-            void router.push(`/association/${association.id}`);
+            void router.push(`/association/${singleAssociation.id}`);
             invite?.id && mutateInviteDelete({ id: invite?.id });
           },
           onError: () => {
@@ -112,7 +96,7 @@ const Invite = () => {
   }
 
   if (
-    !hasFetchedAssociation ||
+    !hasFetchedSingleAssociation ||
     !hasFetchedUser ||
     !hasFetchedInviter ||
     !hasFetchedInvite
@@ -144,12 +128,12 @@ const Invite = () => {
           <h4>
             {inviter?.name || "A player"} has invited you to join their group{" "}
           </h4>
-          <h2 className="text-2xl">{association?.name}</h2>
+          <h2 className="text-2xl">{singleAssociation?.name}</h2>
 
           {user && !user?.name && hasFetchedUser && (
             <div className="m-4">
               <div className="stack">
-                <div className="card-compact card mb-4 bg-primary text-primary-content shadow-md">
+                <div className="card card-compact mb-4 bg-primary text-primary-content shadow-md">
                   <div className="card-body">
                     <p>
                       Before you can accept the invite, please submit your name
@@ -158,13 +142,15 @@ const Invite = () => {
                   </div>
                 </div>
               </div>
-              <PlayerInfo
-                user={user}
-                hideTitle
-                hidePhone
-                hideEmail
-                refetchUser={refetchUser}
-              />
+              {sessionUser && (
+                <PlayerInfo
+                  user={sessionUser}
+                  hideTitle
+                  hidePhone
+                  hideEmail
+                  refetchUser={refetchUser}
+                />
+              )}
             </div>
           )}
           {user?.name && (
@@ -172,7 +158,7 @@ const Invite = () => {
               <button
                 onClick={onJoinConfirmed}
                 disabled={isAcceptingInvite || !user?.name}
-                className={`btn btn-primary ${
+                className={`btn-primary btn ${
                   !!user?.name ? "animate-pulse" : ""
                 } text-white`}
               >
