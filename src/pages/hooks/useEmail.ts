@@ -1,6 +1,6 @@
 import { api } from "~/utils/api";
 
-export const useEmail = () => {
+const useEmail = () => {
   const { mutate: mutateEmail } = api.emailer.sendEmail.useMutation();
   const { mutate: mutateInviteEmail } =
     api.emailer.sendInvitationEmail.useMutation();
@@ -10,3 +10,5 @@ export const useEmail = () => {
     mutateInviteEmail,
   };
 };
+
+export default useEmail;

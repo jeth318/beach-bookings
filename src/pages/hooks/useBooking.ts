@@ -1,6 +1,6 @@
 import { api } from "~/utils/api";
 
-export const useBooking = () => {
+const useBooking = () => {
   const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
     api.booking.update.useMutation({});
 
@@ -28,3 +28,5 @@ export const useBooking = () => {
     isInitialLoadingRefetch
   };
 };
+
+export default useBooking;

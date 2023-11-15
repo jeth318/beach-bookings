@@ -1,7 +1,7 @@
 import { type Booking } from "@prisma/client";
 import { api } from "~/utils/api";
 
-export const useUser = (
+const useUser = (
   email?: string,
   enabled?: boolean,
   booking?: Booking,
@@ -61,3 +61,5 @@ export const useUser = (
     hasFetchedInviter,
   };
 };
+
+export default useUser;

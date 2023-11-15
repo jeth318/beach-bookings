@@ -9,8 +9,8 @@ import { BeatLoader } from "react-spinners";
 import { renderToast } from "~/utils/general.util";
 import { Toast } from "~/components/Toast";
 import { ArrogantFrog } from "~/components/ArrogantFrog";
-import { useSingleAssociations } from "../hooks/useSingleAssociation";
-import { useEmail } from "../hooks/useEmail";
+import useSingleAssociations from "../hooks/useSingleAssociation";
+import useEmail from "../hooks/useEmail";
 
 const Group = () => {
   const router = useRouter();
@@ -188,7 +188,7 @@ const Group = () => {
                         association.userId !== member.id && (
                           <>
                             <br />
-                            <span className="badge badge-ghost badge-sm">
+                            <span className="badge-ghost badge badge-sm">
                               administrator
                             </span>
                           </>
@@ -196,7 +196,7 @@ const Group = () => {
                       {association.userId === member.id && (
                         <>
                           <br />
-                          <span className="badge badge-ghost badge-sm">
+                          <span className="badge-ghost badge badge-sm">
                             group owner
                           </span>
                         </>

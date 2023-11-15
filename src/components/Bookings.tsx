@@ -30,10 +30,10 @@ import { OngoingGame } from "./OngoingGame";
 import { CustomIcon } from "./CustomIcon";
 import { PlayersTable } from "./PlayersTable";
 import { Toast } from "./Toast";
-import { useEmail } from "~/pages/hooks/useEmail";
-import { useUser } from "~/pages/hooks/useUser";
-import { useBooking } from "~/pages/hooks/useBooking";
-import { useAssociations } from "~/pages/hooks/useAssociations";
+import useEmail from "~/pages/hooks/useEmail";
+import useUser from "~/pages/hooks/useUser";
+import useBooking from "~/pages/hooks/useBooking";
+import useAssociations from "~/pages/hooks/useAssociations";
 
 type Bookings = {
   data: Booking[];
@@ -477,7 +477,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn-warning btn-sm btn text-white"
+                                  className="btn btn-warning btn-sm text-white"
                                 >
                                   {leaving.isWorking &&
                                   booking.id === leaving.bookingId ? (
@@ -507,7 +507,7 @@ export const Bookings = ({ bookings }: Props) => {
 
                             {!isMainPage &&
                               session?.data?.user?.id === booking?.userId && (
-                                <button className="btn-sm btn text-white">
+                                <button className="btn btn-sm text-white">
                                   <Link
                                     href={{
                                       pathname: `/booking/${booking.id}`,
@@ -525,7 +525,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn-error btn-sm btn text-white"
+                                  className="btn btn-error btn-sm text-white"
                                 >
                                   {deleting.isWorking &&
                                   booking.id === deleting.bookingId ? (

@@ -3,14 +3,13 @@ import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
 import { PageLoader } from "~/components/PageLoader";
-import { type User } from "@prisma/client";
 import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { PlayerInfo } from "~/components/PlayerInfo";
 import { ArrogantFrog } from "~/components/ArrogantFrog";
-import { useInvite } from "../hooks/useInvite";
-import { useAssociations } from "../hooks/useAssociations";
-import { useUser } from "../hooks/useUser";
+import useInvite from "../hooks/useInvite";
+import useAssociations from "../hooks/useAssociations";
+import useUser from "../hooks/useUser";
 
 const Invite = () => {
   const router = useRouter();

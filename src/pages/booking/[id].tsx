@@ -17,10 +17,10 @@ import { JoinableToggle } from "~/components/JoinableToggle";
 import { SelectInput } from "~/components/SelectInput";
 import { DateSelector } from "~/components/DateSelector";
 import { Toast } from "~/components/Toast";
-import { useUser } from "../hooks/useUser";
-import { useAssociations } from "../hooks/useAssociations";
-import { useBooking } from "../hooks/useBooking";
-import { useEmail } from "../hooks/useEmail";
+import useUser from "../hooks/useUser";
+import useAssociations from "../hooks/useAssociations";
+import useBooking from "../hooks/useBooking";
+import useEmail from "../hooks/useEmail";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();

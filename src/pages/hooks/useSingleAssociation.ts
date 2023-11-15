@@ -1,7 +1,7 @@
 import { type NextRouter } from "next/router";
 import { api } from "~/utils/api";
 
-export const useSingleAssociations = (router: NextRouter) => {
+const useSingleAssociations = (router: NextRouter) => {
   const { data, isFetched } = api.association.getSingle.useQuery(
     { id: typeof router?.query.id === "string" ? router?.query.id : "" },
     {
@@ -15,3 +15,5 @@ export const useSingleAssociations = (router: NextRouter) => {
     hasFetchedSingleAssociation: isFetched,
   };
 };
+
+export default useSingleAssociations;

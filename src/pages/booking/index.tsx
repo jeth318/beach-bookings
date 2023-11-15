@@ -21,7 +21,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { setUncaughtExceptionCaptureCallback } from "process";
-import { useEmail } from "../hooks/useEmail";
+import useEmail from "../hooks/useEmail";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();

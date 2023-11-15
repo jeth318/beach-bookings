@@ -1,10 +1,7 @@
 import { type NextRouter } from "next/router";
 import { api } from "~/utils/api";
 
-export const useInvite = (
-  router: NextRouter,
-  email?: string | null | undefined
-) => {
+const useInvite = (router: NextRouter, email?: string | null | undefined) => {
   const { data: invite, isFetched: hasFetchedInvite } = api.invite.get.useQuery(
     {
       email: email || "",
@@ -25,3 +22,5 @@ export const useInvite = (
     mutateInviteDelete,
   };
 };
+
+export default useInvite;

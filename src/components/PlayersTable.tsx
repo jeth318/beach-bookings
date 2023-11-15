@@ -9,8 +9,8 @@ import { getEmailRecipients } from "~/utils/general.util";
 import { emailDispatcher } from "~/utils/booking.util";
 import { useSession } from "next-auth/react";
 import ActionModal from "./ActionModal";
-import { useBooking } from "~/pages/hooks/useBooking";
-import { useUser } from "~/pages/hooks/useUser";
+import useBooking from "~/pages/hooks/useBooking";
+import useUser from "~/pages/hooks/useUser";
 
 type Props = {
   booking: Booking;

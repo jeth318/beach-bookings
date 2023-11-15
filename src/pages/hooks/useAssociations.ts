@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
-import { useUser } from "./useUser";
+import useUser from "./useUser";
 
-export const useAssociations = (email: string, associationId?: string) => {
+const useAssociations = (email: string, associationId?: string) => {
   const { user } = useUser(email);
   const { data, isFetched } = api.association.getForUser.useQuery(
     { ids: user?.associations || [] },
@@ -40,3 +40,5 @@ export const useAssociations = (email: string, associationId?: string) => {
     hasFetchedSingleAssociation,
   };
 };
+
+export default useAssociations;

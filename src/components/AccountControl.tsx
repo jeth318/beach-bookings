@@ -3,8 +3,8 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { BeatLoader } from "react-spinners";
 import { useState } from "react";
-import { useUser } from "~/pages/hooks/useUser";
-import { useBooking } from "~/pages/hooks/useBooking";
+import useUser from "~/pages/hooks/useUser";
+import useBooking from "~/pages/hooks/useBooking";
 
 export const AccountControl = () => {
   const { mutateUserDelete } = useUser(undefined);
@@ -120,7 +120,7 @@ export const AccountControl = () => {
       <div className="mb-20 mt-5 flex flex-col items-center justify-center">
         <label
           htmlFor="action-modal-remove-account"
-          className="btn-outline btn-error btn-ghost btn-sm btn"
+          className="btn-outline btn btn-error btn-ghost btn-sm"
         >
           Remove account
         </label>
