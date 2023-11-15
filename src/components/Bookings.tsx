@@ -31,6 +31,9 @@ import { CustomIcon } from "./CustomIcon";
 import { PlayersTable } from "./PlayersTable";
 import { Toast } from "./Toast";
 import { useEmail } from "~/pages/hooks/useEmail";
+import { useUser } from "~/pages/hooks/useUser";
+import { useBooking } from "~/pages/hooks/useBooking";
+import { useAssociations } from "~/pages/hooks/useAssociations";
 
 type Bookings = {
   data: Booking[];
@@ -51,13 +54,14 @@ export const Bookings = ({ bookings }: Props) => {
   const session = useSession();
   const router = useRouter();
   const isMainPage = router.asPath === "/";
+  const sessionUserEmail = session.data?.user.email || "";
+  const sessionUserId = session?.data?.user?.id;
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
 
   const historyOnly = router.asPath === "/history";
   const createdOnly = router.asPath === "/created";
 
-  const sessionUserId = session?.data?.user?.id;
   const [bookingToChange, setBookingToChange] = useState<Booking | undefined>();
 
   const [joining, setIsJoining] = useState<BookingAction>({
@@ -78,18 +82,19 @@ export const Bookings = ({ bookings }: Props) => {
   const { data: users = [], isInitialLoading: isInitialLoadingUsers } =
     api.user.getAll.useQuery();
 
-  const { data: associations = [] } = api.association.getAll.useQuery();
-  const { data: user } = api.user.get.useQuery();
+  const { joinedAssociationsIncludingPublic: associations } =
+    useAssociations(sessionUserEmail);
+
+  const { sessionUser, user } = useUser(sessionUserEmail);
+
   const { data: facilities = [] } = api.facility.getAll.useQuery();
-  const { refetch: refetchBookings } = api.booking.getAll.useQuery(undefined, {
-    refetchIntervalInBackground: true,
-    refetchInterval: 15000,
-  });
+
+  const { refetchBookings } = useBooking();
 
   const { mutateEmail } = useEmail();
 
   const getAssociation = (id: string) => {
-    return associations.find((item) => item.id === id);
+    return associations?.find((item) => item.id === id);
   };
 
   const getFacility = (id: string | null) => {
@@ -229,8 +234,8 @@ export const Bookings = ({ bookings }: Props) => {
   const bgColorDark = getBgColor(router.asPath);
 
   const bookingsToShow = bookingsByDate({
-    associations,
-    user,
+    associations: associations || [],
+    user: sessionUser,
     bookings,
     path: router.asPath,
     sessionUserId,
@@ -472,7 +477,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn btn-warning btn-sm text-white"
+                                  className="btn-warning btn-sm btn text-white"
                                 >
                                   {leaving.isWorking &&
                                   booking.id === leaving.bookingId ? (
@@ -502,7 +507,7 @@ export const Bookings = ({ bookings }: Props) => {
 
                             {!isMainPage &&
                               session?.data?.user?.id === booking?.userId && (
-                                <button className="btn btn-sm text-white">
+                                <button className="btn-sm btn text-white">
                                   <Link
                                     href={{
                                       pathname: `/booking/${booking.id}`,
@@ -520,7 +525,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn btn-error btn-sm text-white"
+                                  className="btn-error btn-sm btn text-white"
                                 >
                                   {deleting.isWorking &&
                                   booking.id === deleting.bookingId ? (

@@ -16,29 +16,24 @@ const Invite = () => {
   const router = useRouter();
   const [isAcceptingInvite, setIsAcceptingInvite] = useState<boolean>(false);
   const { status: sessionStatus, data: sessionData } = useSession();
+  const email = sessionData?.user.email || "";
 
-  const { user, sessionUser, refetchUser, hasFetchedUser } = useUser(
-    sessionData?.user.email || ""
-  );
+  const {
+    user,
+    sessionUser,
+    refetchUser,
+    hasFetchedUser,
+    inviter,
+    hasFetchedInviter,
+  } = useUser(sessionData?.user.email || "");
+
   const { invite, mutateInviteDelete, hasFetchedInvite } = useInvite(
     router,
-    sessionData?.user.email || ""
+    email
   );
 
-  const { singleAssociation, hasFetchedSingleAssociation } = useAssociations(
-    sessionData?.user.email || ""
-  );
-
-  const { data: inviter, isFetched: hasFetchedInviter } =
-    api.user.getById.useQuery(
-      {
-        id: (invite?.invitedBy as string) || "",
-      },
-      {
-        refetchOnWindowFocus: false,
-        enabled: !!singleAssociation && !!invite,
-      }
-    );
+  const { singleAssociation, hasFetchedSingleAssociation } =
+    useAssociations(email);
 
   const { mutate: mutateUserAssociations } =
     api.user.updateAssociations.useMutation();
@@ -57,8 +52,7 @@ const Invite = () => {
           associations: updatedAssociationList,
         },
         {
-          onSuccess: (mutatedUser: User) => {
-            console.log("SUCCESSFULLY UPDATED ASSO", mutatedUser.associations);
+          onSuccess: () => {
             void router.push(`/association/${singleAssociation.id}`);
             invite?.id && mutateInviteDelete({ id: invite?.id });
           },
@@ -133,7 +127,7 @@ const Invite = () => {
           {user && !user?.name && hasFetchedUser && (
             <div className="m-4">
               <div className="stack">
-                <div className="card card-compact mb-4 bg-primary text-primary-content shadow-md">
+                <div className="card-compact card mb-4 bg-primary text-primary-content shadow-md">
                   <div className="card-body">
                     <p>
                       Before you can accept the invite, please submit your name
@@ -158,7 +152,7 @@ const Invite = () => {
               <button
                 onClick={onJoinConfirmed}
                 disabled={isAcceptingInvite || !user?.name}
-                className={`btn-primary btn ${
+                className={`btn btn-primary ${
                   !!user?.name ? "animate-pulse" : ""
                 } text-white`}
               >

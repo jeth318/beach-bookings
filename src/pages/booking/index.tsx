@@ -96,9 +96,7 @@ const Booking = () => {
       setJoinable(localStorageState.joinable);
 
       if (localStorageState.association) {
-        console.log("setting");
-
-        // setAssociation(localStorageState.association);
+        setAssociation(localStorageState.association);
       }
 
       if (localStorageState.facility) {
@@ -188,8 +186,6 @@ const Booking = () => {
           console.log(
             "Email dispatch temporarily disabled during booking publish"
           );
-
-          console.log({ mutateEmail });
 
           emailDispatcher({
             originalBooking: {
@@ -338,8 +334,6 @@ const Booking = () => {
       </main>
     );
   }
-
-  console.log({ aN: association?.name });
 
   return (
     <>

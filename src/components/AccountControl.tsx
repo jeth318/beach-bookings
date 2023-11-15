@@ -1,16 +1,15 @@
-import { api } from "~/utils/api";
 import ActionModal from "./ActionModal";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { BeatLoader } from "react-spinners";
 import { useState } from "react";
+import { useUser } from "~/pages/hooks/useUser";
+import { useBooking } from "~/pages/hooks/useBooking";
 
 export const AccountControl = () => {
-  const { mutate: mutateUserDelete } = api.user.delete.useMutation();
-  const { data: upcomingBookingsCreated } =
-    api.booking.getUpcomingForUser.useQuery();
-  const { data: upcomingBookingsJoined } =
-    api.booking.getJoinedUpcoming.useQuery();
+  const { mutateUserDelete } = useUser(undefined);
+
+  const { upcomingBookingsCreated, upcomingBookingsJoined } = useBooking();
 
   const [isLoading, setIsLoading] = useState<boolean>();
 
@@ -121,7 +120,7 @@ export const AccountControl = () => {
       <div className="mb-20 mt-5 flex flex-col items-center justify-center">
         <label
           htmlFor="action-modal-remove-account"
-          className="btn-outline btn btn-error btn-ghost btn-sm"
+          className="btn-outline btn-error btn-ghost btn-sm btn"
         >
           Remove account
         </label>

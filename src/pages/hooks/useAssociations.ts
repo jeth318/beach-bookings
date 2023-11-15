@@ -11,10 +11,7 @@ export const useAssociations = (email: string, associationId?: string) => {
   );
 
   const { data: singleAssociation, isFetched: hasFetchedSingleAssociation } =
-    api.association.getSingle.useQuery(
-      { id: associationId || "" },
-
-    );
+    api.association.getSingle.useQuery({ id: associationId || "" });
 
   const joinedAssociationsWithoutPublic = data?.filter(
     (association) => association.id !== "public"
@@ -32,16 +29,9 @@ export const useAssociations = (email: string, associationId?: string) => {
     joinedAssociationsWithoutPublic?.length === 1 &&
     !!joinedAssociationsWithoutPublic[0]?.id !== undefined;
 
-  console.log({
-    joinedAssociations: joinedAssociationsWithoutPublic,
-    hasFetchedJoinedAssociations: isFetched,
-    isWithoutGroup,
-    isOneGroupMember,
-    isMultiGroupMember,
-  });
-
   return {
     joinedAssociations: joinedAssociationsWithoutPublic,
+    joinedAssociationsIncludingPublic: data,
     hasFetchedJoinedAssociations: isFetched,
     isWithoutGroup,
     isOneGroupMember,

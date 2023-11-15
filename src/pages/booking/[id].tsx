@@ -194,8 +194,6 @@ const Booking = () => {
         },
         {
           onSuccess: (mutatedBooking: Booking) => {
-            console.log(mutateEmail);
-
             emailDispatcher({
               originalBooking: booking,
               mutatedBooking,

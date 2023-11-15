@@ -1,4 +1,4 @@
-import { type Booking, type User } from "@prisma/client";
+import { type Booking } from "@prisma/client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
@@ -9,34 +9,44 @@ import { getEmailRecipients } from "~/utils/general.util";
 import { emailDispatcher } from "~/utils/booking.util";
 import { useSession } from "next-auth/react";
 import ActionModal from "./ActionModal";
+import { useBooking } from "~/pages/hooks/useBooking";
+import { useUser } from "~/pages/hooks/useUser";
 
 type Props = {
   booking: Booking;
 };
 
 export const PlayersTable = ({ booking }: Props) => {
-  const [playersInBooking, setPlayersInBooking] = useState<User[]>();
+  const session = useSession();
+  const sessionUserEmail = session.data?.user.email || "";
+
+  type PlayerInBooking = {
+    id: string;
+    emailConsents: string[];
+    name: string | null;
+    image: string | null;
+  };
+
+  const [playersInBooking, setPlayersInBooking] = useState<
+    PlayerInBooking[] | undefined
+  >();
   const [toastMessage, setToastMessage] = useState<string>();
 
-  const session = useSession();
-
-  const {
-    refetch: refetchBookings,
-    isInitialLoading: isInitialLodaingBookings,
-  } = api.booking.getAll.useQuery();
+  const { refetchBookings, isInitialLoadingRefetch } = useBooking();
 
   const mutateEmail = api.emailer.sendEmail.useMutation({});
 
   const updateBooking = api.booking.update.useMutation();
-  const { data: users, isInitialLoading: isInitialLodaingUsers } =
-    api.user.getAll.useQuery();
+
+  const { usersInBooking, isInitialLoadingUsersInBooking } =
+    useUser(sessionUserEmail);
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
 
   useEffect(() => {
     setPlayersInBooking(
-      users?.filter((user) => booking.players.includes(user.id))
+      usersInBooking?.filter((user) => booking.players.includes(user.id))
     );
-  }, [booking, users]);
+  }, [booking, usersInBooking]);
 
   const renderToast = (body: string) => {
     setToastMessage(body);
@@ -48,7 +58,7 @@ export const PlayersTable = ({ booking }: Props) => {
   const removePlayer = (playerId: string) => {
     const recipients = getEmailRecipients({
       playersInBooking: booking.players,
-      users: users || [],
+      users: playersInBooking || [],
       sessionUserId: "",
       eventType: "KICK",
     });
@@ -95,8 +105,8 @@ export const PlayersTable = ({ booking }: Props) => {
       />
 
       {!playersInBooking ||
-      isInitialLodaingBookings ||
-      isInitialLodaingUsers ? (
+      isInitialLoadingRefetch ||
+      isInitialLoadingUsersInBooking ? (
         <div className="flex justify-center">
           <BeatLoader size={20} color="#36d7b7" />
         </div>
@@ -143,7 +153,7 @@ export const PlayersTable = ({ booking }: Props) => {
                         textOverflow: "ellipsis",
                       }}
                     >
-                      {player.email}
+                      playeremail
                     </div>
                   </div>
                 </div>
@@ -160,7 +170,7 @@ export const PlayersTable = ({ booking }: Props) => {
                   {player.id !== session.data?.user.id && (
                     <>
                       <div className="br-3 flex flex-row gap-2">
-                        {player.email && (
+                        {/* {player.email && (
                           <a
                             className="btn-outline btn btn-accent btn-sm"
                             href={`sms:${""}`}
@@ -177,7 +187,7 @@ export const PlayersTable = ({ booking }: Props) => {
                           >
                             EMAIL
                           </a>
-                        )}
+                        )} */}
                       </div>
                       {session.data?.user.id === booking.userId &&
                         playersInBooking.length >= 2 && (

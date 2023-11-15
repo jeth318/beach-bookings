@@ -23,12 +23,6 @@ export const inviteRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      console.log({
-        associationId: input.associationId,
-        email: input.email,
-        invitedBy: ctx.session.user.id,
-      });
-
       const existingUser = await ctx.prisma.user.findFirst({
         where: {
           email: input.email,

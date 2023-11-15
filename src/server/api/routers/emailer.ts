@@ -52,16 +52,9 @@ export const emailerRouter = createTRPCRouter({
                 .filter((user) => input.recipients.includes(user.id))
                 .map((user) => user.email);
 
-        console.log({
-          receivingEmailAddresses: emailAddresses,
-          isEmailDispatcherActive,
-        });
-
         if (isEmailDispatcherActive === "true") {
           console.warn("Email dispatcher is active");
           const promises = emailAddresses.map((recipient, index) => {
-            console.log("BEFORE CRASH", recipient);
-
             return new Promise((resolve, reject) => {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-call
               transporter.sendMail(
@@ -82,8 +75,6 @@ export const emailerRouter = createTRPCRouter({
               );
             });
           });
-
-          console.log("PROMISES", promises);
 
           const resolved = await Promise.all([
             verificationPromise,
