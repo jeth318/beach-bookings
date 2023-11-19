@@ -98,7 +98,7 @@ export const bookingRouter = createTRPCRouter({
           court: input.court,
           date: input.date,
           duration: input.duration || 0,
-          associationId: null,
+          associationId: input.associationId,
           facilityId: input.facilityId,
           maxPlayers: input.maxPlayers === null ? 0 : input.maxPlayers,
           joinable: input.joinable,

@@ -59,7 +59,8 @@ export const associationRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        members: z.string(),
+        name: z.string(),
+        description: z.string().or(z.null()),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -68,7 +69,8 @@ export const associationRouter = createTRPCRouter({
           id: input.id,
         },
         data: {
-          members: input.members,
+          name: input.name,
+          description: input.description || null,
         },
       });
     }),

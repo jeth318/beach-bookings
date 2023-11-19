@@ -128,8 +128,9 @@ const Booking = () => {
         setTime(localStorageState.time);
       }
     }
-  }, [facilities, facility, hydrated]);
+  }, [facilities, facility, hydrated, localStorageState]);
 
+  const isInitialLoading = sessionStatus === "loading";
   useEffect(() => {
     if (hydrated && !isInitialLoading && !preventLocalStorageWrite) {
       setPrePopulateBookingState({
@@ -153,9 +154,9 @@ const Booking = () => {
     maxPlayers,
     joinable,
     preventLocalStorageWrite,
+    hydrated,
+    isInitialLoading,
   ]);
-
-  const isInitialLoading = sessionStatus === "loading";
 
   const onPublishClicked = async () => {
     if (!validBooking) {
@@ -170,6 +171,8 @@ const Booking = () => {
       sessionUserId: sessionData.user.id,
       eventType: "ADD",
     });
+
+    console.log("association?.id", association?.id);
 
     try {
       const newBooking = await createBooking({
@@ -229,6 +232,7 @@ const Booking = () => {
     const associationToSelect = joinedAssociations?.find(
       (f) => f.id === associationId
     );
+
     setAssociation(associationToSelect || defaultAssociation);
   };
 

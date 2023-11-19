@@ -344,6 +344,8 @@ export const Bookings = ({ bookings }: Props) => {
             }
           };
 
+          console.log(booking.associationId);
+
           return (
             <div
               key={booking.id}
@@ -372,7 +374,7 @@ export const Bookings = ({ bookings }: Props) => {
                           style={{ maxWidth: "150px" }}
                           className="transparent-background-grey self-start rounded-lg border border-slate-600 p-1"
                         >
-                          {booking.associationId && booking.associationId && (
+                          {booking.associationId && (
                             <div className="flex flex-row items-center self-start pb-1 ">
                               <span className="pr-1">
                                 <CustomIcon path="/svg/people.svg" width={18} />

@@ -216,11 +216,13 @@ const Booking = () => {
       );
     }
 
-    if (!association && isJoinedAssociationsFetched && joinedAssociations) {
+    if (
+      !association &&
+      !!joinedAssociations?.length &&
+      !!booking?.associationId
+    ) {
       setAssociation(
-        joinedAssociations.find(
-          (association) => association.id === booking?.associationId
-        )
+        joinedAssociations.find((assoc) => assoc.id === booking.associationId)
       );
     }
 
@@ -251,24 +253,24 @@ const Booking = () => {
     }
   }, [
     areFacilitiesFetched,
+    association,
+    booking?.associationId,
     booking?.court,
     booking?.date,
     booking?.duration,
+    booking?.facilityId,
+    booking?.joinable,
     booking?.maxPlayers,
     court,
     date,
     duration,
     facilities,
     facility,
+    isUserFetchedsInBooking,
+    joinedAssociations,
     maxPlayers,
     time,
   ]);
-
-  console.log({
-    sessionData,
-    facility,
-    booking,
-  });
 
   return (
     <>
@@ -285,6 +287,7 @@ const Booking = () => {
           <div className="smooth-render-in container max-w-md p-4">
             {sessionData?.user.id &&
             booking?.id &&
+            isJoinedAssociationsFetched &&
             isUserFetchedsInBooking &&
             booking?.joinable !== undefined ? (
               <div className="mt-4">
@@ -295,7 +298,7 @@ const Booking = () => {
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   callback={onJoinableChange}
                 />
-                  <PlayersTable booking={booking || defaultBooking} />
+                <PlayersTable booking={booking || defaultBooking} />
 
                 <ActionModal
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises

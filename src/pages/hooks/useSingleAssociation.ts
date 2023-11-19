@@ -24,8 +24,15 @@ const useSingleAssociation = ({
     }
   );
 
+  const {
+    mutateAsync: updateAssociation,
+    isLoading: isLoadingUpdateAssociation,
+  } = api.association.update.useMutation();
+
   return {
     association: data,
+    updateAssociation,
+    isLoadingUpdateAssociation,
     isSingleAssociationSuccess,
     isSingleAssociationError,
     isSingleAssociationFetched,
