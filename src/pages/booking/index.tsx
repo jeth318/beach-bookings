@@ -265,7 +265,6 @@ const Booking = () => {
     !!date &&
     !!time &&
     !!facility &&
-    !!association &&
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
 
@@ -378,15 +377,17 @@ const Booking = () => {
                   />
                 </div>
 
-                <SelectInput
-                  label="Group"
-                  disabledOption="Select group"
-                  description="With what group do you want to play?"
-                  valid={!!association}
-                  value={association?.name || "Select group"}
-                  items={associationsToShow}
-                  callback={onAssociationSelect}
-                />
+                {!!associationsToShow.length && (
+                  <SelectInput
+                    label="Group"
+                    disabledOption="Select group"
+                    description="With what group do you want to play?"
+                    valid={!!association}
+                    value={association?.name || "Select group"}
+                    items={associationsToShow}
+                    callback={onAssociationSelect}
+                  />
+                )}
 
                 <SelectInput
                   label="Players"
