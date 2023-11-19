@@ -15,7 +15,7 @@ import { PageLoader } from "~/components/PageLoader";
 import useUser from "~/pages/hooks/useUser";
 import { Toast } from "~/components/Toast";
 import { JoinableToggle } from "~/components/JoinableToggle";
-import { PrivateAssociationToggle } from "~/components/PrivateAssociationToggle";
+import { PrivateAssociationToggle } from "~/components/InviteRequiredToggle";
 
 const ModifyAssociation = () => {
   const session = useSession();

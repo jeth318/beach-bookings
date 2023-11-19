@@ -13,7 +13,7 @@ type Props = {
   callback: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
-export const PrivateAssociationToggle = ({
+export const InviteRequiredToggle = ({
   title,
   body,
   inputId,
