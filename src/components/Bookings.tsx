@@ -86,7 +86,12 @@ export const Bookings = ({ bookings }: Props) => {
   const { sessionUser } = useSessionUser();
   const { user } = useUser({ email: sessionUserEmail });
 
-  const { joinedAssociations: associations } = useAssociations({
+  const {
+    joinedAssociations: associations,
+    isJoinedAssociationsFetched,
+    isInitialLoadingJoinedAssociations,
+    isLoadingJoinedAssociations,
+  } = useAssociations({
     associationIds: user?.associations,
   });
 
@@ -318,15 +323,12 @@ export const Bookings = ({ bookings }: Props) => {
           />
         );
       })}
-
       <div
         className={`bg-gradient-to-b ${bgColorDark} bookings-container h-full`}
       >
         {toastMessage && <Toast body={toastMessage} />}
-
         {bookingsToShow?.map((booking: Booking) => {
           const maxPlayers = booking.maxPlayers || 0;
-
           const renderPlayersInBooking = () =>
             getUsersByBooking(users, booking)
               .filter((player) => player.id !== booking.userId)
@@ -343,8 +345,6 @@ export const Bookings = ({ bookings }: Props) => {
               return <Player key={booker.id} user={booker} booking={booking} />;
             }
           };
-
-          console.log(booking.associationId);
 
           return (
             <div
@@ -389,7 +389,11 @@ export const Bookings = ({ bookings }: Props) => {
                                   style={{ maxWidth: 100 }}
                                   className="overflow-dots"
                                 >
-                                  {getAssociation(booking?.associationId)?.name}
+                                  {isInitialLoadingJoinedAssociations ? (
+                                    <BeatLoader size={6} color="white" />
+                                  ) : (
+                                    getAssociation(booking?.associationId)?.name
+                                  )}
                                 </div>
                               </div>
                             )}

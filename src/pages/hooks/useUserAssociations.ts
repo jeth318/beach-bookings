@@ -8,6 +8,8 @@ const useUserAssociations = ({ associationIds }: Props) => {
   const {
     data: joinedAssociations,
     isFetched: isJoinedAssociationsFetched,
+    isLoading: isLoadingJoinedAssociations,
+    isInitialLoading: isInitialLoadingJoinedAssociations,
     refetch: refetchUserAssociations,
   } = api.association.getMultipleByIds.useQuery({ ids: associationIds || [] });
 
@@ -28,6 +30,8 @@ const useUserAssociations = ({ associationIds }: Props) => {
     isWithoutGroup,
     isOneGroupMember,
     refetchUserAssociations,
+    isInitialLoadingJoinedAssociations,
+    isLoadingJoinedAssociations,
     isMultiGroupMember,
     createAssociation,
   };

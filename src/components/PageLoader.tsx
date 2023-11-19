@@ -14,7 +14,7 @@ export const PageLoader = ({
 }: Props) => {
   return (
     <div
-      className={`smooth-render-in h-full bg-gradient-to-b from-[#005e1ba6] to-[#000000] ${
+      className={`smooth-render-in h-screen bg-gradient-to-b from-[#005e1ba6] to-[#000000] ${
         isMainPage || noSubmenu ? "bg-min-height-no-submenu" : "bg-min-height"
       } flex items-start justify-center ${isMainPage ? mainBgColor : bgColor}`}
     >

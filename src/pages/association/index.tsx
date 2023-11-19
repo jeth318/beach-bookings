@@ -5,7 +5,6 @@ import useUserAssociations from "../hooks/useUserAssociations";
 import useUser from "../hooks/useUser";
 import { useSession } from "next-auth/react";
 import { PageLoader } from "~/components/PageLoader";
-import { CustomIcon } from "~/components/CustomIcon";
 import { Association } from "@prisma/client";
 import ActionModal from "~/components/ActionModal";
 import { useRouter } from "next/router";
@@ -111,7 +110,6 @@ const Association = () => {
   return (
     <>
       {toastMessage && <Toast body={toastMessage} />}
-
       <SubHeader title="My groups" />
       <main className="min-w-sm pd-3 flex h-full min-w-fit flex-col bg-gradient-to-b from-[#a31da1] to-[#15162c]">
         {["delete", "leave"].flatMap((action) => {
@@ -141,7 +139,6 @@ const Association = () => {
           }
 
           let title = `Confirm ${action} ${emoji}`;
-
           let confirmButtonText =
             action.charAt(0).toUpperCase() + action.slice(1);
 

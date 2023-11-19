@@ -18,18 +18,6 @@ type LocalStorageBookingState = {
   expiry: number;
 };
 
-type Props = {
-  court?: string | null;
-  duration?: number | null;
-  time?: string;
-  date?: Date;
-  association?: Association | null;
-  facility?: Facility | null;
-  maxPlayers: number | string;
-  joinable: boolean;
-  isLoading?: boolean;
-};
-
 export const readPrePopulateBookingState = ():
   | PrePopulateBookingState
   | undefined => {

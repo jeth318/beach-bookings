@@ -128,46 +128,17 @@ const Group = () => {
             src="/beach-game.png"
           />
           <div className="flex flex-col items-start">
-            <h2 className="heading text-3xl ">{association.name}</h2>
+            <h2
+              className="heading 
+            text-3xl "
+            >
+              {association.name}
+            </h2>
             <h4 className="">{association.description}</h4>
           </div>
         </div>
-        <div className="flex w-screen max-w-md flex-col p-4">
-          <form className="flex flex-col" onSubmit={onInviteClicked}>
-            <div className="join flex justify-between">
-              <input
-                disabled={isLoadingInviteCreate}
-                name="email"
-                id="email"
-                type="email"
-                placeholder="Enter email to invite..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="join-item input-bordered input w-[100%]"
-              />
 
-              <button
-                type="submit"
-                className="join-item btn btn-accent rounded-r-full"
-                disabled={
-                  isLoadingInviteCreate ||
-                  !searchQuery?.length ||
-                  searchQuery?.length < 5
-                }
-              >
-                {isLoadingInviteCreate ? (
-                  <div className="flex items-center self-center">
-                    <BeatLoader className="w-[46px]" size={10} color="white" />
-                  </div>
-                ) : (
-                  <span>Invite</span>
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div className="mb-14 mt-2 w-[100%] max-w-md overflow-x-auto p-4">
+        <div className="mb-4 mt-2 w-[100%] max-w-md overflow-x-auto p-4">
           <table className="table-compact table w-[100%]">
             {/* head */}
             <thead>
@@ -198,7 +169,7 @@ const Group = () => {
                         association.userId !== member.id && (
                           <>
                             <br />
-                            <span className="badge-ghost badge badge-sm">
+                            <span className="badge badge-ghost badge-sm">
                               administrator
                             </span>
                           </>
@@ -206,7 +177,7 @@ const Group = () => {
                       {association.userId === member.id && (
                         <>
                           <br />
-                          <span className="badge-ghost badge badge-sm">
+                          <span className="badge badge-ghost badge-sm">
                             group owner
                           </span>
                         </>
@@ -228,6 +199,41 @@ const Group = () => {
               </tr>
             </tfoot>
           </table>
+        </div>
+        <hr style={{ width: "100%", color: "lightgrey" }} />
+        <div className="flex w-screen max-w-md flex-col p-4">
+          <form className="flex flex-col" onSubmit={onInviteClicked}>
+            <label className="label" htmlFor="email">
+              Invite a friend
+            </label>
+            <input
+              disabled={isLoadingInviteCreate}
+              name="email"
+              id="email"
+              type="email"
+              placeholder="Enter email to invite..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="input-bordered input w-[100%]"
+            />
+            <button
+              type="submit"
+              className="btn btn-accent mt-4 self-end"
+              disabled={
+                isLoadingInviteCreate ||
+                !searchQuery?.length ||
+                searchQuery?.length < 5
+              }
+            >
+              {isLoadingInviteCreate ? (
+                <div className="flex items-center self-center">
+                  <BeatLoader className="w-[46px]" size={10} color="white" />
+                </div>
+              ) : (
+                <span>Send invite</span>
+              )}
+            </button>
+          </form>
         </div>
       </main>
     </>

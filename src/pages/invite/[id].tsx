@@ -11,6 +11,7 @@ import useUser from "../hooks/useUser";
 import useGroupInviter from "../hooks/useGroupInviter";
 import useSessionUser from "../hooks/useSessionUser";
 import useSingleAssociation from "../hooks/useSingleAssociation";
+import Image from "next/image";
 
 const Invite = () => {
   const [isAcceptingInvite, setIsAcceptingInvite] = useState<boolean>(false);
@@ -117,10 +118,18 @@ const Invite = () => {
     <main className="min-w-sm flex min-w-fit flex-col text-white">
       <SubHeader title="Invitation" />
       <div
-        className={`smooth-render-in bookings-container flex min-h-[400px] flex-col items-center justify-center bg-gradient-to-b from-[#a31da1] to-[#000000]`}
+        style={{ marginTop: "-91px" }}
+        className={`smooth-render-in flex h-screen flex-col justify-center bg-gradient-to-b from-[#a31da1] to-[#000000]`}
       >
-        <div className="mt-4 flex flex-col items-center justify-center">
-          <h4>
+        <Image
+          alt="beach-game"
+          className="self-center"
+          width={300}
+          height={300}
+          src="/beach-game.png"
+        />
+        <div className="flex flex-col items-center justify-center pl-4 pr-4">
+          <h4 className="text-center">
             {inviter?.name || "A player"} has invited you to join their group{" "}
           </h4>
           <h2 className="text-2xl">{association?.name}</h2>
