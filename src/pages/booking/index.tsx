@@ -54,7 +54,7 @@ const Booking = () => {
   const [preventLocalStorageWrite, setPreventLocalStorageWrite] =
     useState<boolean>(false);
 
-  const { user, isUserLoading, isUserSuccess, isUserFetched } = useUser({
+  const { user, isUserFetched } = useUser({
     email: sessionData?.user.email,
   });
   const { data: facilities } = api.facility.getAll.useQuery();
@@ -171,8 +171,8 @@ const Booking = () => {
       eventType: "ADD",
     });
 
-    await createBooking(
-      {
+    try {
+      const newBooking = await createBooking({
         userId: sessionData?.user.id,
         date: new Date(formattedDate.replace(" ", "T")),
         court: court || null,
@@ -181,40 +181,21 @@ const Booking = () => {
         duration: duration || null,
         maxPlayers: maxPlayers === undefined ? 0 : maxPlayers,
         joinable: joinable,
-      },
-      {
-        onSuccess: () => {
-          console.log(
-            "Email dispatch temporarily disabled during booking publish"
-          );
+      });
 
-          emailDispatcher({
-            originalBooking: {
-              id: "placeholderId",
-              associationId: association?.id || null,
-              facilityId: null,
-              private: true,
-              userId: sessionData?.user.id,
-              date: new Date(formattedDate?.replace(" ", "T")),
-              court: court || null,
-              duration: duration || 0,
-              players: [],
-              maxPlayers: maxPlayers || null,
-              joinable: joinable,
-            },
-            recipients,
-            bookerName: sessionData.user.name || "Someone",
-            bookings: [],
-            eventType: "ADD",
-            sendEmail,
-          });
+      emailDispatcher({
+        originalBooking: newBooking,
+        recipients,
+        bookerName: sessionData.user.name || "Someone",
+        bookings: [],
+        eventType: "ADD",
+        sendEmail,
+      });
 
-          void router.push("/");
-          setPreventLocalStorageWrite(true);
-          localStorage.removeItem("booking-state");
-        },
-      }
-    );
+      void router.push("/");
+      setPreventLocalStorageWrite(true);
+      localStorage.removeItem("booking-state");
+    } catch (error) {}
   };
 
   const onDateSelect = (date: Date) => {
