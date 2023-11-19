@@ -72,7 +72,7 @@ const Association = () => {
   if (!user || !isJoinedAssociationsFetched) {
     return (
       <>
-        <SubHeader title="Groups" />
+        <SubHeader title="My groups" />
         <PageLoader
           noSubmenu
           bgColor={"bg-gradient-to-b from-[#a31da1] to-[#15162c]"}
@@ -112,7 +112,7 @@ const Association = () => {
     <>
       {toastMessage && <Toast body={toastMessage} />}
 
-      <SubHeader title="Groups" />
+      <SubHeader title="My groups" />
       <main className="min-w-sm pd-3 flex h-full min-w-fit flex-col bg-gradient-to-b from-[#a31da1] to-[#15162c]">
         {["delete", "leave"].flatMap((action) => {
           let level = "error";
@@ -281,7 +281,7 @@ const Association = () => {
         </div>
       </main>
       <div className="m-4 flex justify-center border-zinc-400">
-        <Link href="/association/create" className="btn btn-accent">
+        <Link href="/association/create" className="btn-outline btn">
           Create new
         </Link>
       </div>

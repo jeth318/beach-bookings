@@ -374,19 +374,25 @@ export const Bookings = ({ bookings }: Props) => {
                           style={{ maxWidth: "150px" }}
                           className="transparent-background-grey self-start rounded-lg border border-slate-600 p-1"
                         >
-                          {booking.associationId && (
-                            <div className="flex flex-row items-center self-start pb-1 ">
-                              <span className="pr-1">
-                                <CustomIcon path="/svg/people.svg" width={18} />
-                              </span>
-                              <div
-                                style={{ maxWidth: 100 }}
-                                className="overflow-dots"
-                              >
-                                {getAssociation(booking?.associationId)?.name}
+                          {booking.associationId &&
+                            sessionUser?.associations.includes(
+                              booking.associationId
+                            ) && (
+                              <div className="flex flex-row items-center self-start pb-1 ">
+                                <span className="pr-1">
+                                  <CustomIcon
+                                    path="/svg/people.svg"
+                                    width={18}
+                                  />
+                                </span>
+                                <div
+                                  style={{ maxWidth: 100 }}
+                                  className="overflow-dots"
+                                >
+                                  {getAssociation(booking?.associationId)?.name}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
                           {booking.facilityId && (
                             <div className="flex flex-row items-center justify-start">
                               <span className="pr-1">
@@ -480,7 +486,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn-warning btn-sm btn text-white"
+                                  className="btn btn-warning btn-sm text-white"
                                 >
                                   {leaving.isWorking &&
                                   booking.id === leaving.bookingId ? (
@@ -510,7 +516,7 @@ export const Bookings = ({ bookings }: Props) => {
 
                             {!isMainPage &&
                               session?.data?.user?.id === booking?.userId && (
-                                <button className="btn-sm btn text-white">
+                                <button className="btn btn-sm text-white">
                                   <Link
                                     href={{
                                       pathname: `/booking/${booking.id}`,
@@ -528,7 +534,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn-error btn-sm btn text-white"
+                                  className="btn btn-error btn-sm text-white"
                                 >
                                   {deleting.isWorking &&
                                   booking.id === deleting.bookingId ? (

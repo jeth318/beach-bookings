@@ -120,7 +120,6 @@ export const emailDispatcher = ({
 };
 
 export const bookingsByDate = ({
-  associations,
   user,
   bookings,
   path,
@@ -144,8 +143,8 @@ export const bookingsByDate = ({
     )
     .filter((booking) => {
       return booking.associationId
-        ? booking.associationId === "public" ||
-            user?.associations.includes(booking.associationId)
+        ? user?.associations.includes(booking.associationId) ||
+            booking.players.includes(sessionUserId)
         : true;
     })
     .filter((booking) => {
