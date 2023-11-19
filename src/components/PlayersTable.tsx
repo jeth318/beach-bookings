@@ -114,66 +114,67 @@ export const PlayersTable = ({ booking }: Props) => {
           <BeatLoader size={20} color="#36d7b7" />
         </div>
       ) : (
-        playersInBooking?.map((player) => {
+        playersInBooking?.map((player, index) => {
           const displayName =
             player.name && player.name.length > 2
               ? player.name?.split(" ")[0]
               : `Player${player.id.slice(0, 3)}`;
+          console.log("player.id", `${player.id}-${index}`);
+
           return (
-            <>
-              <div
-                key={player.id}
-                style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
-                className="flex flex-row justify-between bg-slate-200 dark:bg-slate-800"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="avatar">
-                    <div className="mask mask-squircle h-12 w-12">
-                      <Image
-                        height={100}
-                        width={100}
-                        alt="user-icon-default"
-                        src={player.image || "/user-default.png"}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <div
-                      style={{
-                        overflow: "hidden",
-                        maxWidth: "150px",
-                        textOverflow: "ellipsis",
-                      }}
-                      className="font-bold"
-                    >
-                      {displayName}
-                    </div>
-                    <div
-                      className="ellips text-sm opacity-50"
-                      style={{
-                        overflow: "hidden",
-                        maxWidth: "150px",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      playeremail
-                    </div>
+            <div
+              key={player.id}
+              style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
+              className="flex flex-row justify-between bg-slate-200 dark:bg-slate-800"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="avatar">
+                  <div className="mask mask-squircle h-12 w-12">
+                    <Image
+                      height={100}
+                      width={100}
+                      alt="user-icon-default"
+                      src={player.image || "/user-default.png"}
+                    />
                   </div>
                 </div>
-                <div
-                  className="flex  items-center justify-between gap-2 self-center pr-2"
-                  style={{ textAlign: "center" }}
-                >
-                  {player.id === booking.userId && (
-                    <div className="flex items-center gap-2">
-                      <div>Booker</div>
-                      <CustomIcon path="/svg/crown.svg" />
-                    </div>
-                  )}
-                  {player.id !== session.data?.user.id && (
-                    <>
-                      <div className="br-3 flex flex-row gap-2">
-                        {/* {player.email && (
+                <div>
+                  <div
+                    style={{
+                      overflow: "hidden",
+                      maxWidth: "150px",
+                      textOverflow: "ellipsis",
+                    }}
+                    className="font-bold"
+                  >
+                    {displayName}
+                  </div>
+                  <div
+                    className="ellips text-sm opacity-50"
+                    style={{
+                      overflow: "hidden",
+                      maxWidth: "150px",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    playeremail
+                  </div>
+                </div>
+              </div>
+              <div
+                className="flex  items-center justify-between gap-2 self-center pr-2"
+                style={{ textAlign: "center" }}
+              >
+                {player.id === booking.userId && (
+                  <div className="flex items-center gap-2">
+                    <div>Booker</div>
+                    <CustomIcon path="/svg/crown.svg" />
+                  </div>
+                )}
+                {player.id !== session.data?.user.id && (
+                  <>
+                    <div className="br-3 flex flex-row gap-2">
+                      {/* {player.email && (
                           <a
                             className="btn-outline btn btn-accent btn-sm"
                             href={`sms:${""}`}
@@ -191,22 +192,21 @@ export const PlayersTable = ({ booking }: Props) => {
                             EMAIL
                           </a>
                         )} */}
-                      </div>
-                      {session.data?.user.id === booking.userId &&
-                        playersInBooking.length >= 2 && (
-                          <label
-                            onClick={() => setPlayerToRemove(player.id)}
-                            className="btn-outline btn btn-sm"
-                            htmlFor="action-modal-player-remove"
-                          >
-                            Kick 👋
-                          </label>
-                        )}
-                    </>
-                  )}
-                </div>
+                    </div>
+                    {session.data?.user.id === booking.userId &&
+                      playersInBooking.length >= 2 && (
+                        <label
+                          onClick={() => setPlayerToRemove(player.id)}
+                          className="btn-outline btn btn-sm"
+                          htmlFor="action-modal-player-remove"
+                        >
+                          Kick 👋
+                        </label>
+                      )}
+                  </>
+                )}
               </div>
-            </>
+            </div>
           );
         })
       )}

@@ -211,7 +211,9 @@ const Booking = () => {
     }
 
     if (!facility && !!facilities?.length) {
-      setFacility(facilities.find((facility) => facility.id === "1"));
+      setFacility(
+        facilities.find((facility) => facility.id === booking?.facilityId)
+      );
     }
 
     if (!association && isJoinedAssociationsFetched && joinedAssociations) {
@@ -262,6 +264,12 @@ const Booking = () => {
     time,
   ]);
 
+  console.log({
+    sessionData,
+    facility,
+    booking,
+  });
+
   return (
     <>
       {toastMessage && <Toast body={toastMessage} />}
@@ -277,7 +285,7 @@ const Booking = () => {
           <div className="smooth-render-in container max-w-md p-4">
             {sessionData?.user.id &&
             booking?.id &&
-            facility &&
+            isUserFetchedsInBooking &&
             booking?.joinable !== undefined ? (
               <div className="mt-4">
                 <JoinableToggle
@@ -287,7 +295,7 @@ const Booking = () => {
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   callback={onJoinableChange}
                 />
-                <PlayersTable booking={booking || defaultBooking} />
+                  <PlayersTable booking={booking || defaultBooking} />
 
                 <ActionModal
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
