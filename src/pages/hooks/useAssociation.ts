@@ -1,6 +1,6 @@
 import { api } from "~/utils/api";
 
-const useCreateAssociation = () => {
+const useAssociation = () => {
   const {
     mutateAsync: createAssociation,
     isSuccess: isAssociationSuccessfullyCreated,
@@ -23,4 +23,4 @@ const useCreateAssociation = () => {
   };
 };
 
-export default useCreateAssociation;
+export default useAssociation;

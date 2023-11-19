@@ -7,25 +7,67 @@ import { useSession } from "next-auth/react";
 import { PageLoader } from "~/components/PageLoader";
 import { CustomIcon } from "~/components/CustomIcon";
 import { Association } from "@prisma/client";
+import ActionModal from "~/components/ActionModal";
+import { useRouter } from "next/router";
+import {
+  associationToastMessages,
+  leaveAssociationText,
+  removeAssociationText,
+  renderToast,
+} from "~/utils/general.util";
+import useAssociation from "../hooks/useAssociation";
+import { parseErrorMessage } from "~/utils/error.util";
+import { useState } from "react";
+import { Toast } from "~/components/Toast";
 
 const Association = () => {
+  const router = useRouter();
   const { data: sessionData } = useSession();
-  const { user } = useUser({ email: sessionData?.user.email });
-
-  const {
-    joinedAssociations,
-    isMultiGroupMember,
-    isWithoutGroup,
-    isOneGroupMember,
-    isJoinedAssociationsFetched,
-  } = useUserAssociations({ associationIds: user?.associations });
-
-  console.log({
-    joinedAssociations,
-    isMultiGroupMember,
-    isWithoutGroup,
-    isOneGroupMember,
+  const { user, updateUserAssociations, refetchUser } = useUser({
+    email: sessionData?.user.email,
   });
+
+  const [associationToLeave, setAssociationToLeave] =
+    useState<Association | null>(null);
+
+  const [associationToDelete, setAssociationToDelete] =
+    useState<Association | null>(null);
+
+  const [toastMessage, setToastMessage] = useState<string>();
+
+  const { joinedAssociations, isWithoutGroup, isJoinedAssociationsFetched } =
+    useUserAssociations({ associationIds: user?.associations });
+
+  const { deleteAssociation } = useAssociation();
+
+  const onAssociationDeleteClicked = async () => {
+    if (!associationToDelete?.id) {
+      return null;
+    }
+
+    try {
+      await deleteAssociation({ id: associationToDelete?.id });
+      await refetchUser();
+      renderToast(associationToastMessages.DELETE, setToastMessage);
+    } catch (error) {
+      console.error(parseErrorMessage(error));
+    }
+  };
+
+  const onAssociationLeaveClicked = async () => {
+    const updatedAssociations =
+      user?.associations.filter(
+        (association) => association !== associationToLeave?.id
+      ) || [];
+
+    try {
+      await updateUserAssociations({ associations: updatedAssociations });
+      await refetchUser();
+      renderToast(associationToastMessages.LEAVE, setToastMessage);
+    } catch (error) {
+      console.error(parseErrorMessage(error));
+    }
+  };
 
   if (!user || !isJoinedAssociationsFetched) {
     return (
@@ -68,11 +110,65 @@ const Association = () => {
 
   return (
     <>
+      {toastMessage && <Toast body={toastMessage} />}
+
       <SubHeader title="Groups" />
       <main className="min-w-sm pd-3 flex h-full min-w-fit flex-col bg-gradient-to-b from-[#a31da1] to-[#15162c]">
-        {joinedAssociations?.map((association: Association) => {
-          const maxPlayers = 4;
+        {["delete", "leave"].flatMap((action) => {
+          let level = "error";
+          let body = "";
+          let callback;
+          let emoji = "";
 
+          switch (action) {
+            case "delete":
+              level = "error";
+              body = removeAssociationText;
+              emoji = "☠️";
+              callback = onAssociationDeleteClicked;
+
+              break;
+            case "leave":
+              level = "warning";
+              body = leaveAssociationText;
+              emoji = "🚪";
+              callback = onAssociationLeaveClicked;
+              break;
+            default:
+              callback = () => {
+                return null;
+              };
+          }
+
+          let title = `Confirm ${action} ${emoji}`;
+
+          let confirmButtonText =
+            action.charAt(0).toUpperCase() + action.slice(1);
+
+          if (!user?.name || user.name.length < 3) {
+            callback = async () => {
+              await router.push("/settings");
+            };
+            title = "What is your name?";
+            confirmButtonText = "Settings";
+            level = "info";
+            body = `Please go to settings and enter your name in order to ${action} this booking.`;
+          }
+
+          return (
+            <ActionModal
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              callback={callback}
+              tagRef={`${action}-association`}
+              title={title}
+              body={body}
+              confirmButtonText={confirmButtonText}
+              cancelButtonText="Cancel"
+              level={level}
+            />
+          );
+        })}
+        {joinedAssociations?.map((association: Association) => {
           return (
             <div
               key={association.id}
@@ -133,8 +229,9 @@ const Association = () => {
                             className="smooth-render-in-slower btn-group btn-group-vertical flex"
                           >
                             <label
-                              htmlFor="action-modal-leave-booking"
-                              onClick={() => void null}
+                              htmlFor="action-modal-leave-association"
+                              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                              onClick={() => setAssociationToLeave(association)}
                               className="btn-warning btn-sm btn text-white"
                             >
                               Leave
@@ -153,9 +250,12 @@ const Association = () => {
                             )}
                             {!!user?.id && association.userId === user.id && (
                               <label
-                                htmlFor="action-modal-delete-booking"
-                                onClick={() => void null}
+                                htmlFor="action-modal-delete-association"
+                                // eslint-disable-next-line @typescript-eslint/no-misused-promises
                                 className="btn-error btn-sm btn text-white"
+                                onClick={() =>
+                                  setAssociationToDelete(association)
+                                }
                               >
                                 Delete
                               </label>

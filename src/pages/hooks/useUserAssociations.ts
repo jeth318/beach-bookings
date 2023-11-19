@@ -5,8 +5,11 @@ type Props = {
 };
 
 const useUserAssociations = ({ associationIds }: Props) => {
-  const { data: joinedAssociations, isFetched: isJoinedAssociationsFetched } =
-    api.association.getMultipleByIds.useQuery({ ids: associationIds || [] });
+  const {
+    data: joinedAssociations,
+    isFetched: isJoinedAssociationsFetched,
+    refetch: refetchUserAssociations,
+  } = api.association.getMultipleByIds.useQuery({ ids: associationIds || [] });
 
   const isWithoutGroup =
     isJoinedAssociationsFetched && !joinedAssociations?.length;
@@ -24,6 +27,7 @@ const useUserAssociations = ({ associationIds }: Props) => {
     isJoinedAssociationsFetched,
     isWithoutGroup,
     isOneGroupMember,
+    refetchUserAssociations,
     isMultiGroupMember,
     createAssociation,
   };

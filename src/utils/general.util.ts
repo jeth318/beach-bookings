@@ -31,6 +31,12 @@ export const toastMessages = {
   CANCELED: "Something was canceled",
 };
 
+export const associationToastMessages = {
+  LEAVE: "You left the group",
+  DELETE: "The group is now deleted",
+  MODIFY: "The group was updated",
+};
+
 export type DropdownItem = {
   text: string;
   href: string;
@@ -271,3 +277,9 @@ export const leaveBookingText =
 
 export const joinBookingText =
   "If you join, the members in this booking will be notified by email.";
+
+export const removeAssociationText =
+  "If you remove this group, it will be gone forever. Are you sure? Existing group members might still want to have the group active. Consider transferring ownership of the group instead of deleting. To do this, enter the EDIT-view";
+
+export const leaveAssociationText =
+  "If you leave this group, you won't be able to join again until an existing member invites you again.";
