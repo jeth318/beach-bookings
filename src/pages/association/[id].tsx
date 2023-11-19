@@ -128,9 +128,7 @@ const Group = () => {
             src="/beach-game.png"
           />
           <div className="flex flex-col items-start">
-            <h2 className="heading text-center text-3xl ">
-              {association.name}
-            </h2>
+            <h2 className="heading text-3xl ">{association.name}</h2>
             <h4 className="">{association.description}</h4>
           </div>
         </div>

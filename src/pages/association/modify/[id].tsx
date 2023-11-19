@@ -15,7 +15,6 @@ import { PageLoader } from "~/components/PageLoader";
 import useUser from "~/pages/hooks/useUser";
 import { Toast } from "~/components/Toast";
 import { JoinableToggle } from "~/components/JoinableToggle";
-import { PrivateAssociationToggle } from "~/components/InviteRequiredToggle";
 
 const ModifyAssociation = () => {
   const session = useSession();
@@ -130,15 +129,6 @@ const ModifyAssociation = () => {
                 value={description}
               ></textarea>
             </div>
-            <div className="mt-4">
-              <PrivateAssociationToggle
-                value={true}
-                isLoading={false}
-                body="A group can be public (join by link) or private (join by invite)."
-                title="Invite required"
-                callback={() => null}
-              />
-            </div>
             <div className="mt-10 flex justify-center">
               <div className="flex flex-col items-center">
                 <button
@@ -148,7 +138,7 @@ const ModifyAssociation = () => {
                   className={`btn btn-success flex min-w-[150px] flex-col items-center text-white`}
                 >
                   {isLoading ? (
-                    <BeatLoader size={14} color="white" />
+                    <BeatLoader size={12} color="white" />
                   ) : (
                     "Save changes"
                   )}

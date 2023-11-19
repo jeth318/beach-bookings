@@ -238,7 +238,7 @@ const Association = () => {
                                 onClick={() =>
                                   setAssociationToLeave(association)
                                 }
-                                className="btn btn-warning btn-sm text-white"
+                                className="btn btn-warning btn-sm min-w-[75px] text-white"
                               >
                                 Leave
                               </label>
