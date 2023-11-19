@@ -30,27 +30,6 @@ type Props = {
   isLoading?: boolean;
 };
 
-const setPrePopulateBookingState = () => {
-  const now = new Date();
-  // Five minutes
-  const ttl = 60000 * 5;
-  const data = {
-    value: {
-      court,
-      duration,
-      time,
-      date,
-      facility,
-      maxPlayers,
-      joinable,
-      isLoading,
-    },
-    expiry: now.getTime() + ttl,
-  };
-
-  localStorage.setItem("booking-state", JSON.stringify(data));
-};
-
 export const readPrePopulateBookingState = ():
   | PrePopulateBookingState
   | undefined => {
