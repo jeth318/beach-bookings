@@ -1,4 +1,3 @@
-import { type NextRouter } from "next/router";
 import { api } from "~/utils/api";
 
 type Props = {

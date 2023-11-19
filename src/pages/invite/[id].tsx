@@ -31,7 +31,7 @@ const Invite = () => {
   });
 
   const inviterId = invite?.invitedBy;
-  const { inviter } = useGroupInviter({ inviterId });
+  const { inviter, hasFetchedInviter } = useGroupInviter({ inviterId });
   const { association, isSingleAssociationFetched } = useSingleAssociation({
     associationId,
   });
@@ -86,7 +86,12 @@ const Invite = () => {
     return <ArrogantFrog />;
   }
 
-  if (!isSingleAssociationFetched || !hasFetchedUser || !hasFetchedInvite) {
+  if (
+    !isSingleAssociationFetched ||
+    !hasFetchedUser ||
+    !hasFetchedInvite ||
+    !hasFetchedInviter
+  ) {
     return (
       <PageLoader
         isMainPage={false}
