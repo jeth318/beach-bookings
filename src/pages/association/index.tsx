@@ -6,6 +6,7 @@ import useUser from "../hooks/useUser";
 import { useSession } from "next-auth/react";
 import { PageLoader } from "~/components/PageLoader";
 import { CustomIcon } from "~/components/CustomIcon";
+import { Association } from "@prisma/client";
 
 const Association = () => {
   const { data: sessionData } = useSession();
@@ -40,8 +41,8 @@ const Association = () => {
 
   if (isWithoutGroup) {
     return (
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c]">
-        <div className="flex h-screen flex-col items-center p-3">
+      <main className="min-w-sm flex min-w-fit flex-col">
+        <div className="flex h-full flex-col bg-gradient-to-b from-[#a31da1] to-[#15162c] p-3 text-white">
           <Image
             alt="beach-game"
             width={100}
@@ -56,7 +57,7 @@ const Association = () => {
 
           <Link
             href="/association/create"
-            className="btn btn-info mt-5 text-white"
+            className="btn-info btn mt-5 text-white"
           >
             Create a group
           </Link>
@@ -68,40 +69,115 @@ const Association = () => {
   return (
     <>
       <SubHeader title="Groups" />
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c]">
-        <div className="flex h-screen flex-col items-center p-3">
-          <Image
-            alt="beach-game"
-            width={150}
-            height={150}
-            src="/beach-game.png"
-          />
-          <div className="mb-10 mt-2 flex flex-col items-center justify-center rounded-md border p-4">
-            <h2 className="mb-4 text-4xl text-white">My groups</h2>
+      <main className="min-w-sm pd-3 flex h-full min-w-fit flex-col bg-gradient-to-b from-[#a31da1] to-[#15162c]">
+        {joinedAssociations?.map((association: Association) => {
+          const maxPlayers = 4;
 
-            <div className="flex flex-col items-center justify-center">
-              {joinedAssociations?.map((association) => {
-                return (
-                  <Link
-                    key={association.id}
-                    href={`/association/${association.id}`}
-                    className="btn btn-secondary m-1 min-w-[250px] text-white"
-                  >
-                    <div className="">{association.name}</div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
+          return (
+            <div
+              key={association.id}
+              className="smooth-render-in first:border-b-1 border-b border-zinc-400"
+            >
+              <div className="card-compact card">
+                <div
+                  className={`card-body flex-row justify-between text-primary-content`}
+                >
+                  <div className="flex flex-col">
+                    <div>
+                      <h2 className="font-bil card-title text-2xl font-bold">
+                        {association.name}
+                      </h2>
+                      <div className="flex flex-col pb-1 font-medium">
+                        <div
+                          style={{ maxWidth: "150px" }}
+                          className="transparent-background-grey self-start rounded-lg border border-slate-600 p-1"
+                        >
+                          <div className="flex flex-row items-center self-start pb-1 ">
+                            <span className="pr-2">
+                              <CustomIcon path="/svg/people.svg" width={18} />
+                            </span>
+                            <div
+                              style={{ maxWidth: 100 }}
+                              className="overflow-dots"
+                            >
+                              12 members
+                            </div>
+                          </div>
+                          <div className="flex flex-row items-center justify-start">
+                            <span className="pr-1">
+                              <CustomIcon
+                                path="/svg/location-arrow.svg"
+                                width={20}
+                              />
+                            </span>
+                            <div>
+                              <div className="flex flex-row items-center">
+                                GBC Kviberg
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <div className="flex flex-col self-end pb-2">
+                      <div
+                        style={{ marginTop: "1.5rem" }}
+                        className="flex flex-col self-center"
+                      >
+                        {!!user.id ? (
+                          <div
+                            style={{ width: "auto" }}
+                            className="smooth-render-in-slower btn-group btn-group-vertical flex"
+                          >
+                            <label
+                              htmlFor="action-modal-leave-booking"
+                              onClick={() => void null}
+                              className="btn-warning btn-sm btn text-white"
+                            >
+                              Leave
+                            </label>
 
-          <Link href="/association/create" className="btn btn-accent mb-2">
-            <div className="flex flex-row items-center justify-between">
-              <div className="mr-2">Create</div>
-              <CustomIcon height={30} width={30} path="/svg/add-circle.svg" />
+                            {!!user?.id && association.userId === user.id && (
+                              <button className="btn-sm btn text-white">
+                                <Link
+                                  href={{
+                                    pathname: `/association/${association.id}`,
+                                  }}
+                                >
+                                  Edit
+                                </Link>
+                              </button>
+                            )}
+                            {!!user?.id && association.userId === user.id && (
+                              <label
+                                htmlFor="action-modal-delete-booking"
+                                onClick={() => void null}
+                                className="btn-error btn-sm btn text-white"
+                              >
+                                Delete
+                              </label>
+                            )}
+                          </div>
+                        ) : (
+                          <div style={{ height: "32px" }}></div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </Link>
-        </div>
+          );
+        })}
       </main>
+      <div className="m-4 flex justify-center border-zinc-400">
+        <Link href="/association/create" className="btn-accent btn">
+          Create new
+        </Link>
+      </div>
     </>
   );
 };
