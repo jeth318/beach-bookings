@@ -71,9 +71,9 @@ const Association = () => {
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c]">
         <div className="flex h-screen flex-col items-center p-3">
           <Image
-            alt="beach-spike"
-            width={300}
-            height={300}
+            alt="beach-game"
+            width={150}
+            height={150}
             src="/beach-game.png"
           />
           <div className="mb-10 mt-2 flex flex-col items-center justify-center rounded-md border p-4">
