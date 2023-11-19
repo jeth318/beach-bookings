@@ -99,11 +99,6 @@ const Booking = () => {
     localStorage.setItem("booking-state", JSON.stringify(data));
   };
 
-  const defaultAssociation = {
-    id: "public",
-    name: "No group",
-  } as Association;
-
   const isInitialLoading = sessionStatus === "loading";
 
   // Populate from localStorage on mount
@@ -227,7 +222,7 @@ const Booking = () => {
       (f) => f.id === associationId
     );
 
-    setAssociation(associationToSelect || defaultAssociation);
+    associationToSelect && setAssociation(associationToSelect);
   };
 
   const onDurationSelect = (event: ChangeEvent<HTMLSelectElement>) => {

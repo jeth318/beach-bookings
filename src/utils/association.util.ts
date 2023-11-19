@@ -11,5 +11,5 @@ export const getAssociationsToShow = (
       };
     }) || [];
 
-  return [{ id: "public", name: "No group" }, ...mapped];
+  return mapped;
 };

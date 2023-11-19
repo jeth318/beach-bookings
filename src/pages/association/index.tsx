@@ -83,11 +83,14 @@ const Association = () => {
   if (isWithoutGroup) {
     return (
       <main className="min-w-sm flex min-w-fit flex-col">
-        <div className="flex h-full flex-col bg-gradient-to-b from-[#a31da1] to-[#15162c] p-3 text-white">
+        <div
+          style={{ height: "calc(100vh - 65px)" }}
+          className="flex flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] p-3 text-white"
+        >
           <Image
             alt="beach-game"
-            width={100}
-            height={100}
+            width={300}
+            height={300}
             src="/beach-game.png"
           />
           <h2 className="mb-4 text-center text-4xl">No groups joined</h2>
@@ -98,7 +101,7 @@ const Association = () => {
 
           <Link
             href="/association/create"
-            className="btn btn-info mt-5 text-white"
+            className="btn btn-accent mt-5 text-white"
           >
             Create a group
           </Link>
