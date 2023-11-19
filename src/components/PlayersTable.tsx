@@ -38,8 +38,9 @@ export const PlayersTable = ({ booking }: Props) => {
 
   const updateBooking = api.booking.update.useMutation();
 
-  const { usersInBooking, isInitialLoadingUsersInBooking } =
-    useUser(sessionUserEmail);
+  const { usersInBooking, isInitialLoadingUsersInBooking } = useUser({
+    email: sessionUserEmail,
+  });
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
 
   useEffect(() => {

@@ -1,19 +1,35 @@
-import { type NextRouter } from "next/router";
 import { api } from "~/utils/api";
 
-const useSingleAssociations = (router: NextRouter) => {
-  const { data, isFetched } = api.association.getSingle.useQuery(
-    { id: typeof router?.query.id === "string" ? router?.query.id : "" },
+type Props = {
+  associationId?: string;
+  refetchOnMount?: boolean;
+  refetchOnWindowFocus?: boolean;
+};
+const useSingleAssociation = ({
+  associationId,
+  refetchOnMount = true,
+  refetchOnWindowFocus = true,
+}: Props) => {
+  const {
+    data,
+    isFetched: isSingleAssociationFetched,
+    isSuccess: isSingleAssociationSuccess,
+    isError: isSingleAssociationError,
+  } = api.association.getSingle.useQuery(
+    { id: associationId || "" },
     {
-      refetchOnMount: true,
-      refetchOnWindowFocus: true,
+      enabled: !!associationId,
+      refetchOnMount,
+      refetchOnWindowFocus,
     }
   );
 
   return {
     association: data,
-    hasFetchedSingleAssociation: isFetched,
+    isSingleAssociationSuccess,
+    isSingleAssociationError,
+    isSingleAssociationFetched,
   };
 };
 
-export default useSingleAssociations;
+export default useSingleAssociation;

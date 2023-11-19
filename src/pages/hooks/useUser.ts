@@ -1,64 +1,31 @@
-import { type Booking } from "@prisma/client";
 import { api } from "~/utils/api";
 
-const useUser = (
-  email?: string,
-  enabled?: boolean,
-  booking?: Booking,
-  inviterId?: string
-) => {
+type Props = {
+  email?: string | null | undefined;
+  enabled?: boolean;
+};
+
+const useUser = ({ email = "", enabled }: Props) => {
   const {
     data: user,
     isFetched: hasFetchedUser,
+    isSuccess: isUserSuccess,
     isError: isUserError,
     refetch: refetchUser,
     isLoading: isUserLoading,
   } = api.user.getSingle.useQuery({ email: email || "" }, { enabled: enabled });
 
-  const {
-    data: sessionUser = undefined,
-    isFetched: hasFetchedSessionUser,
-    isError: isSessionUserError,
-    isLoading: isSessionUserLoading,
-  } = api.user.get.useQuery();
-
-  const {
-    data: usersInBooking,
-    isFetched: hasFetchedUsersInBooking,
-    isInitialLoading: isInitialLoadingUsersInBooking,
-  } = api.user.getMultipleByIds.useQuery({
-    playerIds: booking?.players || [],
-  });
-
-  const { data: inviter, isFetched: hasFetchedInviter } =
-    api.user.getById.useQuery(
-      {
-        id: (inviterId as string) || "",
-      },
-      {
-        refetchOnWindowFocus: false,
-        enabled: !!inviterId,
-      }
-    );
-
-  const { mutate: mutateUserDelete } = api.user.delete.useMutation();
+  const { mutateAsync: updateUserAssociations } =
+    api.user.updateAssociations.useMutation();
 
   return {
     user,
-    sessionUser,
-    hasFetchedSessionUser,
-    isSessionUserError,
-    isSessionUserLoading,
     hasFetchedUser,
     isUserError,
+    isUserSuccess,
     isUserLoading,
-    usersInBooking,
-    hasFetchedUsersInBooking,
-    isInitialLoadingUsersInBooking,
     refetchUser,
-    mutateUserDelete,
-    inviter,
-    hasFetchedInviter,
+    updateUserAssociations,
   };
 };
 

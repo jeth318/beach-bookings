@@ -11,6 +11,8 @@ import { Toast } from "~/components/Toast";
 import { ArrogantFrog } from "~/components/ArrogantFrog";
 import useSingleAssociations from "../hooks/useSingleAssociation";
 import useEmail from "../hooks/useEmail";
+import useUser from "../hooks/useUser";
+import useInvite from "../hooks/useInvite";
 
 const Group = () => {
   const router = useRouter();
@@ -19,8 +21,11 @@ const Group = () => {
   const [toastMessage, setToastMessage] = useState<string>();
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
 
-  const { mutateInviteEmail } = useEmail();
-  const { data: user, isFetched: hasFetchedUser } = api.user.get.useQuery();
+  const { sendEmail, sendInvitationEmail } = useEmail();
+  const { user, hasFetchedUser } = useUser({
+    email: sessionData?.user.email || undefined,
+  });
+
   const { association, hasFetchedSingleAssociation } =
     useSingleAssociations(router);
 
@@ -29,8 +34,7 @@ const Group = () => {
       associationId: association?.id || "",
     });
 
-  const { mutate: createInvite, isLoading: isCreatingInvite } =
-    api.invite.create.useMutation({});
+  const { createInvite, isLoadingInviteCreate } = useInvite({});
 
   const onInviteClicked = (event: FormEvent<HTMLFormElement> | undefined) => {
     event && event.preventDefault();
@@ -107,7 +111,7 @@ const Group = () => {
       {toastMessage && <Toast body={toastMessage} />}
       {errorToastMessage && <Toast level="error" body={errorToastMessage} />}
 
-      <main className="min-w-sm pd-3 smooth-render-in flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] dark:text-white ">
+      <main className="min-w-sm pd-3 smooth-render-in flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] dark:text-white ">
         <div className="4 mt-4 flex flex-row items-center justify-center text-white">
           <Image
             alt="beach-game"
@@ -126,7 +130,7 @@ const Group = () => {
           <form className="flex flex-col" onSubmit={onInviteClicked}>
             <div className="join flex justify-between">
               <input
-                disabled={isCreatingInvite}
+                disabled={isLoadingInviteCreate}
                 name="email"
                 id="email"
                 type="email"
@@ -140,12 +144,12 @@ const Group = () => {
                 type="submit"
                 className="join-item btn btn-accent rounded-r-full"
                 disabled={
-                  isCreatingInvite ||
+                  isLoadingInviteCreate ||
                   !searchQuery?.length ||
                   searchQuery?.length < 5
                 }
               >
-                {isCreatingInvite ? (
+                {isLoadingInviteCreate ? (
                   <div className="flex items-center self-center">
                     <BeatLoader className="w-[46px]" size={10} color="white" />
                   </div>

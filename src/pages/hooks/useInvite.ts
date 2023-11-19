@@ -1,25 +1,35 @@
 import { type NextRouter } from "next/router";
 import { api } from "~/utils/api";
 
-const useInvite = (router: NextRouter, email?: string | null | undefined) => {
+type Props = {
+  associationId?: string;
+  email?: string | null | undefined;
+};
+
+const useInvite = ({ associationId, email }: Props) => {
   const { data: invite, isFetched: hasFetchedInvite } = api.invite.get.useQuery(
     {
       email: email || "",
-      associationId: (router.query.id as string) || "",
+      associationId: associationId || "",
     },
     {
       refetchOnWindowFocus: false,
-      enabled:
-        typeof email === "string" && typeof router?.query?.id === "string",
+      enabled: !!email,
     }
   );
 
-  const { mutate: mutateInviteDelete } = api.invite.delete.useMutation({});
+  const { mutate: deleteInvite, isSuccess: successfulDeletion } =
+    api.invite.delete.useMutation({});
+  const { mutate: createInvite, isLoading: isLoadingInviteCreate } =
+    api.invite.create.useMutation({});
 
   return {
     invite,
     hasFetchedInvite,
-    mutateInviteDelete,
+    deleteInvite,
+    createInvite,
+    successfulDeletion,
+    isLoadingInviteCreate,
   };
 };
 

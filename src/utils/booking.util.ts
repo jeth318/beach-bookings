@@ -129,18 +129,9 @@ export const bookingsByDate = ({
   const created = path === "/created";
 
   if (!sessionUserId) {
-    return bookings?.filter((booking) => {
-      if (!booking.associationId) {
-        return getBookingEndDate(booking) >= today;
-      }
-
-      if (!!booking.associationId) {
-        const association = associations.find(
-          ({ id }) => id === booking.associationId
-        );
-        return !association?.private;
-      }
-    });
+    return bookings?.filter((booking) =>
+      !booking.associationId ? getBookingEndDate(booking) >= today : false
+    );
   }
 
   return bookings

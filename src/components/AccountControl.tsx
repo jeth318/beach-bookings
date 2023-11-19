@@ -7,7 +7,7 @@ import useUser from "~/pages/hooks/useUser";
 import useBooking from "~/pages/hooks/useBooking";
 
 export const AccountControl = () => {
-  const { mutateUserDelete } = useUser(undefined);
+  const { mutateUserDelete } = useUser({});
 
   const { upcomingBookingsCreated, upcomingBookingsJoined } = useBooking();
 

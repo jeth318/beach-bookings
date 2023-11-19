@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { SubHeader } from "~/components/SubHeader";
 import { api } from "~/utils/api";
-import useAssociations from "../hooks/useAssociations";
+import useAssociations from "../hooks/useUserAssociations";
 
 const Association = () => {
   const router = useRouter();
@@ -30,8 +30,12 @@ const Association = () => {
             You are not a part of a group yet. Group members can invite you.
             Meanwhile, you can join public bookings from the home page.
           </h3>
-          <Link href="/" className="btn btn-info mt-10 text-white">
-            Home
+
+          <Link
+            href="/association/create"
+            className="btn btn-info mt-5 text-white"
+          >
+            Create a group
           </Link>
         </div>
       </main>

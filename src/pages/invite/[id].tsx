@@ -1,6 +1,5 @@
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
 import { PageLoader } from "~/components/PageLoader";
 import { useState } from "react";
@@ -8,62 +7,61 @@ import { BeatLoader } from "react-spinners";
 import { PlayerInfo } from "~/components/PlayerInfo";
 import { ArrogantFrog } from "~/components/ArrogantFrog";
 import useInvite from "../hooks/useInvite";
-import useAssociations from "../hooks/useAssociations";
 import useUser from "../hooks/useUser";
+import useGroupInviter from "../hooks/useGroupInviter";
+import useSessionUser from "../hooks/useSessionUser";
+import useSingleAssociation from "../hooks/useSingleAssociation";
 
 const Invite = () => {
-  const router = useRouter();
   const [isAcceptingInvite, setIsAcceptingInvite] = useState<boolean>(false);
-  const { status: sessionStatus, data: sessionData } = useSession();
-  const email = sessionData?.user.email || "";
 
-  const {
-    user,
-    sessionUser,
-    refetchUser,
-    hasFetchedUser,
-    inviter,
-    hasFetchedInviter,
-  } = useUser(sessionData?.user.email || "");
-
-  const { invite, mutateInviteDelete, hasFetchedInvite } = useInvite(
-    router,
-    email
+  const router = useRouter();
+  const { status: sessionStatus } = useSession();
+  const { sessionUser } = useSessionUser();
+  const associationId =
+    typeof router.query?.id === "string" ? router.query?.id : undefined;
+  const email = sessionUser?.email;
+  const { user, hasFetchedUser, updateUserAssociations, refetchUser } = useUser(
+    { email }
   );
 
-  const { singleAssociation, hasFetchedSingleAssociation } =
-    useAssociations(email);
+  const { invite, deleteInvite, hasFetchedInvite } = useInvite({
+    email,
+    associationId,
+  });
 
-  const { mutate: mutateUserAssociations } =
-    api.user.updateAssociations.useMutation();
+  const inviterId = invite?.invitedBy;
+  const { inviter } = useGroupInviter({ inviterId });
+  const { association, isSingleAssociationFetched } = useSingleAssociation({
+    associationId,
+  });
 
-  const onJoinConfirmed = () => {
-    if (
-      singleAssociation?.id &&
-      !user?.associations?.includes(singleAssociation?.id)
-    ) {
-      setIsAcceptingInvite(true);
-      const updatedAssociationList = !!user?.associations.length
-        ? [...user?.associations, singleAssociation.id]
-        : [singleAssociation.id];
-      mutateUserAssociations(
-        {
-          associations: updatedAssociationList,
-        },
-        {
-          onSuccess: () => {
-            void router.push(`/association/${singleAssociation.id}`);
-            invite?.id && mutateInviteDelete({ id: invite?.id });
-          },
-          onError: () => {
-            setIsAcceptingInvite(false);
-          },
-        }
-      );
+  const getUserAssociations = (user: {
+    id: string;
+    name: string | null;
+    associations: string[];
+  }) =>
+    !!user?.associations.length
+      ? ([...user?.associations, association?.id] as string[])
+      : ([association?.id] as string[]);
+
+  const onJoinConfirmed = async () => {
+    if (!association?.id || !user?.associations?.includes(association?.id)) {
+      return null;
     }
-  };
 
-  console.log({ sessionStatus });
+    setIsAcceptingInvite(true);
+    const associations = getUserAssociations(user);
+
+    try {
+      await updateUserAssociations({ associations });
+      void router.push(`/association/${association.id}`);
+      invite?.id && deleteInvite({ id: invite?.id });
+    } catch (error) {
+      console.error("There was an error joining the group.");
+    }
+    setIsAcceptingInvite(false);
+  };
 
   if (sessionStatus === "loading") {
     return (
@@ -88,12 +86,7 @@ const Invite = () => {
     return <ArrogantFrog />;
   }
 
-  if (
-    !hasFetchedSingleAssociation ||
-    !hasFetchedUser ||
-    !hasFetchedInviter ||
-    !hasFetchedInvite
-  ) {
+  if (!isSingleAssociationFetched || !hasFetchedUser || !hasFetchedInvite) {
     return (
       <PageLoader
         isMainPage={false}
@@ -121,7 +114,7 @@ const Invite = () => {
           <h4>
             {inviter?.name || "A player"} has invited you to join their group{" "}
           </h4>
-          <h2 className="text-2xl">{singleAssociation?.name}</h2>
+          <h2 className="text-2xl">{association?.name}</h2>
 
           {user && !user?.name && hasFetchedUser && (
             <div className="m-4">
@@ -149,6 +142,7 @@ const Invite = () => {
           {user?.name && (
             <div className="mb-4 mt-4 flex flex-col items-center">
               <button
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 onClick={onJoinConfirmed}
                 disabled={isAcceptingInvite || !user?.name}
                 className={`btn btn-primary ${

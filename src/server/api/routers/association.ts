@@ -11,7 +11,7 @@ export const associationRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.association.findMany({});
   }),
-  getForUser: protectedProcedure
+  getMultipleByIds: protectedProcedure
     .input(z.object({ ids: z.array(z.string()) }))
     .query(async ({ ctx, input }) => {
       const associations = await ctx.prisma.association.findMany({
@@ -37,7 +37,7 @@ export const associationRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
-        description: z.string(),
+        description: z.string().or(z.null()),
       })
     )
     .mutation(({ ctx, input }) => {

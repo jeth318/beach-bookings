@@ -33,7 +33,7 @@ import { Toast } from "./Toast";
 import useEmail from "~/pages/hooks/useEmail";
 import useUser from "~/pages/hooks/useUser";
 import useBooking from "~/pages/hooks/useBooking";
-import useAssociations from "~/pages/hooks/useAssociations";
+import useAssociations from "~/pages/hooks/useUserAssociations";
 
 type Bookings = {
   data: Booking[];
@@ -85,7 +85,7 @@ export const Bookings = ({ bookings }: Props) => {
   const { joinedAssociationsIncludingPublic: associations } =
     useAssociations(sessionUserEmail);
 
-  const { sessionUser, user } = useUser(sessionUserEmail);
+  const { sessionUser, user } = useUser({ email: sessionUserEmail });
 
   const { data: facilities = [] } = api.facility.getAll.useQuery();
 
@@ -316,7 +316,9 @@ export const Bookings = ({ bookings }: Props) => {
         );
       })}
 
-      <div className={`bg-gradient-to-b ${bgColorDark} bookings-container`}>
+      <div
+        className={`bg-gradient-to-b ${bgColorDark} bookings-container h-full`}
+      >
         {toastMessage && <Toast body={toastMessage} />}
 
         {bookingsToShow?.map((booking: Booking) => {
@@ -342,7 +344,7 @@ export const Bookings = ({ bookings }: Props) => {
           return (
             <div
               key={booking.id}
-              className="smooth-render-in border-b border-zinc-400 last:border-b-0"
+              className="smooth-render-in first:border-b-1 border-b border-zinc-400"
             >
               <div className="card-compact card">
                 <div
@@ -367,23 +369,19 @@ export const Bookings = ({ bookings }: Props) => {
                           style={{ maxWidth: "150px" }}
                           className="transparent-background-grey self-start rounded-lg border border-slate-600 p-1"
                         >
-                          {booking.associationId &&
-                            booking.associationId !== "public" && (
-                              <div className="flex flex-row items-center self-start pb-1 ">
-                                <span className="pr-1">
-                                  <CustomIcon
-                                    path="/svg/people.svg"
-                                    width={18}
-                                  />
-                                </span>
-                                <div
-                                  style={{ maxWidth: 100 }}
-                                  className="overflow-dots"
-                                >
-                                  {getAssociation(booking?.associationId)?.name}
-                                </div>
+                          {booking.associationId && booking.associationId && (
+                            <div className="flex flex-row items-center self-start pb-1 ">
+                              <span className="pr-1">
+                                <CustomIcon path="/svg/people.svg" width={18} />
+                              </span>
+                              <div
+                                style={{ maxWidth: 100 }}
+                                className="overflow-dots"
+                              >
+                                {getAssociation(booking?.associationId)?.name}
                               </div>
-                            )}
+                            </div>
+                          )}
                           {booking.facilityId && (
                             <div className="flex flex-row items-center justify-start">
                               <span className="pr-1">

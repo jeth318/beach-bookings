@@ -1,13 +1,13 @@
 import { api } from "~/utils/api";
 
 const useEmail = () => {
-  const { mutate: mutateEmail } = api.emailer.sendEmail.useMutation();
-  const { mutate: mutateInviteEmail } =
+  const { mutate: sendEmail } = api.emailer.sendEmail.useMutation();
+  const { mutate: sendInvitationEmail } =
     api.emailer.sendInvitationEmail.useMutation();
 
   return {
-    mutateEmail,
-    mutateInviteEmail,
+    sendEmail,
+    sendInvitationEmail,
   };
 };
 

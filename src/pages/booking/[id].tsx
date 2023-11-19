@@ -18,7 +18,7 @@ import { SelectInput } from "~/components/SelectInput";
 import { DateSelector } from "~/components/DateSelector";
 import { Toast } from "~/components/Toast";
 import useUser from "../hooks/useUser";
-import useAssociations from "../hooks/useAssociations";
+import useAssociations from "../hooks/useUserAssociations";
 import useBooking from "../hooks/useBooking";
 import useEmail from "../hooks/useEmail";
 
@@ -43,9 +43,9 @@ const Booking = () => {
     id: query,
   });
 
-  const { usersInBooking, hasFetchedUsersInBooking } = useUser(
-    sessionData?.user.email || ""
-  );
+  const { usersInBooking, hasFetchedUsersInBooking } = useUser({
+    email: sessionData?.user.email || "",
+  });
 
   const { data: facilities, isFetched: areFacilitiesFetched } =
     api.facility.getAll.useQuery();
