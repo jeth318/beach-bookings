@@ -98,8 +98,8 @@ const Group = () => {
   ) {
     return (
       <PageLoader
+        noSubmenu
         isMainPage={false}
-        mainBgColor={"mainPageBgColor"}
         bgColor={"bg-gradient-to-b from-[#a31da1] to-[#000000]"}
       />
     );

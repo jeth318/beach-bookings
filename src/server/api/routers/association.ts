@@ -21,6 +21,7 @@ export const associationRouter = createTRPCRouter({
           },
         },
       });
+
       return associations;
     }),
 
