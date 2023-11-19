@@ -14,10 +14,7 @@ import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { SelectInput } from "~/components/SelectInput";
 import { DateSelector } from "~/components/DateSelector";
 import { JoinableToggle } from "~/components/JoinableToggle";
-import {
-  getPrePopulationState,
-  setPrePopulateBookingState,
-} from "~/utils/storage";
+import { getPrePopulationState } from "~/utils/storage";
 import Image from "next/image";
 import Link from "next/link";
 import useEmail from "../hooks/useEmail";
@@ -25,6 +22,7 @@ import useUser from "../hooks/useUser";
 import useUserAssociations from "../hooks/useUserAssociations";
 import useSingleBooking from "../hooks/useSingleBooking";
 import { getAssociationsToShow } from "~/utils/association.util";
+import { lutimesSync } from "fs";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -54,20 +52,22 @@ const Booking = () => {
   const [preventLocalStorageWrite, setPreventLocalStorageWrite] =
     useState<boolean>(false);
 
+  const [isInitialStateLoaded, setIsInitialStateLoaded] =
+    useState<boolean>(false);
   const { user, isUserFetched } = useUser({
     email: sessionData?.user.email,
   });
   const { data: facilities } = api.facility.getAll.useQuery();
 
-  const { joinedAssociations } = useUserAssociations({
-    associationIds: user?.associations,
-  });
+  const { joinedAssociations, isJoinedAssociationsFetched } =
+    useUserAssociations({
+      associationIds: user?.associations,
+    });
 
   const { data: usersWithAddConsent } =
     api.user.getUserIdsWithAddConsent.useQuery();
 
-  const { createBooking, isSuccessfullyCreateBooking, isLoadingCreateBooking } =
-    useSingleBooking({});
+  const { createBooking, isLoadingCreateBooking } = useSingleBooking({});
 
   const { sendEmail } = useEmail();
 
@@ -75,65 +75,15 @@ const Booking = () => {
     setJoinable(!joinable);
   };
 
-  const localStorageState = getPrePopulationState(facilities);
+  // localStorageState
+  const lss = getPrePopulationState(facilities);
 
-  const defaultAssociation = {
-    id: "public",
-    name: "No group",
-  } as Association;
-
-  useEffect(() => {
-    setHydrated(true);
-
-    if (!hydrated) {
-      return undefined;
-    }
-
-    if (!localStorageState) {
-      setFacility(facilities?.find((facility) => facility?.id === "1"));
-    }
-
-    if (localStorageState) {
-      setJoinable(localStorageState.joinable);
-
-      if (localStorageState.association) {
-        setAssociation(localStorageState.association);
-      }
-
-      if (localStorageState.facility) {
-        setFacility(localStorageState.facility);
-      }
-
-      if (Number.isInteger(localStorageState.duration)) {
-        setDuration(localStorageState.duration);
-      }
-      if (localStorageState.maxPlayers) {
-        setMaxPlayers(localStorageState.maxPlayers);
-      }
-      if (localStorageState.court) {
-        setCourt(localStorageState.court);
-      }
-
-      if (
-        localStorageState.date !== null &&
-        localStorageState.date !== undefined
-      ) {
-        setDate(new Date(localStorageState.date));
-      }
-
-      if (
-        localStorageState.time !== null &&
-        localStorageState.time !== undefined
-      ) {
-        setTime(localStorageState.time);
-      }
-    }
-  }, [facilities, facility, hydrated, localStorageState]);
-
-  const isInitialLoading = sessionStatus === "loading";
-  useEffect(() => {
-    if (hydrated && !isInitialLoading && !preventLocalStorageWrite) {
-      setPrePopulateBookingState({
+  const setPrePopulateBookingState = () => {
+    const now = new Date();
+    // Five minutes
+    const ttl = 60000 * 5;
+    const data = {
+      value: {
         court,
         association,
         duration,
@@ -142,20 +92,60 @@ const Booking = () => {
         facility,
         maxPlayers,
         joinable,
-      });
+      },
+      expiry: now.getTime() + ttl,
+    };
+
+    localStorage.setItem("booking-state", JSON.stringify(data));
+  };
+
+  const defaultAssociation = {
+    id: "public",
+    name: "No group",
+  } as Association;
+
+  const isInitialLoading = sessionStatus === "loading";
+
+  // Populate from localStorage on mount
+  const setInitialState = () => {
+    setDuration(lss?.duration);
+    setCourt(lss?.court);
+    setFacility(lss?.facility);
+    setMaxPlayers(lss?.maxPlayers || 4);
+    setTime(lss?.time);
+    setAssociation(lss?.association);
+    setIsInitialStateLoaded(true);
+
+    if (lss?.date !== null && lss?.date !== undefined) {
+      setDate(new Date(lss?.date));
     }
+
+    if (lss?.time !== null && lss?.time !== undefined) {
+      setTime(lss.time);
+    }
+  };
+
+  useEffect(() => {
+    if (!isInitialStateLoaded) {
+      setInitialState();
+    }
+  }, [lss]);
+
+  useEffect(() => {
+    if (!preventLocalStorageWrite) {
+      setPrePopulateBookingState();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     court,
     duration,
-    association,
     time,
     date,
+    association,
     facility,
     maxPlayers,
     joinable,
     preventLocalStorageWrite,
-    hydrated,
-    isInitialLoading,
   ]);
 
   const onPublishClicked = async () => {
@@ -218,10 +208,14 @@ const Booking = () => {
 
   const onFacilitySelect = (event: ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.options[event.target.selectedIndex];
+    console.log({ selected });
 
     const facilityId = selected?.dataset["id"];
     const facilityToSelect = facilities?.find((f) => f.id === facilityId);
+    console.log("EF", facilityToSelect);
+
     setFacility(facilityToSelect);
+
     setCourt(null);
     setDuration(null);
   };
@@ -280,7 +274,7 @@ const Booking = () => {
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
 
-  if (!hydrated || isInitialLoading || !isUserFetched) {
+  if (isInitialLoading || !isUserFetched || !isJoinedAssociationsFetched) {
     return (
       <div className="flex h-screen items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <BeatLoader size={20} color="white" />
@@ -409,7 +403,7 @@ const Booking = () => {
                 />
 
                 <SelectInput
-                  disabled
+                  disabledOption="Pick a place"
                   label="Facility"
                   description="Where are you playing? (more to come)"
                   valid={!!facility}
@@ -419,34 +413,38 @@ const Booking = () => {
                 />
 
                 {!!facility?.durations?.length && (
-                  <SelectInput
-                    label="Duration"
-                    disabledOption="Select duration"
-                    description="Fow how long?"
-                    optionSuffix={` minutes`}
-                    valid={!!duration}
-                    value={duration || "Select duration"}
-                    items={facility.durations.map((item) => ({
-                      id: item,
-                      name: item,
-                    }))}
-                    callback={onDurationSelect}
-                  />
+                  <div className="smooth-render-in">
+                    <SelectInput
+                      label="Duration"
+                      disabledOption="Select duration"
+                      description="Fow how long?"
+                      optionSuffix={` minutes`}
+                      valid={!!duration}
+                      value={duration || "Select duration"}
+                      items={facility.durations.map((item) => ({
+                        id: item,
+                        name: item,
+                      }))}
+                      callback={onDurationSelect}
+                    />
+                  </div>
                 )}
 
                 {!!facility?.courts.length && (
-                  <SelectInput
-                    label="Court"
-                    disabledOption="Select court"
-                    description="Which court?"
-                    valid={!!court}
-                    value={court || "Select court"}
-                    items={facility.courts.map((item) => ({
-                      id: item,
-                      name: item,
-                    }))}
-                    callback={onCourtSelect}
-                  />
+                  <div className="smooth-render-in">
+                    <SelectInput
+                      label="Court"
+                      disabledOption="Select court"
+                      description="Which court?"
+                      valid={!!court}
+                      value={court || "Select court"}
+                      items={facility.courts.map((item) => ({
+                        id: item,
+                        name: item,
+                      }))}
+                      callback={onCourtSelect}
+                    />
+                  </div>
                 )}
 
                 <DateSelector date={date} time={time} callback={onDateSelect} />

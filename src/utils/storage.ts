@@ -30,16 +30,7 @@ type Props = {
   isLoading?: boolean;
 };
 
-export const setPrePopulateBookingState = ({
-  court,
-  duration,
-  time,
-  date,
-  facility,
-  maxPlayers,
-  joinable,
-  isLoading,
-}: Props) => {
+const setPrePopulateBookingState = () => {
   const now = new Date();
   // Five minutes
   const ttl = 60000 * 5;
