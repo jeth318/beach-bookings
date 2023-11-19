@@ -46,7 +46,7 @@ const Invite = () => {
       : ([association?.id] as string[]);
 
   const onJoinConfirmed = async () => {
-    if (!association?.id || !user?.associations?.includes(association?.id)) {
+    if (!association?.id || !user) {
       return null;
     }
 
@@ -54,7 +54,9 @@ const Invite = () => {
     const associations = getUserAssociations(user);
 
     try {
+      console.log("JOIN INVITE");
       await updateUserAssociations({ associations });
+
       void router.push(`/association/${association.id}`);
       invite?.id && deleteInvite({ id: invite?.id });
     } catch (error) {

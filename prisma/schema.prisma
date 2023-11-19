@@ -95,7 +95,7 @@ model Invite {
     id            String       @id
     email         String
     invitedBy     String
-    associationId String
+    associationId String?
     user          User         @relation(fields: [invitedBy], references: [id], onDelete: Cascade)
     association   Association? @relation(fields: [associationId], references: [id])
 }
