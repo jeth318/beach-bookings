@@ -2,6 +2,7 @@ import { type User, type Booking } from "@prisma/client";
 import { type EventType, getTimeWithZeroPadding } from "./booking.util";
 import { type SetStateAction } from "react";
 import { beachBookingsSpikeLogoBase64 } from "./image.util";
+import { type NextRouter } from "next/router";
 
 type EmailRecipientsProps = {
   sessionUserId: string;
@@ -14,6 +15,11 @@ type MailOptions = {
   sender?: string;
   recipients: string[];
 };
+
+export const getQueryId = (router: NextRouter) =>
+  Array.isArray(router.query.id)
+    ? router?.query?.id[0] || ""
+    : router?.query?.id || "";
 
 export const toastMessages = {
   ADD: "Your booking was successfully published",

@@ -21,9 +21,9 @@ const Invite = () => {
   const associationId =
     typeof router.query?.id === "string" ? router.query?.id : undefined;
   const email = sessionUser?.email;
-  const { user, hasFetchedUser, updateUserAssociations, refetchUser } = useUser(
-    { email }
-  );
+  const { user, isUserFetched, updateUserAssociations, refetchUser } = useUser({
+    email,
+  });
 
   const { invite, deleteInvite, hasFetchedInvite } = useInvite({
     email,
@@ -58,7 +58,9 @@ const Invite = () => {
       void router.push(`/association/${association.id}`);
       invite?.id && deleteInvite({ id: invite?.id });
     } catch (error) {
-      console.error("There was an error joining the group.");
+      if (error instanceof Error) {
+        console.error("There was an error joining the group.");
+      }
     }
     setIsAcceptingInvite(false);
   };
@@ -88,7 +90,7 @@ const Invite = () => {
 
   if (
     !isSingleAssociationFetched ||
-    !hasFetchedUser ||
+    !isUserFetched ||
     !hasFetchedInvite ||
     !hasFetchedInviter
   ) {
@@ -121,7 +123,7 @@ const Invite = () => {
           </h4>
           <h2 className="text-2xl">{association?.name}</h2>
 
-          {user && !user?.name && hasFetchedUser && (
+          {user && !user?.name && isUserFetched && (
             <div className="m-4">
               <div className="stack">
                 <div className="card-compact card mb-4 bg-primary text-primary-content shadow-md">

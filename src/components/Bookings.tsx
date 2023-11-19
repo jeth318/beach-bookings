@@ -34,6 +34,7 @@ import useEmail from "~/pages/hooks/useEmail";
 import useUser from "~/pages/hooks/useUser";
 import useBooking from "~/pages/hooks/useBooking";
 import useAssociations from "~/pages/hooks/useUserAssociations";
+import useSessionUser from "~/pages/hooks/useSessionUser";
 
 type Bookings = {
   data: Booking[];
@@ -82,16 +83,18 @@ export const Bookings = ({ bookings }: Props) => {
   const { data: users = [], isInitialLoading: isInitialLoadingUsers } =
     api.user.getAll.useQuery();
 
-  const { joinedAssociationsIncludingPublic: associations } =
-    useAssociations(sessionUserEmail);
+  const { sessionUser } = useSessionUser();
+  const { user } = useUser({ email: sessionUserEmail });
 
-  const { sessionUser, user } = useUser({ email: sessionUserEmail });
+  const { joinedAssociations: associations } = useAssociations({
+    associationIds: user?.associations,
+  });
 
   const { data: facilities = [] } = api.facility.getAll.useQuery();
 
   const { refetchBookings } = useBooking();
 
-  const { mutateEmail } = useEmail();
+  const { sendEmail } = useEmail();
 
   const getAssociation = (id: string) => {
     return associations?.find((item) => item.id === id);
@@ -120,7 +123,7 @@ export const Bookings = ({ bookings }: Props) => {
       mutatedBooking,
       bookings: bookings || [],
       eventType,
-      mutateEmail,
+      sendEmail,
     });
 
     void refetchBookings().then(() => {

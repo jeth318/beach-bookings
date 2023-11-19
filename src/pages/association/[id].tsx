@@ -13,26 +13,34 @@ import useSingleAssociations from "../hooks/useSingleAssociation";
 import useEmail from "../hooks/useEmail";
 import useUser from "../hooks/useUser";
 import useInvite from "../hooks/useInvite";
+import useUserAssociations from "../hooks/useUserAssociations";
 
 const Group = () => {
   const router = useRouter();
+  const associationId =
+    typeof router.query.id === "string" ? router.query.id : "";
   const { status: sessionStatus, data: sessionData } = useSession();
   const [errorToastMessage, setErrorToastMessage] = useState<string>();
   const [toastMessage, setToastMessage] = useState<string>();
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
 
   const { sendEmail, sendInvitationEmail } = useEmail();
-  const { user, hasFetchedUser } = useUser({
+  const { user, isUserFetched } = useUser({
     email: sessionData?.user.email || undefined,
   });
 
-  const { association, hasFetchedSingleAssociation } =
-    useSingleAssociations(router);
+  const { association, isSingleAssociationFetched } = useSingleAssociations({
+    associationId,
+  });
 
   const { data: members, isFetched: hasFetchedMembers } =
     api.user.getUsersByAssociationId.useQuery({
       associationId: association?.id || "",
     });
+
+  const { joinedAssociations } = useUserAssociations({
+    associationIds: user?.associations,
+  });
 
   const { createInvite, isLoadingInviteCreate } = useInvite({});
 
@@ -57,7 +65,7 @@ const Group = () => {
       }
 
       emailInviteDispatcher({
-        mutateEmail: mutateInviteEmail,
+        sendEmail: sendInvitationEmail,
         inviterName: sessionData?.user.name || "",
         email: searchQuery,
         association: association,
@@ -84,9 +92,9 @@ const Group = () => {
 
   if (
     sessionStatus === "loading" ||
-    !hasFetchedSingleAssociation ||
+    !isSingleAssociationFetched ||
     !hasFetchedMembers ||
-    !hasFetchedUser
+    !isUserFetched
   ) {
     return (
       <PageLoader

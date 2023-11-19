@@ -20,8 +20,11 @@ import {
 } from "~/utils/storage";
 import Image from "next/image";
 import Link from "next/link";
-import { setUncaughtExceptionCaptureCallback } from "process";
 import useEmail from "../hooks/useEmail";
+import useUser from "../hooks/useUser";
+import useUserAssociations from "../hooks/useUserAssociations";
+import useSingleBooking from "../hooks/useSingleBooking";
+import { getAssociationsToShow } from "~/utils/association.util";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -51,24 +54,22 @@ const Booking = () => {
   const [preventLocalStorageWrite, setPreventLocalStorageWrite] =
     useState<boolean>(false);
 
-  const { data: user, isFetched: isUserFetched } = api.user.get.useQuery();
+  const { user, isUserLoading, isUserSuccess, isUserFetched } = useUser({
+    email: sessionData?.user.email,
+  });
   const { data: facilities } = api.facility.getAll.useQuery();
-  const { data: userAssociations, isFetched: hasFetchedUserAssociations } =
-    api.association.getForUser.useQuery(
-      {
-        ids: user?.associations || [],
-      },
-      {
-        enabled: !!sessionData?.user.id,
-      }
-    );
+
+  const { joinedAssociations } = useUserAssociations({
+    associationIds: user?.associations,
+  });
+
   const { data: usersWithAddConsent } =
     api.user.getUserIdsWithAddConsent.useQuery();
 
-  const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
-    api.booking.create.useMutation({});
+  const { createBooking, isSuccessfullyCreateBooking, isLoadingCreateBooking } =
+    useSingleBooking({});
 
-  const { mutateEmail } = useEmail();
+  const { sendEmail } = useEmail();
 
   const onJoinableChange = () => {
     setJoinable(!joinable);
@@ -156,7 +157,7 @@ const Booking = () => {
 
   const isInitialLoading = sessionStatus === "loading";
 
-  const addBooking = () => {
+  const onPublishClicked = async () => {
     if (!validBooking) {
       return null;
     }
@@ -170,7 +171,7 @@ const Booking = () => {
       eventType: "ADD",
     });
 
-    mutateBooking(
+    await createBooking(
       {
         userId: sessionData?.user.id,
         date: new Date(formattedDate.replace(" ", "T")),
@@ -205,7 +206,7 @@ const Booking = () => {
             bookerName: sessionData.user.name || "Someone",
             bookings: [],
             eventType: "ADD",
-            mutateEmail,
+            sendEmail,
           });
 
           void router.push("/");
@@ -244,7 +245,7 @@ const Booking = () => {
   const onAssociationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.options[event.target.selectedIndex];
     const associationId = selected?.dataset["id"];
-    const associationToSelect = userAssociations?.find(
+    const associationToSelect = joinedAssociations?.find(
       (f) => f.id === associationId
     );
     setAssociation(associationToSelect || defaultAssociation);
@@ -277,17 +278,7 @@ const Booking = () => {
         };
       }) || [];
 
-  const associationsMapped =
-    userAssociations
-      ?.map((association) => {
-        return {
-          id: association.id,
-          name: association.name,
-        };
-      })
-      .filter((association) => association.id !== "public") || [];
-
-  const associationsToShow = [defaultAssociation, ...associationsMapped];
+  const associationsToShow = getAssociationsToShow(joinedAssociations);
   const maxPlayersToShow = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
     (item) => ({
       id: String(item),
@@ -350,7 +341,8 @@ const Booking = () => {
             {sessionData?.user.id && (
               <div>
                 <ActionModal
-                  callback={addBooking}
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                  callback={onPublishClicked}
                   data={undefined}
                   tagRef={`booking`}
                   title="Confirm new booking 🏖️"
@@ -491,7 +483,7 @@ const Booking = () => {
                     htmlFor="action-modal-booking"
                   >
                     Publish
-                    {isLoadingBookingMutation && (
+                    {isLoadingCreateBooking && (
                       <div style={{ position: "absolute", bottom: 0 }}>
                         <BeatLoader size={8} color="white" />
                       </div>

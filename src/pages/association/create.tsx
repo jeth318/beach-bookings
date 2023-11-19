@@ -1,26 +1,23 @@
 import { type ChangeEvent, useState } from "react";
 import { SubHeader } from "~/components/SubHeader";
-import useAssociations from "../hooks/useUserAssociations";
 import { useSession } from "next-auth/react";
 import ActionModal from "~/components/ActionModal";
 import { BeatLoader } from "react-spinners";
-import { embeddedLanguageFormatting } from "prettier.config.cjs";
-import { type Association } from "@prisma/client";
 import { useRouter } from "next/router";
 import useUser from "../hooks/useUser";
+import useAssociation from "../hooks/useAssociation";
+import { parseErrorMessage } from "~/utils/error.util";
 
 const CreateAssociation = () => {
   const session = useSession();
   const router = useRouter();
-  const { user, mutateAssociations } = useUser({
+  const { user, updateUserAssociations } = useUser({
     email: session.data?.user.email || "",
   });
   const [name, setName] = useState<string>();
-  const [description, setDescription] = useState<string>();
+  const [description, setDescription] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>();
-  const { createAssociationMutation } = useAssociations(
-    session.data?.user.email || ""
-  );
+  const { createAssociation } = useAssociation();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -39,44 +36,27 @@ const CreateAssociation = () => {
   };
 
   const onSubmit = async () => {
-    console.log(validName);
+    if (!validName || !user) {
+      return null;
+    }
 
-    if (validName && !!user) {
-      console.log("Valid name");
-      setIsLoading(true);
-      try {
-        await createAssociationMutation(
-          {
-            name,
-            description: description || null,
-          },
-
-          {
-            onSuccess: (association: Association) => {
-              console.log("Success!");
-
-              mutateAssociations({
-                associations: [...user?.associations, association.id],
-              });
-              router.push(`/association/${association.id}`).catch(() => null);
-            },
-            onError: (e) => {
-              if (e.message?.includes("Unique constraint")) {
-                setErrorMessage("Group name already exists. Try another.");
-              }
-            },
-            onSettled: () => {
-              setIsLoading(false);
-            },
-          }
-        );
-      } catch (error) {
-        console.error(error);
+    setIsLoading(true);
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      const { id: newAssociationId } = await createAssociation({
+        name,
+        description,
+      });
+      const associations = [...user?.associations, newAssociationId];
+      await updateUserAssociations({ associations });
+      router.push(`/association/${newAssociationId}`).catch(() => null);
+    } catch (error) {
+      if (parseErrorMessage(error).includes("Unique constraint")) {
+        setErrorMessage("Group name already exists. Try another.");
       }
     }
+    setIsLoading(false);
   };
-
-  console.log("Name", name);
 
   return (
     <div>

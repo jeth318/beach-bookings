@@ -11,6 +11,9 @@ import { useSession } from "next-auth/react";
 import ActionModal from "./ActionModal";
 import useBooking from "~/pages/hooks/useBooking";
 import useUser from "~/pages/hooks/useUser";
+import useSessionUser from "~/pages/hooks/useSessionUser";
+import useUsersInBooking from "~/pages/hooks/useUsersInBooking";
+import useEmail from "~/pages/hooks/useEmail";
 
 type Props = {
   booking: Booking;
@@ -18,7 +21,6 @@ type Props = {
 
 export const PlayersTable = ({ booking }: Props) => {
   const session = useSession();
-  const sessionUserEmail = session.data?.user.email || "";
 
   type PlayerInBooking = {
     id: string;
@@ -34,12 +36,12 @@ export const PlayersTable = ({ booking }: Props) => {
 
   const { refetchBookings, isInitialLoadingRefetch } = useBooking();
 
-  const mutateEmail = api.emailer.sendEmail.useMutation({});
+  const { sendEmail } = useEmail();
 
   const updateBooking = api.booking.update.useMutation();
 
-  const { usersInBooking, isInitialLoadingUsersInBooking } = useUser({
-    email: sessionUserEmail,
+  const { usersInBooking, isInitialLoadingUsersInBooking } = useUsersInBooking({
+    booking,
   });
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
 
@@ -82,7 +84,7 @@ export const PlayersTable = ({ booking }: Props) => {
             originalBooking: booking,
             mutatedBooking,
             eventType: "KICK",
-            mutateEmail,
+            sendEmail,
           });
           renderToast(`Player was removed from the booking.`);
           void refetchBookings();

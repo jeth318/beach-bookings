@@ -21,7 +21,7 @@ const useUserAssociations = ({ associationIds }: Props) => {
     joinedAssociations?.length === 1 &&
     !!joinedAssociations[0]?.id !== undefined;
 
-  const { mutateAsync: createAssociationMutation } =
+  const { mutateAsync: createAssociation } =
     api.association.create.useMutation();
 
   return {
@@ -30,7 +30,7 @@ const useUserAssociations = ({ associationIds }: Props) => {
     isWithoutGroup,
     isOneGroupMember,
     isMultiGroupMember,
-    createAssociationMutation,
+    createAssociation,
   };
 };
 

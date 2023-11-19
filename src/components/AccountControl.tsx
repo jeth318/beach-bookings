@@ -1,36 +1,34 @@
 import ActionModal from "./ActionModal";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { BeatLoader } from "react-spinners";
 import { useState } from "react";
 import useUser from "~/pages/hooks/useUser";
 import useBooking from "~/pages/hooks/useBooking";
+import useSessionUser from "~/pages/hooks/useSessionUser";
 
 export const AccountControl = () => {
-  const { mutateUserDelete } = useUser({});
+  const { sessionUser } = useSessionUser();
+  const { deleteUser } = useUser({ email: sessionUser?.email });
 
   const { upcomingBookingsCreated, upcomingBookingsJoined } = useBooking();
 
   const [isLoading, setIsLoading] = useState<boolean>();
 
-  const onAccountDelete = () => {
+  const onAccountDelete = async () => {
     setIsLoading(true);
 
-    mutateUserDelete(undefined, {
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      onSuccess: async () => {
-        await signOut({ callbackUrl: "/" });
-      },
-      onError: () => {
-        setIsLoading(false);
-        alert(
-          "Something went wrong trying to remove the account. Either try again later or contact me at admin@beachbookings.se and I'll check it out."
-        );
-      },
-      onSettled: () => {
-        setIsLoading(false);
-      },
-    });
+    try {
+      await deleteUser();
+      await signOut({ callbackUrl: "/" });
+    } catch (error) {
+      setIsLoading(false);
+      alert(
+        "Something went wrong trying to remove the account. Either try again later or contact me at admin@beachbookings.se and I'll check it out."
+      );
+    }
+
+    setIsLoading(false);
   };
 
   const leaveJoinedBookingsDialogue = (
@@ -85,6 +83,7 @@ export const AccountControl = () => {
   return (
     <div>
       <ActionModal
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         callback={onAccountDelete}
         data={null}
         tagRef={`remove-account`}

@@ -19,7 +19,7 @@ type EmailDispatchProps = {
   mutatedBooking?: Booking;
   eventType: EventType;
   recipients?: string[];
-  mutateEmail: any;
+  sendEmail: any;
 };
 
 type EmailInviteDispatchProps = {
@@ -27,7 +27,7 @@ type EmailInviteDispatchProps = {
   association: Association;
   inviterName: string;
   recipients?: string[];
-  mutateEmail: any;
+  sendEmail: any;
 };
 
 export const isOngoingGame = (booking: Booking) => {
@@ -66,7 +66,7 @@ export const maxPlayersToShow = [4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => ({
 export const emailInviteDispatcher = ({
   email,
   inviterName,
-  mutateEmail,
+  sendEmail,
   association,
 }: EmailInviteDispatchProps) => {
   const htmlString = buildHtmlInvitationTemplate({
@@ -75,7 +75,7 @@ export const emailInviteDispatcher = ({
     association,
   });
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  mutateEmail(
+  sendEmail(
     {
       emailAddresses: [email],
       htmlString,
@@ -93,9 +93,11 @@ export const emailDispatcher = ({
   bookings,
   originalBooking,
   mutatedBooking,
-  mutateEmail,
+  sendEmail,
   eventType,
 }: EmailDispatchProps) => {
+  console.log("sendEmail", sendEmail);
+
   const htmlString = buildHtmlTemplate({
     bookerName,
     playerName,
@@ -105,7 +107,7 @@ export const emailDispatcher = ({
     bookings,
   });
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  mutateEmail(
+  sendEmail(
     {
       recipients,
       eventType,

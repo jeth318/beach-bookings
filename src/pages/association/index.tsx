@@ -4,16 +4,16 @@ import { useRouter } from "next/router";
 import { SubHeader } from "~/components/SubHeader";
 import { api } from "~/utils/api";
 import useAssociations from "../hooks/useUserAssociations";
+import useUserAssociations from "../hooks/useUserAssociations";
 
 const Association = () => {
-  const router = useRouter();
   const { data: user } = api.user.get.useQuery();
   const {
     joinedAssociations,
     isMultiGroupMember,
     isWithoutGroup,
     isOneGroupMember,
-  } = useAssociations(user?.email || "");
+  } = useUserAssociations({ associationIds: user?.associations });
 
   if (isWithoutGroup) {
     return (
@@ -74,11 +74,17 @@ const Association = () => {
       </>
     );
   }
-
+  /* 
   if (isOneGroupMember) {
     void router.push(`/association/${joinedAssociations?.[0]?.id as string}`);
     return null;
-  }
+  } */
+
+  return (
+    <Link href="/association/create" className="btn btn-info mt-5 text-white">
+      Create a group
+    </Link>
+  );
 };
 
 export default Association;

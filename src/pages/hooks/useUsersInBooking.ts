@@ -3,13 +3,13 @@ import { api } from "~/utils/api";
 
 type Props = {
   enabled?: boolean;
-  booking?: Booking;
+  booking?: Booking | undefined | null;
 };
 
 const useUsersInBooking = ({ booking }: Props) => {
   const {
     data: usersInBooking,
-    isFetched: hasFetchedUsersInBooking,
+    isFetched: isUserFetchedsInBooking,
     isInitialLoading: isInitialLoadingUsersInBooking,
   } = api.user.getMultipleByIds.useQuery({
     playerIds: booking?.players || [],
@@ -17,7 +17,7 @@ const useUsersInBooking = ({ booking }: Props) => {
 
   return {
     usersInBooking,
-    hasFetchedUsersInBooking,
+    isUserFetchedsInBooking,
     isInitialLoadingUsersInBooking,
   };
 };

@@ -8,7 +8,7 @@ type Props = {
 const useUser = ({ email = "", enabled }: Props) => {
   const {
     data: user,
-    isFetched: hasFetchedUser,
+    isFetched: isUserFetched,
     isSuccess: isUserSuccess,
     isError: isUserError,
     refetch: refetchUser,
@@ -18,13 +18,16 @@ const useUser = ({ email = "", enabled }: Props) => {
   const { mutateAsync: updateUserAssociations } =
     api.user.updateAssociations.useMutation();
 
+  const { mutateAsync: deleteUser } = api.user.delete.useMutation();
+
   return {
     user,
-    hasFetchedUser,
+    isUserFetched,
     isUserError,
     isUserSuccess,
     isUserLoading,
     refetchUser,
+    deleteUser,
     updateUserAssociations,
   };
 };

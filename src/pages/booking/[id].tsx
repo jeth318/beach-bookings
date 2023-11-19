@@ -10,17 +10,24 @@ import { PlayersTable } from "~/components/PlayersTable";
 
 import { SubHeader } from "~/components/SubHeader";
 import { emailDispatcher, maxPlayersToShow } from "~/utils/booking.util";
-import { getEmailRecipients, renderToast } from "~/utils/general.util";
+import {
+  getEmailRecipients,
+  getQueryId,
+  renderToast,
+} from "~/utils/general.util";
 import { BeatLoader } from "react-spinners";
 import ActionModal from "~/components/ActionModal";
 import { JoinableToggle } from "~/components/JoinableToggle";
 import { SelectInput } from "~/components/SelectInput";
 import { DateSelector } from "~/components/DateSelector";
 import { Toast } from "~/components/Toast";
-import useUser from "../hooks/useUser";
-import useAssociations from "../hooks/useUserAssociations";
-import useBooking from "../hooks/useBooking";
 import useEmail from "../hooks/useEmail";
+import useUsersInBooking from "../hooks/useUsersInBooking";
+import useSingleBooking from "../hooks/useSingleBooking";
+import useUserAssociations from "../hooks/useUserAssociations";
+import useUser from "../hooks/useUser";
+import { getFacilitiesToShow } from "~/utils/facility.util";
+import { getAssociationsToShow } from "~/utils/association.util";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -35,34 +42,31 @@ const Booking = () => {
   const [joinable, setJoinable] = useState<boolean>();
   const [toastMessage, setToastMessage] = useState<string>();
 
-  const query = Array.isArray(router.query.id)
-    ? router?.query?.id[0] || ""
-    : router?.query?.id || "";
+  const session = useSession();
+  const isInitialLoading = sessionStatus === "loading";
 
-  const { data: booking } = api.booking.getSingle.useQuery({
-    id: query,
+  const { user } = useUser({ email: session.data?.user.email });
+  const { sendEmail } = useEmail();
+
+  const {
+    updateBooking,
+    updateBookingJoinable,
+    booking,
+    isLoadingUpdateBookingJoinable,
+    isLoadingUpdateBooking,
+  } = useSingleBooking({ id: getQueryId(router) });
+
+  const { usersInBooking, isUserFetchedsInBooking } = useUsersInBooking({
+    booking,
   });
 
-  const { usersInBooking, hasFetchedUsersInBooking } = useUser({
-    email: sessionData?.user.email || "",
-  });
+  const { joinedAssociations, isJoinedAssociationsFetched } =
+    useUserAssociations({ associationIds: user?.associations });
 
   const { data: facilities, isFetched: areFacilitiesFetched } =
     api.facility.getAll.useQuery();
 
-  const { joinedAssociations, hasFetchedJoinedAssociations } = useAssociations(
-    sessionData?.user.email || ""
-  );
-
-  const {
-    mutateBooking,
-    mutateJoinable,
-    isLoadingJoinable,
-    isLoadingBookingMutation,
-  } = useBooking();
-  const { mutateEmail } = useEmail();
-
-  const onJoinableMutationSuccess = (mutatedBooking: Booking) => {
+  const onUpdateBookingJoinableSuccess = (mutatedBooking: Booking) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     setJoinable(mutatedBooking?.joinable);
     renderToast(
@@ -71,41 +75,22 @@ const Booking = () => {
     );
   };
 
-  const onJoinableChange = () => {
+  const onJoinableChange = async () => {
     if (!booking) {
       setJoinable(!joinable);
       return null;
     }
-    mutateJoinable(
-      { id: booking.id, joinable: !joinable },
-      {
-        onSuccess: onJoinableMutationSuccess,
-      }
-    );
+    try {
+      const updatedBooking = await updateBookingJoinable({
+        id: booking.id,
+        joinable: !joinable,
+      });
+      onUpdateBookingJoinableSuccess(updatedBooking);
+    } catch (error) {}
   };
 
-  const facilitiesToShow =
-    facilities
-      ?.filter((facility) => facility.id === "1")
-      .map((facility) => ({
-        id: facility.id,
-        name: facility.name,
-      })) || [];
-
-  const associationsMapped =
-    joinedAssociations?.map((association) => {
-      return {
-        id: association.id,
-        name: association.name,
-      };
-    }) || [];
-
-  const associationsToShow = [
-    { id: "public", name: "No group" },
-    ...associationsMapped,
-  ];
-
-  const isInitialLoading = sessionStatus === "loading";
+  const facilitiesToShow = getFacilitiesToShow(facilities);
+  const associationsToShow = getAssociationsToShow(joinedAssociations);
 
   const defaultBooking = {
     players: [sessionData?.user.id],
@@ -160,54 +145,52 @@ const Booking = () => {
     setCourt(event?.target.value);
   };
 
-  const updateBooking = () => {
-    if (!validBooking) {
+  const onBookingUpdateConfirmed = async () => {
+    if (!validBooking || !booking) {
       return null;
     }
 
     const formattedDate = date?.toLocaleString("sv-SE");
 
-    if (!!booking) {
-      const recipients = getEmailRecipients({
-        users: usersInBooking || [],
-        playersInBooking: booking.players,
-        sessionUserId: sessionData?.user.id,
-        eventType: "MODIFY",
-      });
+    const recipients = getEmailRecipients({
+      users: usersInBooking || [],
+      playersInBooking: booking.players,
+      sessionUserId: sessionData?.user.id,
+      eventType: "MODIFY",
+    });
 
-      const preserveDuration =
-        duration !== undefined &&
-        facility.durations.find((dur) => dur === duration?.toString()) !==
-          undefined;
+    const preserveDuration =
+      duration !== undefined &&
+      facility.durations.find((dur) => dur === duration?.toString()) !==
+        undefined;
 
-      mutateBooking(
-        {
-          id: booking.id,
-          date: new Date(formattedDate.replace(" ", "T")),
-          court: court || null,
-          players: booking.players,
-          duration: preserveDuration ? duration : 0,
-          facility: facility.id || null,
-          association: association?.id || null,
-          maxPlayers: maxPlayers || 0,
-          joinable: joinable || false,
+    const response = await updateBooking(
+      {
+        id: booking.id,
+        date: new Date(formattedDate.replace(" ", "T")),
+        court: court || null,
+        players: booking.players,
+        duration: preserveDuration ? duration : 0,
+        facility: facility.id || null,
+        association: association?.id || null,
+        maxPlayers: maxPlayers || 0,
+        joinable: joinable || false,
+      },
+      {
+        onSuccess: (mutatedBooking: Booking) => {
+          emailDispatcher({
+            originalBooking: booking,
+            mutatedBooking,
+            bookerName: sessionData.user.name || "Someone",
+            bookings: [],
+            eventType: "MODIFY",
+            recipients,
+            sendEmail,
+          });
+          renderToast("Your booking details were updated", setToastMessage);
         },
-        {
-          onSuccess: (mutatedBooking: Booking) => {
-            emailDispatcher({
-              originalBooking: booking,
-              mutatedBooking,
-              bookerName: sessionData.user.name || "Someone",
-              bookings: [],
-              eventType: "MODIFY",
-              recipients,
-              mutateEmail,
-            });
-            renderToast("Your booking details were updated", setToastMessage);
-          },
-        }
-      );
-    }
+      }
+    );
   };
 
   const validBooking =
@@ -219,7 +202,7 @@ const Booking = () => {
     (facility?.durations.length ? !!duration : true);
 
   useEffect(() => {
-    if (!hasFetchedUsersInBooking || !areFacilitiesFetched) {
+    if (!isUserFetchedsInBooking || !areFacilitiesFetched) {
       return undefined;
     }
 
@@ -231,7 +214,7 @@ const Booking = () => {
       setFacility(facilities.find((facility) => facility.id === "1"));
     }
 
-    if (!association && hasFetchedJoinedAssociations && joinedAssociations) {
+    if (!association && isJoinedAssociationsFetched && joinedAssociations) {
       setAssociation(
         joinedAssociations.find(
           (association) => association.id === booking?.associationId
@@ -300,13 +283,15 @@ const Booking = () => {
                 <JoinableToggle
                   textColor="white"
                   value={joinable || false}
-                  isLoading={isLoadingJoinable}
+                  isLoading={isLoadingUpdateBookingJoinable}
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   callback={onJoinableChange}
                 />
                 <PlayersTable booking={booking || defaultBooking} />
 
                 <ActionModal
-                  callback={updateBooking}
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                  callback={onBookingUpdateConfirmed}
                   data={undefined}
                   tagRef={`booking`}
                   title={`Confirm ${
@@ -385,7 +370,7 @@ const Booking = () => {
                     <Link
                       href="/"
                       className={`${
-                        validBooking && !isLoadingBookingMutation
+                        validBooking && !isLoadingUpdateBooking
                           ? "btn btn-warning"
                           : "btn-disabled"
                       } btn text-white`}
@@ -396,7 +381,7 @@ const Booking = () => {
                     <label
                       style={{ position: "relative" }}
                       className={`${
-                        validBooking && !isLoadingBookingMutation
+                        validBooking && !isLoadingUpdateBooking
                           ? "btn-success"
                           : "btn-disabled"
                       } btn text-white`}
@@ -405,7 +390,7 @@ const Booking = () => {
                       {router.query.id ? "Update" : "Publish"}
                     </label>
                   </div>
-                  {isLoadingBookingMutation && (
+                  {isLoadingUpdateBooking && (
                     <div className="mt-4 flex justify-center">
                       <BeatLoader size={15} color="white" />
                     </div>
