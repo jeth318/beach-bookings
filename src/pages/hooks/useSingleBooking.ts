@@ -28,6 +28,13 @@ const useSingleBooking = ({ id }: Props) => {
   } = api.booking.updateJoinable.useMutation({});
 
   const {
+    mutateAsync: updateBookingPrivate,
+    isLoading: isLoadingUpdateBookingPrivate,
+    isSuccess: isSuccessfullyUpdateBookingPrivate,
+    isError: isErrorUpdateBookingPrivate,
+  } = api.booking.updateJoinable.useMutation({});
+
+  const {
     mutateAsync: deleteBooking,
     isLoading: isLoadingDeleteBookingJoinable,
     isSuccess: isSuccessfullyDeleteBookingJoinable,

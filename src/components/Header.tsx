@@ -74,7 +74,7 @@ export const Header = () => {
                 renderToast(`https://beachbookings.se copied to clipboard.`);
               }}
             >
-              <button className="btn-success btn-xs btn ml-2 mr-2 self-end text-white">
+              <button className="btn btn-success btn-xs ml-2 mr-2 self-end text-white">
                 copy the link
               </button>
             </CopyToClipboard>
@@ -87,14 +87,14 @@ export const Header = () => {
       </ActionModal>
       <div className="navbar-start">
         <>
-          {sessionStatus === "unauthenticated" && (
+          {/*           {sessionStatus === "unauthenticated" && (
             <Link
               href={"/help"}
               className="btn-info btn-sm btn self-end text-white"
             >
               How to
             </Link>
-          )}
+          )} */}
 
           <div className="hidden pr-2 text-lg md:hidden lg:flex"></div>
           <Link className="hidden text-lg md:hidden lg:flex" href="/">
@@ -112,7 +112,7 @@ export const Header = () => {
                 }}
                 id="burger-dropdown-label"
                 tabIndex={0}
-                className="btn-ghost btn-circle btn"
+                className="btn btn-ghost btn-circle"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -187,7 +187,7 @@ export const Header = () => {
                 }}
                 id="user-dropdown-label"
                 tabIndex={0}
-                className="btn-ghost btn-circle avatar btn"
+                className="btn btn-ghost btn-circle avatar"
               >
                 <div className="w-9 rounded-full">
                   <CustomIcon
@@ -265,7 +265,7 @@ export const Header = () => {
               {toastMessage && <Toast body={toastMessage} />}
               {invalidUseragent ? (
                 <label
-                  className="btn-outline btn-sm btn self-end"
+                  className="btn-outline btn btn-sm self-end"
                   htmlFor="action-modal-bad-useragent"
                 >
                   Login
@@ -273,7 +273,7 @@ export const Header = () => {
               ) : (
                 <button
                   onClick={() => void signIn()}
-                  className="btn-outline btn-sm btn self-end"
+                  className="btn-outline btn btn-sm self-end"
                 >
                   Login
                 </button>

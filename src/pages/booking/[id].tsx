@@ -28,6 +28,7 @@ import useUserAssociations from "../hooks/useUserAssociations";
 import useUser from "../hooks/useUser";
 import { getFacilitiesToShow } from "~/utils/facility.util";
 import { getAssociationsToShow } from "~/utils/association.util";
+import { Toggle } from "~/components/Toggle";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -40,7 +41,9 @@ const Booking = () => {
   const [association, setAssociation] = useState<Association | null>();
   const [maxPlayers, setMaxPlayers] = useState<number>();
   const [joinable, setJoinable] = useState<boolean>();
+  const [privateBooking, setPrivateBooking] = useState<boolean>();
   const [toastMessage, setToastMessage] = useState<string>();
+  const [isInitialStateLoaded, setIsInitialStateLoaded] = useState<boolean>();
 
   const session = useSession();
   const isInitialLoading = sessionStatus === "loading";
@@ -145,6 +148,14 @@ const Booking = () => {
     setCourt(event?.target.value);
   };
 
+  const onPrivateBookingChange = () => {
+    if (!privateBooking === false) {
+      setAssociation(undefined);
+    }
+    console.log("setting", !privateBooking);
+    setPrivateBooking(!privateBooking);
+  };
+
   const onBookingUpdateConfirmed = async () => {
     if (!validBooking || !booking) {
       return null;
@@ -175,6 +186,7 @@ const Booking = () => {
         association: association?.id || null,
         maxPlayers: maxPlayers || 0,
         joinable: joinable || false,
+        private: privateBooking || false,
       },
       {
         onSuccess: (mutatedBooking: Booking) => {
@@ -202,12 +214,21 @@ const Booking = () => {
     (facility?.durations.length ? !!duration : true);
 
   useEffect(() => {
-    if (!isUserFetchedsInBooking || !areFacilitiesFetched) {
+    if (
+      isInitialStateLoaded ||
+      !areFacilitiesFetched ||
+      !booking ||
+      !isJoinedAssociationsFetched
+    ) {
       return undefined;
     }
 
-    if (booking?.joinable !== undefined) {
+    if (booking.joinable !== undefined) {
       setJoinable(booking.joinable);
+    }
+
+    if (booking.private !== undefined) {
+      setPrivateBooking(booking.private);
     }
 
     if (!facility && !!facilities?.length) {
@@ -219,29 +240,19 @@ const Booking = () => {
     if (
       !association &&
       !!joinedAssociations?.length &&
-      !!booking?.associationId
+      !!booking.associationId
     ) {
       setAssociation(
-        joinedAssociations.find((assoc) => assoc.id === booking.associationId)
+        joinedAssociations?.find((assoc) => assoc.id === booking.associationId)
       );
     }
 
-    if (facility) {
-      if (!duration) {
-        setDuration(booking?.duration);
-      }
-
-      if (!court) {
-        setCourt(booking?.court);
-      }
-    }
-
     if (!maxPlayers) {
-      setMaxPlayers(booking?.maxPlayers || 4);
+      setMaxPlayers(booking.maxPlayers || 4);
     }
 
     if (!date) {
-      setDate(booking?.date);
+      setDate(booking.date);
     }
     if (date && !time) {
       setTime(
@@ -251,16 +262,21 @@ const Booking = () => {
         })
       );
     }
+
+    if (facility) {
+      if (!duration) {
+        setDuration(booking.duration);
+      }
+
+      if (!court) {
+        setCourt(booking.court);
+      }
+      setIsInitialStateLoaded(true);
+    }
   }, [
     areFacilitiesFetched,
+    booking,
     association,
-    booking?.associationId,
-    booking?.court,
-    booking?.date,
-    booking?.duration,
-    booking?.facilityId,
-    booking?.joinable,
-    booking?.maxPlayers,
     court,
     date,
     duration,
@@ -291,15 +307,6 @@ const Booking = () => {
             isUserFetchedsInBooking &&
             booking?.joinable !== undefined ? (
               <div className="mt-4">
-                <JoinableToggle
-                  textColor="white"
-                  value={joinable || false}
-                  isLoading={isLoadingUpdateBookingJoinable}
-                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  callback={onJoinableChange}
-                />
-                <PlayersTable booking={booking || defaultBooking} />
-
                 <ActionModal
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   callback={onBookingUpdateConfirmed}
@@ -317,6 +324,28 @@ const Booking = () => {
                     updated booking details.
                   </p>
                 </ActionModal>
+                <PlayersTable booking={booking || defaultBooking} />
+
+                <JoinableToggle
+                  textColor="white"
+                  value={joinable || false}
+                  isLoading={isLoadingUpdateBookingJoinable}
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                  callback={onJoinableChange}
+                />
+                {!!associationsToShow.length && (
+                  <div className="mb-4 mt-4">
+                    <Toggle
+                      textColor="white"
+                      title="Private"
+                      svgPath="/svg/group.svg"
+                      message="Make visible for chosen group only. You can change this at anytime."
+                      value={privateBooking || false}
+                      callback={onPrivateBookingChange}
+                    />
+                  </div>
+                )}
+
                 <SelectInput
                   label="Group"
                   description="With what group do you want to play?"

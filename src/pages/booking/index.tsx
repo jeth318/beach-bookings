@@ -396,7 +396,7 @@ const Booking = () => {
                       textColor="white"
                       title="Private"
                       svgPath="/svg/group.svg"
-                      message="Make visible for chosen group only. Can be changed at anytime."
+                      message="Make visible for chosen group only. You can change this at anytime."
                       value={privateBooking}
                       callback={onPrivateBookingChange}
                     />

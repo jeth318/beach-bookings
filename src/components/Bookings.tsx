@@ -176,7 +176,7 @@ export const Bookings = ({ bookings }: Props) => {
     const btnVariant = spotsAvailable
       ? !booking?.joinable && booking.userId !== sessionUserId
         ? "btn-disabled"
-        : "btn-accent"
+        : "btn-success"
       : "btn-disabled";
 
     return `btn-sm btn text-white ${btnVariant}`;
@@ -284,7 +284,7 @@ export const Bookings = ({ bookings }: Props) => {
             callback = leaveGame;
             break;
           case "join":
-            level = "accent";
+            level = "success";
             body = joinBookingText;
             emoji = "🫂";
             callback = joinGame;
@@ -358,10 +358,13 @@ export const Bookings = ({ bookings }: Props) => {
                   <div className="flex flex-col">
                     {isOngoingGame(booking) && <OngoingGame />}
                     <div>
-                      <h2 className="font-bil card-title text-2xl font-bold">
+                      <Link
+                        href={`/booking/details/${booking.id}`}
+                        className="font-bil card-title text-2xl font-bold"
+                      >
                         {parseDate(booking)}
                         {booking.players.length === 4 && !historyOnly && " ✅"}
-                      </h2>
+                      </Link>
                       <div className="flex flex-col pb-1 font-medium">
                         <div className="flex flex-row self-start pb-2">
                           <CustomIcon path="/svg/duration.svg" width={20} />
@@ -432,7 +435,7 @@ export const Bookings = ({ bookings }: Props) => {
                           </div>
                         ) : (
                           <>
-                            {!router.query.id && (
+                            {!router.query.id && sessionUserId && (
                               <div>
                                 {renderPartyLeader()}
                                 {renderPlayersInBooking()}
@@ -453,10 +456,7 @@ export const Bookings = ({ bookings }: Props) => {
                       {booking.court && (
                         <div className="self-center">Court {booking.court}</div>
                       )}
-                      <div
-                        style={{ marginTop: "1.5rem" }}
-                        className="flex flex-col self-center"
-                      >
+                      <div className="mt-6 flex flex-col self-center">
                         {!historyOnly && (
                           <div
                             className={`radial-progress self-center text-lg font-bold ${getProgressAccent(
@@ -481,25 +481,34 @@ export const Bookings = ({ bookings }: Props) => {
                         {sessionUserId && !historyOnly ? (
                           <div
                             style={{ width: "auto" }}
-                            className="smooth-render-in-slower btn-group btn-group-vertical flex pt-14"
+                            className="smooth-render-in-slower btn-group btn-group-vertical flex pt-6"
                           >
                             {booking.players.includes(sessionUserId) &&
                               !isOngoingGame(booking) && (
-                                <label
-                                  htmlFor="action-modal-leave-booking"
-                                  onClick={() =>
-                                    void setBookingToChange(booking)
-                                  }
-                                  className="btn btn-warning btn-sm text-white"
-                                >
-                                  {leaving.isWorking &&
-                                  booking.id === leaving.bookingId ? (
-                                    <BeatLoader size={10} color="white" />
-                                  ) : (
-                                    "Leave"
-                                  )}
-                                </label>
+                                <>
+                                  <Link
+                                    href={""}
+                                    className="btn btn-info btn-sm text-white"
+                                  >
+                                    Details
+                                  </Link>
+                                  <label
+                                    htmlFor="action-modal-leave-booking"
+                                    onClick={() =>
+                                      void setBookingToChange(booking)
+                                    }
+                                    className="btn btn-warning btn-sm text-white"
+                                  >
+                                    {leaving.isWorking &&
+                                    booking.id === leaving.bookingId ? (
+                                      <BeatLoader size={10} color="white" />
+                                    ) : (
+                                      "Leave"
+                                    )}
+                                  </label>
+                                </>
                               )}
+
                             {!booking.players.includes(sessionUserId) &&
                               !isOngoingGame(booking) && (
                                 <label
@@ -549,9 +558,7 @@ export const Bookings = ({ bookings }: Props) => {
                                 </label>
                               )}
                           </div>
-                        ) : (
-                          <div style={{ height: "32px" }}></div>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                   </div>

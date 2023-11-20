@@ -119,6 +119,7 @@ export const bookingRouter = createTRPCRouter({
         facility: z.string().or(z.null()),
         maxPlayers: z.number().or(z.null()),
         joinable: z.boolean(),
+        private: z.boolean(),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -135,6 +136,7 @@ export const bookingRouter = createTRPCRouter({
           associationId: input.association,
           maxPlayers: input.maxPlayers,
           joinable: input.joinable,
+          private: input.private,
         },
       });
     }),
@@ -152,6 +154,23 @@ export const bookingRouter = createTRPCRouter({
         },
         data: {
           joinable: input.joinable,
+        },
+      });
+    }),
+  updatePrivate: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        private: z.boolean(),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.booking.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          private: input.private,
         },
       });
     }),
