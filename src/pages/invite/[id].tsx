@@ -6,11 +6,11 @@ import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { PlayerInfo } from "~/components/PlayerInfo";
 import { ArrogantFrog } from "~/components/ArrogantFrog";
-import useInvite from "../hooks/useInvite";
-import useUser from "../hooks/useUser";
-import useGroupInviter from "../hooks/useGroupInviter";
-import useSessionUser from "../hooks/useSessionUser";
-import useSingleAssociation from "../hooks/useSingleAssociation";
+import useInvite from "../../hooks/useInvite";
+import useUser from "../../hooks/useUser";
+import useGroupInviter from "../../hooks/useGroupInviter";
+import useSessionUser from "../../hooks/useSessionUser";
+import useSingleAssociation from "../../hooks/useSingleAssociation";
 import Image from "next/image";
 
 const Invite = () => {

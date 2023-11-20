@@ -97,7 +97,7 @@ export const PlayerInfo = ({
             >
               <span
                 style={{ width: "33%" }}
-                className="label-info-text flex justify-between pr-1"
+                className="label-info-text flex justify-between"
               >
                 <div>Name</div>
                 <div className="self-center">
@@ -131,7 +131,7 @@ export const PlayerInfo = ({
                 >
                   <span
                     style={{ width: "33%" }}
-                    className="label-info-text flex justify-between pr-1"
+                    className="label-info-text flex justify-between"
                   >
                     <div>Phone</div>
                     <div className="self-center">
@@ -167,7 +167,7 @@ export const PlayerInfo = ({
                 <label className="input-group">
                   <span
                     style={{ width: "33%" }}
-                    className="label-info-text flex justify-between pr-1"
+                    className="label-info-text flex justify-between"
                   >
                     <div>E-mail</div>
                     <div className="self-center">✅</div>
@@ -187,7 +187,7 @@ export const PlayerInfo = ({
         <div className="flex flex-col items-center gap-2 self-center">
           <button
             disabled={!hasContactInfoChanged || !validPhone || !validName}
-            className={`btn-md btn text-white ${
+            className={`btn btn-md text-white ${
               hasContactInfoChanged
                 ? validName
                   ? "btn-success animate-pulse"

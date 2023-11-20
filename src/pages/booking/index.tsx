@@ -17,10 +17,10 @@ import { JoinableToggle } from "~/components/JoinableToggle";
 import { getPrePopulationState } from "~/utils/storage";
 import Image from "next/image";
 import Link from "next/link";
-import useEmail from "../hooks/useEmail";
-import useUser from "../hooks/useUser";
-import useUserAssociations from "../hooks/useUserAssociations";
-import useSingleBooking from "../hooks/useSingleBooking";
+import useEmail from "../../hooks/useEmail";
+import useUser from "../../hooks/useUser";
+import useUserAssociations from "../../hooks/useUserAssociations";
+import useSingleBooking from "../../hooks/useSingleBooking";
 import { getAssociationsToShow } from "~/utils/association.util";
 import { Toggle } from "~/components/Toggle";
 

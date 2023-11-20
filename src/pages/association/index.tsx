@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SubHeader } from "~/components/SubHeader";
-import useUserAssociations from "../hooks/useUserAssociations";
-import useUser from "../hooks/useUser";
+import useUserAssociations from "../../hooks/useUserAssociations";
+import useUser from "../../hooks/useUser";
 import { useSession } from "next-auth/react";
 import { PageLoader } from "~/components/PageLoader";
 import { Association } from "@prisma/client";
@@ -14,7 +14,7 @@ import {
   removeAssociationText,
   renderToast,
 } from "~/utils/general.util";
-import useAssociation from "../hooks/useAssociation";
+import useAssociation from "../../hooks/useAssociation";
 import { parseErrorMessage } from "~/utils/error.util";
 import { useState } from "react";
 import { Toast } from "~/components/Toast";

@@ -9,11 +9,11 @@ import { BeatLoader } from "react-spinners";
 import { renderToast } from "~/utils/general.util";
 import { Toast } from "~/components/Toast";
 import { ArrogantFrog } from "~/components/ArrogantFrog";
-import useSingleAssociations from "../hooks/useSingleAssociation";
-import useEmail from "../hooks/useEmail";
-import useUser from "../hooks/useUser";
-import useInvite from "../hooks/useInvite";
-import useUserAssociations from "../hooks/useUserAssociations";
+import useSingleAssociations from "../../hooks/useSingleAssociation";
+import useEmail from "../../hooks/useEmail";
+import useUser from "../../hooks/useUser";
+import useInvite from "../../hooks/useInvite";
+import useUserAssociations from "../../hooks/useUserAssociations";
 
 const Group = () => {
   const router = useRouter();

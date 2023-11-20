@@ -4,8 +4,8 @@ import { useSession } from "next-auth/react";
 import ActionModal from "~/components/ActionModal";
 import { BeatLoader } from "react-spinners";
 import { useRouter } from "next/router";
-import useUser from "../hooks/useUser";
-import useAssociation from "../hooks/useAssociation";
+import useUser from "../../hooks/useUser";
+import useAssociation from "../../hooks/useAssociation";
 import { parseErrorMessage } from "~/utils/error.util";
 
 const CreateAssociation = () => {

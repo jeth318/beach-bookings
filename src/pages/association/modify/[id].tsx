@@ -5,14 +5,14 @@ import ActionModal from "~/components/ActionModal";
 import { BeatLoader } from "react-spinners";
 import { useRouter } from "next/router";
 import { parseErrorMessage } from "~/utils/error.util";
-import useSingleAssociation from "~/pages/hooks/useSingleAssociation";
+import useSingleAssociation from "~/hooks/useSingleAssociation";
 import {
   associationToastMessages,
   getQueryId,
   renderToast,
 } from "~/utils/general.util";
 import { PageLoader } from "~/components/PageLoader";
-import useUser from "~/pages/hooks/useUser";
+import useUser from "~/hooks/useUser";
 import { Toast } from "~/components/Toast";
 import { JoinableToggle } from "~/components/JoinableToggle";
 

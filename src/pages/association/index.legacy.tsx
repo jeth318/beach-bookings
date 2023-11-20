@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SubHeader } from "~/components/SubHeader";
-import useUserAssociations from "../hooks/useUserAssociations";
-import useUser from "../hooks/useUser";
+import useUserAssociations from "../../hooks/useUserAssociations";
+import useUser from "../../hooks/useUser";
 import { useSession } from "next-auth/react";
 import { PageLoader } from "~/components/PageLoader";
 import { CustomIcon } from "~/components/CustomIcon";

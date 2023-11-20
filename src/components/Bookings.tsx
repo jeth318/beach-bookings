@@ -30,11 +30,11 @@ import { OngoingGame } from "./OngoingGame";
 import { CustomIcon } from "./CustomIcon";
 import { PlayersTable } from "./PlayersTable";
 import { Toast } from "./Toast";
-import useEmail from "~/pages/hooks/useEmail";
-import useUser from "~/pages/hooks/useUser";
-import useBooking from "~/pages/hooks/useBooking";
-import useAssociations from "~/pages/hooks/useUserAssociations";
-import useSessionUser from "~/pages/hooks/useSessionUser";
+import useEmail from "~/hooks/useEmail";
+import useUser from "~/hooks/useUser";
+import useBooking from "~/hooks/useBooking";
+import useAssociations from "~/hooks/useUserAssociations";
+import useSessionUser from "~/hooks/useSessionUser";
 
 type Bookings = {
   data: Booking[];

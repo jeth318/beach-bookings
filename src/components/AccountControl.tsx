@@ -3,9 +3,9 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { BeatLoader } from "react-spinners";
 import { useState } from "react";
-import useUser from "~/pages/hooks/useUser";
-import useBooking from "~/pages/hooks/useBooking";
-import useSessionUser from "~/pages/hooks/useSessionUser";
+import useUser from "~/hooks/useUser";
+import useBooking from "~/hooks/useBooking";
+import useSessionUser from "~/hooks/useSessionUser";
 
 export const AccountControl = () => {
   const { sessionUser } = useSessionUser();
