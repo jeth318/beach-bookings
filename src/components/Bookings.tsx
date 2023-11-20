@@ -385,7 +385,7 @@ export const Bookings = ({ bookings }: Props) => {
                                 <span className="pr-1">
                                   <CustomIcon
                                     path="/svg/people.svg"
-                                    width={18}
+                                    width={20}
                                   />
                                 </span>
                                 <div
