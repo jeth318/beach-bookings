@@ -481,7 +481,7 @@ export const Bookings = ({ bookings }: Props) => {
                         {sessionUserId && !historyOnly ? (
                           <div
                             style={{ width: "auto" }}
-                            className="smooth-render-in-slower btn-group btn-group-vertical flex pt-6"
+                            className="smooth-render-in-slower btn-group btn-group-vertical mt-7 flex"
                           >
                             {booking.players.includes(sessionUserId) &&
                               !isOngoingGame(booking) && (
