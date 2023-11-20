@@ -266,7 +266,7 @@ export const getFrogText = (path: string) => {
     return "You are not a member of the requested group. An existing group member can invite you. Talk to them.";
   }
 
-  return "There are no upcoming bookings right now. Head over to GBC, book a court and comeback here and publish.";
+  return "There are no upcoming bookings right now. Head over to <a class='link' href='https://gbc.goactivebooking.com/'>GBC</a>, book a court and comeback here and publish.";
 };
 
 export const removeBookingText =

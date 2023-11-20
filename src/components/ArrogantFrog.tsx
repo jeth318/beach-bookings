@@ -21,12 +21,14 @@ export const ArrogantFrog = () => {
         <Image
           className="rounded-full"
           alt="arrogant-frog"
-          src="/cig-frog.gif"
+          src="/beach-spike.png"
           width={210}
           height={210}
         />
         <div className="p-4 text-center text-xl text-white">
-          <div className="pb-4">{getFrogText(router.asPath)}</div>
+          <div
+            dangerouslySetInnerHTML={{ __html: getFrogText(router.asPath) }}
+          ></div>
           {main && (
             <div className="flex items-center justify-center">
               <Link className="btn btn-info text-white" href="/booking">

@@ -358,13 +358,26 @@ export const Bookings = ({ bookings }: Props) => {
                   <div className="flex flex-col">
                     {isOngoingGame(booking) && <OngoingGame />}
                     <div>
-                      <Link
-                        href={`/booking/details/${booking.id}`}
-                        className="font-bil card-title text-2xl font-bold"
-                      >
-                        {parseDate(booking)}
-                        {booking.players.length === 4 && !historyOnly && " ✅"}
-                      </Link>
+                      {(sessionUserId &&
+                        booking.players.includes(sessionUserId)) ||
+                      booking.userId === sessionUserId ? (
+                        <Link
+                          href={`/booking/details/${booking.id}`}
+                          className="font-bil link card-title text-2xl font-bold"
+                        >
+                          {parseDate(booking)}
+                          {booking.players.length === 4 &&
+                            !historyOnly &&
+                            " ✅"}
+                        </Link>
+                      ) : (
+                        <div className="font-bil card-title text-2xl font-bold">
+                          {parseDate(booking)}
+                          {booking.players.length === 4 &&
+                            !historyOnly &&
+                            " ✅"}
+                        </div>
+                      )}
                       <div className="flex flex-col pb-1 font-medium">
                         <div className="flex flex-row self-start pb-2">
                           <CustomIcon path="/svg/duration.svg" width={20} />
@@ -486,12 +499,6 @@ export const Bookings = ({ bookings }: Props) => {
                             {booking.players.includes(sessionUserId) &&
                               !isOngoingGame(booking) && (
                                 <>
-                                  <Link
-                                    href={""}
-                                    className="btn btn-info btn-sm text-white"
-                                  >
-                                    Details
-                                  </Link>
                                   <label
                                     htmlFor="action-modal-leave-booking"
                                     onClick={() =>
