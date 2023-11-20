@@ -11,6 +11,7 @@ type PrePopulateBookingState = {
   eventType: EventType;
   maxPlayers?: number;
   joinable: boolean;
+  privateBooking: boolean;
 };
 
 type LocalStorageBookingState = {
@@ -55,6 +56,7 @@ export const getPrePopulationState = (facilities: Facility[] | undefined) => {
       time: ls?.time,
       facility: facilities?.find((facility) => facility.id === "1"),
       joinable: ls.joinable,
+      privateBooking: ls.privateBooking,
     } as PrePopulateBookingState;
   }
 };

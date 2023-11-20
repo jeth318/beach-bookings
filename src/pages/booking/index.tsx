@@ -22,7 +22,7 @@ import useUser from "../hooks/useUser";
 import useUserAssociations from "../hooks/useUserAssociations";
 import useSingleBooking from "../hooks/useSingleBooking";
 import { getAssociationsToShow } from "~/utils/association.util";
-import { lutimesSync } from "fs";
+import { Toggle } from "~/components/Toggle";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -49,6 +49,7 @@ const Booking = () => {
   const [association, setAssociation] = useState<Association | null>();
   const [maxPlayers, setMaxPlayers] = useState<number>(4);
   const [joinable, setJoinable] = useState<boolean>(true);
+  const [privateBooking, setPrivateBooking] = useState<boolean>(true);
   const [preventLocalStorageWrite, setPreventLocalStorageWrite] =
     useState<boolean>(false);
 
@@ -75,6 +76,13 @@ const Booking = () => {
     setJoinable(!joinable);
   };
 
+  const onPrivateBookingChange = () => {
+    if (!privateBooking === false) {
+      setAssociation(undefined);
+    }
+    setPrivateBooking(!privateBooking);
+  };
+
   // localStorageState
   const lss = getPrePopulationState(facilities);
 
@@ -92,6 +100,7 @@ const Booking = () => {
         facility,
         maxPlayers,
         joinable,
+        privateBooking,
       },
       expiry: now.getTime() + ttl,
     };
@@ -103,20 +112,23 @@ const Booking = () => {
 
   // Populate from localStorage on mount
   const setInitialState = () => {
-    setDuration(lss?.duration);
-    setCourt(lss?.court);
-    setFacility(lss?.facility);
-    setMaxPlayers(lss?.maxPlayers || 4);
-    setTime(lss?.time);
-    setAssociation(lss?.association);
-    setIsInitialStateLoaded(true);
+    if (lss) {
+      setDuration(lss?.duration);
+      setCourt(lss?.court);
+      setFacility(lss?.facility);
+      setMaxPlayers(lss?.maxPlayers || 4);
+      setTime(lss?.time);
+      setAssociation(lss?.association);
+      setPrivateBooking(lss?.privateBooking);
+      setIsInitialStateLoaded(true);
 
-    if (lss?.date !== null && lss?.date !== undefined) {
-      setDate(new Date(lss?.date));
-    }
+      if (lss?.date !== null && lss?.date !== undefined) {
+        setDate(new Date(lss?.date));
+      }
 
-    if (lss?.time !== null && lss?.time !== undefined) {
-      setTime(lss.time);
+      if (lss?.time !== null && lss?.time !== undefined) {
+        setTime(lss.time);
+      }
     }
   };
 
@@ -140,6 +152,7 @@ const Booking = () => {
     facility,
     maxPlayers,
     joinable,
+    privateBooking,
     preventLocalStorageWrite,
   ]);
 
@@ -153,7 +166,7 @@ const Booking = () => {
     const recipients = getEmailRecipients({
       users: usersWithAddConsent || [],
       playersInBooking: [],
-      sessionUserId: sessionData.user.id,
+      sessionUserId: sessionData?.user.id || "",
       eventType: "ADD",
     });
 
@@ -164,11 +177,12 @@ const Booking = () => {
         userId: sessionData?.user.id,
         date: new Date(formattedDate.replace(" ", "T")),
         court: court || null,
-        facilityId: facility.id || null,
+        facilityId: facility?.id || null,
         associationId: association?.id || null,
         duration: duration || null,
         maxPlayers: maxPlayers === undefined ? 0 : maxPlayers,
         joinable: joinable,
+        private: privateBooking,
       });
 
       emailDispatcher({
@@ -264,6 +278,7 @@ const Booking = () => {
     !!sessionData?.user.id &&
     !!date &&
     !!time &&
+    (privateBooking ? !!association : true) &&
     !!facility &&
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
@@ -372,78 +387,96 @@ const Booking = () => {
                   <JoinableToggle
                     textColor="white"
                     value={joinable}
-                    isLoading={false}
                     callback={onJoinableChange}
                   />
                 </div>
-
                 {!!associationsToShow.length && (
+                  <div className="mb-4 mt-4">
+                    <Toggle
+                      textColor="white"
+                      title="Private"
+                      svgPath="/svg/group.svg"
+                      message="Make visible for chosen group only. Can be changed at anytime."
+                      value={privateBooking}
+                      callback={onPrivateBookingChange}
+                    />
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-4">
+                  {!!associationsToShow.length && (
+                    <SelectInput
+                      label="Group"
+                      disabled={!privateBooking}
+                      disabledOption="Select group"
+                      description="With what group do you want to play?"
+                      valid={!!association}
+                      value={association?.name || "Select group"}
+                      items={associationsToShow}
+                      callback={onAssociationSelect}
+                    />
+                  )}
+
                   <SelectInput
-                    label="Group"
-                    disabledOption="Select group"
-                    description="With what group do you want to play?"
-                    valid={!!association}
-                    value={association?.name || "Select group"}
-                    items={associationsToShow}
-                    callback={onAssociationSelect}
+                    label="Players"
+                    description="How many players are required/allowed?"
+                    valid={!!maxPlayers}
+                    value={String(maxPlayers) || "Players"}
+                    items={maxPlayersToShow}
+                    callback={onMaxPlayersSelect}
                   />
-                )}
 
-                <SelectInput
-                  label="Players"
-                  description="How many players are required/allowed?"
-                  valid={!!maxPlayers}
-                  value={String(maxPlayers) || "Players"}
-                  items={maxPlayersToShow}
-                  callback={onMaxPlayersSelect}
-                />
+                  <SelectInput
+                    disabledOption="Pick a place"
+                    label="Facility"
+                    description="Where are you playing? (more to come)"
+                    valid={!!facility}
+                    value={facility?.name || "Pick a place"}
+                    items={facilitiesToShow}
+                    callback={onFacilitySelect}
+                  />
 
-                <SelectInput
-                  disabledOption="Pick a place"
-                  label="Facility"
-                  description="Where are you playing? (more to come)"
-                  valid={!!facility}
-                  value={facility?.name || "Pick a place"}
-                  items={facilitiesToShow}
-                  callback={onFacilitySelect}
-                />
+                  {!!facility?.durations?.length && (
+                    <div className="smooth-render-in">
+                      <SelectInput
+                        label="Duration"
+                        disabledOption="Select duration"
+                        description="Fow how long?"
+                        optionSuffix={` minutes`}
+                        valid={!!duration}
+                        value={duration || "Select duration"}
+                        items={facility.durations.map((item) => ({
+                          id: item,
+                          name: item,
+                        }))}
+                        callback={onDurationSelect}
+                      />
+                    </div>
+                  )}
 
-                {!!facility?.durations?.length && (
-                  <div className="smooth-render-in">
-                    <SelectInput
-                      label="Duration"
-                      disabledOption="Select duration"
-                      description="Fow how long?"
-                      optionSuffix={` minutes`}
-                      valid={!!duration}
-                      value={duration || "Select duration"}
-                      items={facility.durations.map((item) => ({
-                        id: item,
-                        name: item,
-                      }))}
-                      callback={onDurationSelect}
-                    />
-                  </div>
-                )}
+                  {!!facility?.courts.length && (
+                    <div className="smooth-render-in">
+                      <SelectInput
+                        label="Court"
+                        disabledOption="Select court"
+                        description="Which court?"
+                        valid={!!court}
+                        value={court || "Select court"}
+                        items={facility.courts.map((item) => ({
+                          id: item,
+                          name: item,
+                        }))}
+                        callback={onCourtSelect}
+                      />
+                    </div>
+                  )}
 
-                {!!facility?.courts.length && (
-                  <div className="smooth-render-in">
-                    <SelectInput
-                      label="Court"
-                      disabledOption="Select court"
-                      description="Which court?"
-                      valid={!!court}
-                      value={court || "Select court"}
-                      items={facility.courts.map((item) => ({
-                        id: item,
-                        name: item,
-                      }))}
-                      callback={onCourtSelect}
-                    />
-                  </div>
-                )}
-
-                <DateSelector date={date} time={time} callback={onDateSelect} />
+                  <DateSelector
+                    date={date}
+                    time={time}
+                    callback={onDateSelect}
+                  />
+                </div>
 
                 <div className="w-100 btn-group btn-group-horizontal mb-20 mt-10 flex justify-center self-center">
                   <label

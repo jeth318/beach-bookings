@@ -7,10 +7,22 @@ type Props = {
   value: boolean;
   isLoading?: boolean | undefined;
   textColor?: string;
+  svgPath?: string;
+  title?: string;
+  message?: string;
+  children?: React.ReactNode | undefined;
   callback: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
-export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
+export const Toggle = ({
+  value,
+  isLoading,
+  svgPath,
+  title,
+  children,
+  message,
+  callback,
+}: Props) => {
   return (
     <label
       style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
@@ -19,11 +31,11 @@ export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
       <div className="flex w-max items-center space-x-2">
         <div className="avatar">
           <div className="mask h-10 w-10">
-            <CustomIcon height={100} width={100} path={`/svg/group.svg`} />
+            {svgPath && <CustomIcon height={100} width={100} path={svgPath} />}
           </div>
         </div>
         <div>
-          <div className="font-bold">Joinable</div>
+          <div className="font-bold">{title}</div>
           <div
             className="text-sm opacity-60"
             style={{
@@ -32,7 +44,8 @@ export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
               textOverflow: "n",
             }}
           >
-            Allow players to join this party. You can change this anytime.
+            {message}
+            {children}
           </div>
         </div>
       </div>

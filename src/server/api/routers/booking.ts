@@ -87,6 +87,7 @@ export const bookingRouter = createTRPCRouter({
         maxPlayers: z.number().or(z.null()),
         duration: z.number().or(z.null()),
         joinable: z.boolean(),
+        private: z.boolean(),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -102,6 +103,7 @@ export const bookingRouter = createTRPCRouter({
           facilityId: input.facilityId,
           maxPlayers: input.maxPlayers === null ? 0 : input.maxPlayers,
           joinable: input.joinable,
+          private: input.private,
         },
       });
     }),

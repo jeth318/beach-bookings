@@ -281,7 +281,7 @@ const Association = () => {
         </div>
       </main>
       <div className="m-4 flex justify-center border-zinc-400">
-        <Link href="/association/create" className="btn-outline btn">
+        <Link href="/association/create" className={`btn-outline`}>
           Create new
         </Link>
       </div>

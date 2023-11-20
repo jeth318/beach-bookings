@@ -51,7 +51,7 @@ const onDateTimeChange = (date: Date, cb: (date: Date) => void) => {
 
 export const DateSelector = ({ date, time, callback }: Props) => {
   return (
-    <>
+    <div>
       <label className="label">
         <span className="label-text text-white">
           What date and time are you playing?
@@ -83,6 +83,6 @@ export const DateSelector = ({ date, time, callback }: Props) => {
           onChange={(date) => onDateTimeChange(date as Date, callback)}
         />
       </div>
-    </>
+    </div>
   );
 };
