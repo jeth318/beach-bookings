@@ -28,7 +28,6 @@ import useUserAssociations from "../../hooks/useUserAssociations";
 import useUser from "../../hooks/useUser";
 import { getFacilitiesToShow } from "~/utils/facility.util";
 import { getAssociationsToShow } from "~/utils/association.util";
-import { Toggle } from "~/components/Toggle";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -45,6 +44,7 @@ const Booking = () => {
   const [toastMessage, setToastMessage] = useState<string>();
   const [isInitialStateLoaded, setIsInitialStateLoaded] = useState<boolean>();
 
+  const [originalStateHash, setOriginalStateHash] = useState<string>();
   const session = useSession();
   const isInitialLoading = sessionStatus === "loading";
 
@@ -59,7 +59,7 @@ const Booking = () => {
     isLoadingUpdateBooking,
   } = useSingleBooking({ id: getQueryId(router) });
 
-  const { usersInBooking, isUserFetchedsInBooking } = useUsersInBooking({
+  const { usersInBooking, isUsersInBookingFetched } = useUsersInBooking({
     booking,
   });
 
@@ -272,6 +272,7 @@ const Booking = () => {
         setCourt(booking.court);
       }
       setIsInitialStateLoaded(true);
+      setOriginalStateHash(m)
     }
   }, [
     areFacilitiesFetched,
@@ -282,7 +283,7 @@ const Booking = () => {
     duration,
     facilities,
     facility,
-    isUserFetchedsInBooking,
+    isUsersInBookingFetched,
     joinedAssociations,
     maxPlayers,
     time,
@@ -304,7 +305,7 @@ const Booking = () => {
             {sessionData?.user.id &&
             booking?.id &&
             isJoinedAssociationsFetched &&
-            isUserFetchedsInBooking &&
+            isUsersInBookingFetched &&
             booking?.joinable !== undefined ? (
               <div className="mt-4">
                 <ActionModal
@@ -324,110 +325,97 @@ const Booking = () => {
                     updated booking details.
                   </p>
                 </ActionModal>
-                <PlayersTable booking={booking || defaultBooking} />
+                <div className="mb-4 text-center">
+                  <h2 className="text-2xl">
+                    {booking?.date.toLocaleDateString("sv-SE")}
+                  </h2>
+                  <h4>{booking?.date.toLocaleTimeString("sv-SE")}</h4>
+                </div>
+                {/* <PlayersTable booking={booking || defaultBooking} /> */}
+                <div className="flex flex-col gap-4">
+                  <JoinableToggle
+                    textColor="white"
+                    value={joinable || false}
+                    isLoading={isLoadingUpdateBookingJoinable}
+                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                    callback={onJoinableChange}
+                  />
 
-                <JoinableToggle
-                  textColor="white"
-                  value={joinable || false}
-                  isLoading={isLoadingUpdateBookingJoinable}
-                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  callback={onJoinableChange}
-                />
-                {!!associationsToShow.length && (
-                  <div className="mb-4 mt-4">
-                    <Toggle
-                      textColor="white"
-                      title="Private"
-                      svgPath="/svg/group.svg"
-                      message="Make visible for chosen group only. You can change this at anytime."
-                      value={privateBooking || false}
-                      callback={onPrivateBookingChange}
+                  <SelectInput
+                    label="Group"
+                    description="Visible for specific group?"
+                    valid={true}
+                    value={association?.name || "Pick a group"}
+                    items={associationsToShow}
+                    defaultOption={{ id: "0", name: "" }}
+                    callback={onAssociationSelect}
+                  />
+                  <SelectInput
+                    label="Players"
+                    description="How many players are required/allowed?"
+                    valid={!!maxPlayers}
+                    value={String(maxPlayers) || "Players"}
+                    items={maxPlayersToShow}
+                    callback={onMaxPlayersSelect}
+                  />
+
+                  <div>
+                    <SelectInput
+                      disabled
+                      label="Facility"
+                      description="Where are you playing? (more to come later)"
+                      valid={!!facility}
+                      value={facility?.name || "Pick a place"}
+                      items={facilitiesToShow}
+                      callback={onFacilitySelect}
                     />
+                    {!!facility?.durations?.length && (
+                      <SelectInput
+                        label="Duration"
+                        optionSuffix={` minutes`}
+                        valid={!!duration}
+                        value={duration || "Select duration"}
+                        items={facility.durations.map((item) => ({
+                          id: item,
+                          name: item,
+                        }))}
+                        callback={onDurationSelect}
+                      />
+                    )}
+
+                    {!!facility?.courts.length && (
+                      <SelectInput
+                        label="Court"
+                        disabledOption="Pick court"
+                        valid={!!court}
+                        value={court || "Pick court"}
+                        items={facility.courts.map((item) => ({
+                          id: item,
+                          name: item,
+                        }))}
+                        callback={onCourtSelect}
+                      />
+                    )}
                   </div>
-                )}
 
-                <SelectInput
-                  label="Group"
-                  description="With what group do you want to play?"
-                  valid={true}
-                  value={association?.name || "Pick a group"}
-                  items={associationsToShow}
-                  callback={onAssociationSelect}
-                />
-                <SelectInput
-                  disabled
-                  label="Facility"
-                  description="Where are you playing? (more to come later)"
-                  valid={!!facility}
-                  value={facility?.name || "Pick a place"}
-                  items={facilitiesToShow}
-                  callback={onFacilitySelect}
-                />
-
-                <SelectInput
-                  label="Players"
-                  description="How many players are required/allowed?"
-                  valid={!!maxPlayers}
-                  value={String(maxPlayers) || "Players"}
-                  items={maxPlayersToShow}
-                  callback={onMaxPlayersSelect}
-                />
-
-                {!!facility?.durations?.length && (
-                  <SelectInput
-                    label="Duration"
-                    disabledOption="Select duration"
-                    description="Fow how long?"
-                    optionSuffix={` minutes`}
-                    valid={!!duration}
-                    value={duration || "Select duration"}
-                    items={facility.durations.map((item) => ({
-                      id: item,
-                      name: item,
-                    }))}
-                    callback={onDurationSelect}
+                  <DateSelector
+                    date={date}
+                    time={time}
+                    callback={onDateSelect}
                   />
-                )}
-
-                {!!facility?.courts.length && (
-                  <SelectInput
-                    label="Court"
-                    disabledOption="Pick court"
-                    description="Which court?"
-                    valid={!!court}
-                    value={court || "Pick court"}
-                    items={facility.courts.map((item) => ({
-                      id: item,
-                      name: item,
-                    }))}
-                    callback={onCourtSelect}
-                  />
-                )}
-                <DateSelector date={date} time={time} callback={onDateSelect} />
-
+                </div>
                 <div className="flex flex-col justify-center">
-                  <div className="w-100 btn-group btn-group-horizontal mb-20 mt-10 flex justify-center self-center">
-                    <Link
-                      href="/"
-                      className={`${
-                        validBooking && !isLoadingUpdateBooking
-                          ? "btn btn-warning"
-                          : "btn-disabled"
-                      } btn text-white`}
-                    >
-                      Cancel
-                    </Link>
-
+                  <div className="w-100  mb-20 mt-10 flex justify-center self-center">
                     <label
                       style={{ position: "relative" }}
                       className={`${
                         validBooking && !isLoadingUpdateBooking
-                          ? "btn-success"
+                          ? "btn-success animate-pulse"
                           : "btn-disabled"
                       } btn text-white`}
                       htmlFor="action-modal-booking"
                     >
-                      {router.query.id ? "Update" : "Publish"}
+                      Save changes
                     </label>
                   </div>
                   {isLoadingUpdateBooking && (

@@ -87,6 +87,8 @@ const Booking = () => {
   const lss = getPrePopulationState(facilities);
 
   const setPrePopulateBookingState = () => {
+    console.log("PREPOPSET", facility);
+
     const now = new Date();
     // Five minutes
     const ttl = 60000 * 5;
@@ -112,6 +114,8 @@ const Booking = () => {
 
   // Populate from localStorage on mount
   const setInitialState = () => {
+    console.log("INITAIL");
+
     if (lss) {
       setDuration(lss?.duration);
       setCourt(lss?.court);
@@ -182,7 +186,7 @@ const Booking = () => {
         duration: duration || null,
         maxPlayers: maxPlayers === undefined ? 0 : maxPlayers,
         joinable: joinable,
-        private: privateBooking,
+        private: privateBooking || false,
       });
 
       emailDispatcher({
@@ -221,8 +225,7 @@ const Booking = () => {
 
     const facilityId = selected?.dataset["id"];
     const facilityToSelect = facilities?.find((f) => f.id === facilityId);
-    console.log("EF", facilityToSelect);
-
+    console.log("SET ON F SEL", facilityToSelect);
     setFacility(facilityToSelect);
 
     setCourt(null);
@@ -236,7 +239,7 @@ const Booking = () => {
       (f) => f.id === associationId
     );
 
-    associationToSelect && setAssociation(associationToSelect);
+    setAssociation(associationToSelect);
   };
 
   const onDurationSelect = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -267,18 +270,15 @@ const Booking = () => {
       }) || [];
 
   const associationsToShow = getAssociationsToShow(joinedAssociations);
-  const maxPlayersToShow = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
-    (item) => ({
-      id: String(item),
-      name: String(item),
-    })
-  );
+  const maxPlayersToShow = [4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => ({
+    id: String(item),
+    name: String(item),
+  }));
 
   const validBooking =
     !!sessionData?.user.id &&
     !!date &&
     !!time &&
-    (privateBooking ? !!association : true) &&
     !!facility &&
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
@@ -390,86 +390,72 @@ const Booking = () => {
                     callback={onJoinableChange}
                   />
                 </div>
-                {!!associationsToShow.length && (
-                  <div className="mb-4 mt-4">
-                    <Toggle
-                      textColor="white"
-                      title="Private"
-                      svgPath="/svg/group.svg"
-                      message="Make visible for chosen group only. You can change this at anytime."
-                      value={privateBooking}
-                      callback={onPrivateBookingChange}
-                    />
-                  </div>
-                )}
 
                 <div className="flex flex-col gap-4">
                   {!!associationsToShow.length && (
                     <SelectInput
                       label="Group"
                       disabled={!privateBooking}
-                      disabledOption="Select group"
-                      description="With what group do you want to play?"
-                      valid={!!association}
+                      defaultOption={{ id: "0", name: "" }}
+                      description="Publish to a specific group only?"
+                      valid
                       value={association?.name || "Select group"}
                       items={associationsToShow}
                       callback={onAssociationSelect}
                     />
                   )}
 
-                  <SelectInput
+                  {/*                   <SelectInput
                     label="Players"
                     description="How many players are required/allowed?"
                     valid={!!maxPlayers}
                     value={String(maxPlayers) || "Players"}
                     items={maxPlayersToShow}
                     callback={onMaxPlayersSelect}
-                  />
+                  /> */}
 
-                  <SelectInput
-                    disabledOption="Pick a place"
-                    label="Facility"
-                    description="Where are you playing? (more to come)"
-                    valid={!!facility}
-                    value={facility?.name || "Pick a place"}
-                    items={facilitiesToShow}
-                    callback={onFacilitySelect}
-                  />
-
-                  {!!facility?.durations?.length && (
-                    <div className="smooth-render-in">
-                      <SelectInput
-                        label="Duration"
-                        disabledOption="Select duration"
-                        description="Fow how long?"
-                        optionSuffix={` minutes`}
-                        valid={!!duration}
-                        value={duration || "Select duration"}
-                        items={facility.durations.map((item) => ({
-                          id: item,
-                          name: item,
-                        }))}
-                        callback={onDurationSelect}
-                      />
-                    </div>
-                  )}
-
-                  {!!facility?.courts.length && (
-                    <div className="smooth-render-in">
-                      <SelectInput
-                        label="Court"
-                        disabledOption="Select court"
-                        description="Which court?"
-                        valid={!!court}
-                        value={court || "Select court"}
-                        items={facility.courts.map((item) => ({
-                          id: item,
-                          name: item,
-                        }))}
-                        callback={onCourtSelect}
-                      />
-                    </div>
-                  )}
+                  <div>
+                    <SelectInput
+                      disabledOption="Pick a place"
+                      label="Facility"
+                      description="Where are you playing? (more to come)"
+                      valid={!!facility}
+                      value={facility?.name || "Pick a place"}
+                      items={facilitiesToShow}
+                      callback={onFacilitySelect}
+                    />
+                    {!!facility?.durations?.length && (
+                      <div className="smooth-render-in">
+                        <SelectInput
+                          label="Duration"
+                          disabledOption="Select duration"
+                          optionSuffix={` minutes`}
+                          valid={!!duration}
+                          value={duration || "Select duration"}
+                          items={facility.durations.map((item) => ({
+                            id: item,
+                            name: item,
+                          }))}
+                          callback={onDurationSelect}
+                        />
+                      </div>
+                    )}
+                    {!!facility?.courts.length && (
+                      <div className="smooth-render-in">
+                        <SelectInput
+                          label="Court"
+                          disabledOption="Select court"
+                          valid={!!court}
+                          value={court || "Select court"}
+                          items={facility.courts.map((item) => ({
+                            id: item,
+                            name: item,
+                          }))}
+                          callback={onCourtSelect}
+                        />
+                      </div>
+                    )}
+                  </div>
 
                   <DateSelector
                     date={date}

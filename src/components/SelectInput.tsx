@@ -1,6 +1,6 @@
 import { type ChangeEvent } from "react";
 
-type Item = {
+type SelectItem = {
   id: string;
   name: string;
 };
@@ -9,11 +9,12 @@ export type Props = {
   label: string;
   disabledOption?: string;
   description?: string;
-  items: Item[];
+  items: SelectItem[];
   valid: boolean;
   optionSuffix?: string;
   value: string | number;
   disabled?: boolean;
+  defaultOption?: SelectItem;
   callback: (e: ChangeEvent<HTMLSelectElement>) => void | undefined;
 };
 
@@ -26,6 +27,7 @@ export const SelectInput = ({
   value,
   items,
   disabled,
+  defaultOption,
   callback,
 }: Props) => {
   return (
@@ -49,7 +51,18 @@ export const SelectInput = ({
           onChange={(e: ChangeEvent<HTMLSelectElement>) => callback(e)}
           value={value}
         >
-          <option disabled>{disabledOption || label}</option>
+          {disabledOption && (
+            <option disabled>{disabledOption || label}</option>
+          )}
+          {defaultOption && (
+            <option
+              key={defaultOption.id}
+              value={defaultOption.name}
+              data-id={defaultOption.id}
+            >
+              {defaultOption.name} {!!optionSuffix && optionSuffix}
+            </option>
+          )}
           {items.map((item) => (
             <option key={item.id} value={item.name} data-id={item.id}>
               {item.name} {!!optionSuffix && optionSuffix}

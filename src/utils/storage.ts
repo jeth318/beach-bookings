@@ -54,7 +54,7 @@ export const getPrePopulationState = (facilities: Facility[] | undefined) => {
       maxPlayers: ls?.maxPlayers,
       date: ls?.date,
       time: ls?.time,
-      facility: facilities?.find((facility) => facility.id === "1"),
+      facility: ls?.facility,
       joinable: ls.joinable,
       privateBooking: ls.privateBooking,
     } as PrePopulateBookingState;

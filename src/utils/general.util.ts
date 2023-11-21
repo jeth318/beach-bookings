@@ -3,6 +3,7 @@ import { type EventType, getTimeWithZeroPadding } from "./booking.util";
 import { type SetStateAction } from "react";
 import { beachBookingsSpikeLogoBase64 } from "./image.util";
 import { type NextRouter } from "next/router";
+import { sha256 } from "hash.js";
 
 type EmailRecipientsProps = {
   sessionUserId: string;

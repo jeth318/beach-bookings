@@ -9,7 +9,7 @@ type Props = {
 const useUsersInBooking = ({ booking }: Props) => {
   const {
     data: usersInBooking,
-    isFetched: isUserFetchedsInBooking,
+    isFetched: isUsersInBookingFetched,
     isInitialLoading: isInitialLoadingUsersInBooking,
   } = api.user.getMultipleByIds.useQuery({
     playerIds: booking?.players || [],
@@ -17,7 +17,7 @@ const useUsersInBooking = ({ booking }: Props) => {
 
   return {
     usersInBooking,
-    isUserFetchedsInBooking,
+    isUsersInBookingFetched,
     isInitialLoadingUsersInBooking,
   };
 };

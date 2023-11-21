@@ -362,8 +362,9 @@ export const Bookings = ({ bookings }: Props) => {
                         booking.players.includes(sessionUserId)) ||
                       booking.userId === sessionUserId ? (
                         <Link
-                          href={`/booking/details/${booking.id}`}
-                          className="font-bil link card-title text-2xl font-bold"
+                          //href={`/booking/details/${booking.id}`}
+                          href="#"
+                          className="font-bil card-title text-2xl font-bold"
                         >
                           {parseDate(booking)}
                           {booking.players.length === 4 &&
