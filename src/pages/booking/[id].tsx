@@ -95,13 +95,6 @@ const Booking = () => {
   const facilitiesToShow = getFacilitiesToShow(facilities);
   const associationsToShow = getAssociationsToShow(joinedAssociations);
 
-  const defaultBooking = {
-    players: [sessionData?.user.id],
-    court: null,
-    maxPlayers: 4,
-    userId: sessionData?.user.id,
-  } as Booking;
-
   const onDateSelect = (date: Date) => {
     setDate(date);
 
@@ -148,14 +141,6 @@ const Booking = () => {
     setCourt(event?.target.value);
   };
 
-  const onPrivateBookingChange = () => {
-    if (!privateBooking === false) {
-      setAssociation(undefined);
-    }
-    console.log("setting", !privateBooking);
-    setPrivateBooking(!privateBooking);
-  };
-
   const onBookingUpdateConfirmed = async () => {
     if (!validBooking || !booking) {
       return null;
@@ -175,7 +160,7 @@ const Booking = () => {
       facility.durations.find((dur) => dur === duration?.toString()) !==
         undefined;
 
-    const response = await updateBooking(
+    await updateBooking(
       {
         id: booking.id,
         date: new Date(formattedDate.replace(" ", "T")),
@@ -324,7 +309,7 @@ const Booking = () => {
                     updated booking details.
                   </p>
                 </ActionModal>
-                <div className="mb-4 text-center">
+                <div className="mb-4 text-center text-white">
                   <h2 className="text-2xl">
                     {booking?.date.toLocaleDateString("sv-SE")}
                   </h2>
@@ -349,14 +334,14 @@ const Booking = () => {
                     defaultOption={{ id: "0", name: "" }}
                     callback={onAssociationSelect}
                   />
-                  <SelectInput
+                  {/*                   <SelectInput
                     label="Players"
                     description="How many players are required/allowed?"
                     valid={!!maxPlayers}
                     value={String(maxPlayers) || "Players"}
                     items={maxPlayersToShow}
                     callback={onMaxPlayersSelect}
-                  />
+                  /> */}
 
                   <div>
                     <SelectInput

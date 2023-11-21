@@ -18,8 +18,10 @@ body {
   color: white !important;
 }
 
-.btn {
-  color: white !important;
+:root,
+[data-theme="light"] {
+  --text-color: black !important;
+  color: black !important;
 }
 
 main {
