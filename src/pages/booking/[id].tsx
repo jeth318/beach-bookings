@@ -272,7 +272,6 @@ const Booking = () => {
         setCourt(booking.court);
       }
       setIsInitialStateLoaded(true);
-      setOriginalStateHash(m)
     }
   }, [
     areFacilitiesFetched,
