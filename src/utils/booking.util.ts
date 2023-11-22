@@ -58,7 +58,7 @@ export const getTimeWithZeroPadding = (hours: number, minutes: number) => {
   return `${hoursPadded}:${minutesPadded}`;
 };
 
-export const maxPlayersToShow = [4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => ({
+export const maxPlayersToShow = [4, 6, 8, 10, 12].map((item) => ({
   id: String(item),
   name: String(item),
 }));

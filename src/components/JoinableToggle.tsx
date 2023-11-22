@@ -1,7 +1,6 @@
 import { BeatLoader } from "react-spinners";
 import { CustomIcon } from "./CustomIcon";
-import { type ChangeEvent, useState } from "react";
-import { api } from "~/utils/api";
+import { type ChangeEvent } from "react";
 
 type Props = {
   value: boolean;
@@ -13,7 +12,7 @@ type Props = {
 export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
   return (
     <label
-      style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
+      style={{ borderRadius: "0.5rem" }}
       className="smooth-render-in flex flex-row justify-between bg-slate-200 p-2 dark:bg-slate-800"
     >
       <div className="flex w-max items-center space-x-2">

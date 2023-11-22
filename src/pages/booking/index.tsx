@@ -6,7 +6,7 @@ import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { type Association, type Facility } from "@prisma/client";
 import { SubHeader } from "~/components/SubHeader";
-import { emailDispatcher } from "~/utils/booking.util";
+import { emailDispatcher, maxPlayersToShow } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
 import { BeatLoader } from "react-spinners";
 import ActionModal from "~/components/ActionModal";
@@ -272,10 +272,6 @@ const Booking = () => {
       }) || [];
 
   const associationsToShow = getAssociationsToShow(joinedAssociations);
-  const maxPlayersToShow = [4, 6, 8, 10, 12].map((item) => ({
-    id: String(item),
-    name: String(item),
-  }));
 
   const validBooking =
     !!sessionData?.user.id &&
@@ -284,6 +280,10 @@ const Booking = () => {
     !!facility &&
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
+
+  const showFacility = () => {
+    return !associationsToShow?.length || !privateBooking || !!association;
+  };
 
   const showDateSelector = () => {
     if (!facility) {
@@ -384,53 +384,67 @@ const Booking = () => {
                 </ActionModal>
 
                 <div className="mt-4 flex flex-col gap-4">
-                  <JoinableToggle
-                    textColor="white"
-                    value={joinable}
-                    callback={onJoinableChange}
-                  />
                   <div className="1px solid rounded-md border border-slate-500 p-2">
-                    <label className="label">
-                      <span className="label-text text-white">
-                        Visible for everyone or for a private group only?
-                      </span>
-                    </label>
-                    <div className="w-100 btn-group-veri btn-group flex justify-center self-center">
-                      <button
-                        onClick={() => {
-                          setPrivateBooking(false);
-                          setAssociation(undefined);
-                        }}
-                        className={`btn-${
-                          privateBooking ? "inactive" : "active"
-                        } btn  w-[50%] text-white`}
-                      >
-                        Public
-                      </button>
-                      <button
-                        onClick={() => setPrivateBooking(true)}
-                        style={{ position: "relative" }}
-                        className={`btn btn-${
-                          privateBooking ? "active" : "inactive"
-                        } w-[50%] text-white`}
-                      >
-                        Private
-                      </button>
-                    </div>
-                    {!!associationsToShow.length && privateBooking && (
-                      <SelectInput
-                        label="Group"
-                        disabled={!privateBooking}
-                        disabledOption="Select group"
-                        valid={!privateBooking || !!association}
-                        value={association?.name || "Select group"}
-                        items={associationsToShow}
-                        callback={onAssociationSelect}
-                      />
-                    )}
+                    <JoinableToggle
+                      textColor="white"
+                      value={joinable}
+                      callback={onJoinableChange}
+                    />
+                    <SelectInput
+                      optionSuffix="players"
+                      label="Players"
+                      description="How many can play?"
+                      disabledOption="Players required (including you)"
+                      valid
+                      value={maxPlayers}
+                      items={maxPlayersToShow}
+                      callback={onMaxPlayersSelect}
+                    />
                   </div>
+                  {!!associationsToShow.length && (
+                    <div className="1px solid rounded-md border border-slate-500 p-2">
+                      <label className="label">
+                        <span className="label-text text-white">
+                          Visible for everyone or for a private group only?
+                        </span>
+                      </label>
+                      <div className="w-100 btn-group-veri btn-group flex justify-center self-center">
+                        <button
+                          onClick={() => {
+                            setPrivateBooking(false);
+                            setAssociation(undefined);
+                          }}
+                          className={`btn-${
+                            privateBooking ? "inactive" : "active"
+                          } btn  w-[50%] text-white`}
+                        >
+                          Public
+                        </button>
+                        <button
+                          onClick={() => setPrivateBooking(true)}
+                          style={{ position: "relative" }}
+                          className={`btn btn-${
+                            privateBooking ? "active" : "inactive"
+                          } w-[50%] text-white`}
+                        >
+                          Private
+                        </button>
+                      </div>
+                      {!!associationsToShow.length && privateBooking && (
+                        <SelectInput
+                          label="Group"
+                          disabled={!privateBooking}
+                          disabledOption="Select group"
+                          valid={!privateBooking || !!association}
+                          value={association?.name || "Select group"}
+                          items={associationsToShow}
+                          callback={onAssociationSelect}
+                        />
+                      )}
+                    </div>
+                  )}
 
-                  {(!privateBooking || !!association) && (
+                  {showFacility() && (
                     <div className="1px solid rounded-md border border-slate-500 p-2">
                       {facility?.name === "GBC Kviberg" && (
                         <div className="alert alert-info mt-2 flex flex-row text-white">

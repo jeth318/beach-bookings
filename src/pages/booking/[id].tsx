@@ -317,33 +317,39 @@ const Booking = () => {
                 </div>
                 {/* <PlayersTable booking={booking || defaultBooking} /> */}
                 <div className="flex flex-col gap-4">
-                  <JoinableToggle
-                    textColor="white"
-                    value={joinable || false}
-                    isLoading={isLoadingUpdateBookingJoinable}
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    callback={onJoinableChange}
-                  />
+                  <div className="1px solid rounded-md border border-slate-500 p-2">
+                    <JoinableToggle
+                      textColor="white"
+                      value={joinable || false}
+                      isLoading={isLoadingUpdateBookingJoinable}
+                      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                      callback={onJoinableChange}
+                    />
+                    <SelectInput
+                      
+                      label="Players"
+                      optionSuffix="players"
+                      description="How many players are required/allowed?"
+                      valid={!!maxPlayers}
+                      value={String(maxPlayers) || "Players"}
+                      items={maxPlayersToShow}
+                      callback={onMaxPlayersSelect}
+                    />
+                  </div>
 
-                  <SelectInput
-                    label="Group"
-                    description="Visible for specific group?"
-                    valid={true}
-                    value={association?.name || "Pick a group"}
-                    items={associationsToShow}
-                    defaultOption={{ id: "0", name: "" }}
-                    callback={onAssociationSelect}
-                  />
-                  {/*                   <SelectInput
-                    label="Players"
-                    description="How many players are required/allowed?"
-                    valid={!!maxPlayers}
-                    value={String(maxPlayers) || "Players"}
-                    items={maxPlayersToShow}
-                    callback={onMaxPlayersSelect}
-                  /> */}
+                  {!!associationsToShow.length && (
+                    <SelectInput
+                      label="Group"
+                      description="Visible for specific group?"
+                      valid={true}
+                      value={association?.name || "Pick a group"}
+                      items={associationsToShow}
+                      defaultOption={{ id: "0", name: "" }}
+                      callback={onAssociationSelect}
+                    />
+                  )}
 
-                  <div>
+                  <div className="1px solid rounded-md border border-slate-500 p-2">
                     <SelectInput
                       disabled
                       label="Facility"
@@ -394,7 +400,7 @@ const Booking = () => {
                       style={{ position: "relative" }}
                       className={`${
                         validBooking && !isLoadingUpdateBooking
-                          ? "btn-success animate-pulse"
+                          ? "btn-success"
                           : "btn-disabled"
                       } btn text-white`}
                       htmlFor="action-modal-booking"
