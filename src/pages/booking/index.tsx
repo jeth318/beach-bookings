@@ -447,7 +447,7 @@ const Booking = () => {
                   {showFacility() && (
                     <div className="1px solid rounded-md border border-slate-500 p-2">
                       {facility?.name === "GBC Kviberg" && (
-                        <div className="alert alert-info mt-2 flex flex-row text-white">
+                        <div className="alert alert-info mt-2 flex flex-row text-sm text-white">
                           <div>
                             <Image
                               className="mr-2 rounded-full shadow-sm shadow-black"
