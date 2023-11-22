@@ -412,7 +412,7 @@ const Booking = () => {
                         <button
                           onClick={() => {
                             setPrivateBooking(false);
-                            setAssociation(undefined);
+                            setAssociation(null);
                           }}
                           className={`btn-${
                             privateBooking ? "inactive" : "active"
