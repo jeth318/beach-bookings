@@ -5,7 +5,7 @@ type Props = {
 };
 
 const useSingleBooking = ({ id }: Props) => {
-  const { data: booking, isFetched: isFetchedBooking } =
+  const { data: booking, isFetched: isFetchedBooking, refetch: refetchBooking } =
     api.booking.getSingle.useQuery({ id: id || "" }, { enabled: !!id });
   const {
     mutateAsync: createBooking,
@@ -47,6 +47,7 @@ const useSingleBooking = ({ id }: Props) => {
     updateBookingJoinable,
     deleteBooking,
     booking,
+    refetchBooking,
     isFetchedBooking,
     isLoadingCreateBooking,
     isSuccessfullyCreateBooking,

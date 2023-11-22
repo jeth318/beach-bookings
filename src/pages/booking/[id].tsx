@@ -5,8 +5,6 @@ import { type ChangeEvent, useState, useEffect } from "react";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { type Association, Booking, type Facility } from "@prisma/client";
-import Link from "next/link";
-import { PlayersTable } from "~/components/PlayersTable";
 
 import { SubHeader } from "~/components/SubHeader";
 import { emailDispatcher, maxPlayersToShow } from "~/utils/booking.util";
@@ -57,6 +55,7 @@ const Booking = () => {
     booking,
     isLoadingUpdateBookingJoinable,
     isLoadingUpdateBooking,
+    refetchBooking,
   } = useSingleBooking({ id: getQueryId(router) });
 
   const { usersInBooking, isUsersInBookingFetched } = useUsersInBooking({
@@ -184,6 +183,7 @@ const Booking = () => {
             recipients,
             sendEmail,
           });
+          refetchBooking().catch(() => null);
           renderToast("Your booking details were updated", setToastMessage);
         },
       }
@@ -326,7 +326,6 @@ const Booking = () => {
                       callback={onJoinableChange}
                     />
                     <SelectInput
-                      
                       label="Players"
                       optionSuffix="players"
                       description="How many players are required/allowed?"
@@ -338,15 +337,46 @@ const Booking = () => {
                   </div>
 
                   {!!associationsToShow.length && (
-                    <SelectInput
-                      label="Group"
-                      description="Visible for specific group?"
-                      valid={true}
-                      value={association?.name || "Pick a group"}
-                      items={associationsToShow}
-                      defaultOption={{ id: "0", name: "" }}
-                      callback={onAssociationSelect}
-                    />
+                    <div className="1px solid rounded-md border border-slate-500 p-2">
+                      <label className="label">
+                        <span className="label-text text-white">
+                          Visible for everyone or for a private group only?
+                        </span>
+                      </label>
+                      <div className="w-100 btn-group-veri btn-group flex justify-center self-center">
+                        <button
+                          onClick={() => {
+                            setPrivateBooking(false);
+                            setAssociation(undefined);
+                          }}
+                          className={`btn-${
+                            privateBooking ? "inactive" : "active"
+                          } btn  w-[50%] text-white`}
+                        >
+                          Public
+                        </button>
+                        <button
+                          onClick={() => setPrivateBooking(true)}
+                          style={{ position: "relative" }}
+                          className={`btn btn-${
+                            privateBooking ? "active" : "inactive"
+                          } w-[50%] text-white`}
+                        >
+                          Private
+                        </button>
+                      </div>
+                      {!!associationsToShow.length && privateBooking && (
+                        <SelectInput
+                          label="Group"
+                          disabled={!privateBooking}
+                          disabledOption="Select group"
+                          valid={!privateBooking || !!association}
+                          value={association?.name || "Select group"}
+                          items={associationsToShow}
+                          callback={onAssociationSelect}
+                        />
+                      )}
+                    </div>
                   )}
 
                   <div className="1px solid rounded-md border border-slate-500 p-2">
