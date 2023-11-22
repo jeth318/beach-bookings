@@ -339,7 +339,7 @@ const Booking = () => {
   return (
     <>
       <SubHeader title={"Publish booking"} />
-      <main className="min-w-sm pd-3 flex flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="min-w-sm pd-3 dark:color-white flex flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex flex-col items-center justify-center p-3">
             <h2 className="text-center text-2xl text-white">
