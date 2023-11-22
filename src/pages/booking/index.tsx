@@ -23,6 +23,7 @@ import useUserAssociations from "../../hooks/useUserAssociations";
 import useSingleBooking from "../../hooks/useSingleBooking";
 import { getAssociationsToShow } from "~/utils/association.util";
 import { Toggle } from "~/components/Toggle";
+import { CustomIcon } from "~/components/CustomIcon";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -253,10 +254,11 @@ const Booking = () => {
   const onCourtSelect = (event: ChangeEvent<HTMLSelectElement>) => {
     setCourt(event?.target.value);
   };
-  const onDraftCancel = async () => {
+  const onDraftCancel = () => {
     setPreventLocalStorageWrite(true);
     localStorage.removeItem("booking-state");
-    await router.push("/");
+    router.reload();
+    //await router.push("/");
     return undefined;
   };
   const facilitiesToShow =
@@ -270,7 +272,7 @@ const Booking = () => {
       }) || [];
 
   const associationsToShow = getAssociationsToShow(joinedAssociations);
-  const maxPlayersToShow = [4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => ({
+  const maxPlayersToShow = [4, 6, 8, 10, 12].map((item) => ({
     id: String(item),
     name: String(item),
   }));
@@ -282,6 +284,26 @@ const Booking = () => {
     !!facility &&
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
+
+  const showDateSelector = () => {
+    if (!facility) {
+      return false;
+    }
+    const hasDurations = !!facility?.durations.length;
+    const hasCourts = !!facility?.courts.length;
+
+    if (hasDurations && hasCourts) {
+      return !!duration && !!court;
+    }
+
+    if (hasDurations) {
+      return !!duration;
+    }
+
+    if (hasCourts) {
+      return !!court;
+    }
+  };
 
   if (isInitialLoading || !isUserFetched || !isJoinedAssociationsFetched) {
     return (
@@ -349,7 +371,8 @@ const Booking = () => {
                   data={undefined}
                   tagRef={`booking-cancel`}
                   title="Are you sure?"
-                  confirmButtonText={"Yesbox"}
+                  level="warning"
+                  confirmButtonText={"Reset"}
                   cancelButtonText="Keep editing"
                 >
                   <div className="py-4">
@@ -359,125 +382,149 @@ const Booking = () => {
                     </p>
                   </div>
                 </ActionModal>
-                <div className="alert alert-info mt-2 flex flex-row text-white">
-                  <div>
-                    <Image
-                      className="mr-2 rounded-full shadow-sm shadow-black"
-                      alt="arrogant-frog"
-                      src="/cig-frog.gif"
-                      width={55}
-                      height={55}
-                    />
-                    <p>
-                      <b>Yo!</b> Before publishing a booking here, make sure
-                      that you actually book it first at{" "}
-                      <a
-                        style={{ color: "gold" }}
-                        target="_blank"
-                        className="link"
-                        href="https://gbc.goactivebooking.com/book-service/27?facility=1"
-                      >
-                        GBC official page
-                      </a>{" "}
-                      and receive a confirmation email.
-                    </p>
-                  </div>
-                </div>
-                <div className="mb-4 mt-4">
+
+                <div className="mt-4 flex flex-col gap-4">
                   <JoinableToggle
                     textColor="white"
                     value={joinable}
                     callback={onJoinableChange}
                   />
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  {!!associationsToShow.length && (
-                    <SelectInput
-                      label="Group"
-                      disabled={!privateBooking}
-                      defaultOption={{ id: "0", name: "" }}
-                      description="Publish to a specific group only?"
-                      valid
-                      value={association?.name || "Select group"}
-                      items={associationsToShow}
-                      callback={onAssociationSelect}
-                    />
-                  )}
-
-                  {/*                   <SelectInput
-                    label="Players"
-                    description="How many players are required/allowed?"
-                    valid={!!maxPlayers}
-                    value={String(maxPlayers) || "Players"}
-                    items={maxPlayersToShow}
-                    callback={onMaxPlayersSelect}
-                  /> */}
-
-                  <div>
-                    <SelectInput
-                      disabledOption="Pick a place"
-                      label="Facility"
-                      description="Where are you playing? (more to come)"
-                      valid={!!facility}
-                      value={facility?.name || "Pick a place"}
-                      items={facilitiesToShow}
-                      callback={onFacilitySelect}
-                    />
-                    {!!facility?.durations?.length && (
-                      <div className="smooth-render-in">
-                        <SelectInput
-                          label="Duration"
-                          disabledOption="Select duration"
-                          optionSuffix={` minutes`}
-                          valid={!!duration}
-                          value={duration || "Select duration"}
-                          items={facility.durations.map((item) => ({
-                            id: item,
-                            name: item,
-                          }))}
-                          callback={onDurationSelect}
-                        />
-                      </div>
-                    )}
-                    {!!facility?.courts.length && (
-                      <div className="smooth-render-in">
-                        <SelectInput
-                          label="Court"
-                          disabledOption="Select court"
-                          valid={!!court}
-                          value={court || "Select court"}
-                          items={facility.courts.map((item) => ({
-                            id: item,
-                            name: item,
-                          }))}
-                          callback={onCourtSelect}
-                        />
-                      </div>
+                  <div className="1px solid rounded-md border border-slate-500 p-2">
+                    <label className="label">
+                      <span className="label-text text-white">
+                        Visible for everyone or for a private group only?
+                      </span>
+                    </label>
+                    <div className="w-100 btn-group-veri btn-group flex justify-center self-center">
+                      <button
+                        onClick={() => {
+                          setPrivateBooking(false);
+                          setAssociation(undefined);
+                        }}
+                        className={`btn-${
+                          privateBooking ? "inactive" : "active"
+                        } btn  w-[50%] text-white`}
+                      >
+                        Public
+                      </button>
+                      <button
+                        onClick={() => setPrivateBooking(true)}
+                        style={{ position: "relative" }}
+                        className={`btn btn-${
+                          privateBooking ? "active" : "inactive"
+                        } w-[50%] text-white`}
+                      >
+                        Private
+                      </button>
+                    </div>
+                    {!!associationsToShow.length && privateBooking && (
+                      <SelectInput
+                        label="Group"
+                        disabled={!privateBooking}
+                        disabledOption="Select group"
+                        valid={!privateBooking || !!association}
+                        value={association?.name || "Select group"}
+                        items={associationsToShow}
+                        callback={onAssociationSelect}
+                      />
                     )}
                   </div>
 
-                  <DateSelector
-                    date={date}
-                    time={time}
-                    callback={onDateSelect}
-                  />
+                  {(!privateBooking || !!association) && (
+                    <div className="1px solid rounded-md border border-slate-500 p-2">
+                      {facility?.name === "GBC Kviberg" && (
+                        <div className="alert alert-info mt-2 flex flex-row text-white">
+                          <div>
+                            <Image
+                              className="mr-2 rounded-full shadow-sm shadow-black"
+                              alt="arrogant-frog"
+                              src="/cig-frog.gif"
+                              width={55}
+                              height={55}
+                            />
+                            <p>
+                              <b>Yo!</b> Make sure that you book a court at{" "}
+                              <a
+                                target="_blank"
+                                className="text-blue link"
+                                href="https://gbc.goactivebooking.com/book-service/27?facility=1"
+                              >
+                                {" "}
+                                {facility.name}
+                              </a>{" "}
+                              and receive a confirmation email before publishing
+                              here.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      <SelectInput
+                        disabledOption="Pick a place"
+                        label="Facility"
+                        description="Where are you playing? (more to come)"
+                        valid={!!facility}
+                        value={facility?.name || "Pick a place"}
+                        items={facilitiesToShow}
+                        callback={onFacilitySelect}
+                      />
+                      {!!facility?.durations?.length && (
+                        <div className="smooth-render-in">
+                          <SelectInput
+                            label="Duration"
+                            disabledOption="Select duration"
+                            optionSuffix={` minutes`}
+                            valid={!!duration}
+                            value={duration || "Select duration"}
+                            items={facility.durations.map((item) => ({
+                              id: item,
+                              name: item,
+                            }))}
+                            callback={onDurationSelect}
+                          />
+                        </div>
+                      )}
+                      {!!facility?.courts.length && (
+                        <div className="smooth-render-in">
+                          <SelectInput
+                            label="Court"
+                            disabledOption="Select court"
+                            valid={!!court}
+                            value={court || "Select court"}
+                            items={facility.courts.map((item) => ({
+                              id: item,
+                              name: item,
+                            }))}
+                            callback={onCourtSelect}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {showDateSelector() && (
+                    <div className="smooth-render-in">
+                      <DateSelector
+                        date={date}
+                        time={time}
+                        callback={onDateSelect}
+                      />
+                    </div>
+                  )}
                 </div>
 
-                <div className="w-100 btn-group btn-group-horizontal mb-20 mt-10 flex justify-center self-center">
+                <div className="mb-20 mt-10 flex flex-col items-center justify-center gap-2">
                   <label
                     htmlFor="action-modal-booking-cancel"
-                    className="btn btn-warning text-white"
+                    className="btn-outline btn w-[200px] text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   >
-                    Cancel
+                    Reset
                   </label>
 
                   <label
-                    style={{ position: "relative" }}
                     className={`${
                       validBooking ? "btn-success" : "btn-disabled"
-                    } btn text-white`}
+                    } btn w-[200px] text-white`}
                     htmlFor="action-modal-booking"
                   >
                     Publish

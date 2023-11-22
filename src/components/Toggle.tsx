@@ -10,6 +10,7 @@ type Props = {
   svgPath?: string;
   title?: string;
   message?: string;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
   children?: React.ReactNode | undefined;
   callback: (event: ChangeEvent<HTMLInputElement>) => void;
 };
@@ -21,6 +22,7 @@ export const Toggle = ({
   title,
   children,
   message,
+  size = "lg",
   callback,
 }: Props) => {
   return (
@@ -55,7 +57,7 @@ export const Toggle = ({
           <input
             id="joinable-input"
             type="checkbox"
-            className={`toggle-success toggle toggle-lg`}
+            className={`toggle-success toggle toggle-${size}`}
             onChange={callback}
             checked={value}
           />

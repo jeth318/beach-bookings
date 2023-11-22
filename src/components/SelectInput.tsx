@@ -6,7 +6,7 @@ type SelectItem = {
 };
 
 export type Props = {
-  label: string;
+  label?: string;
   disabledOption?: string;
   description?: string;
   items: SelectItem[];
@@ -35,18 +35,24 @@ export const SelectInput = ({
       <label className="label">
         <span className="label-text text-white">{description}</span>
       </label>
-      <label className={`input-group ${valid ? "input-valid" : ""}`}>
-        <span
-          style={{ width: "33%" }}
-          className="label-info-text flex justify-between pr-1"
-        >
-          <div>{label}</div>
-          <div className="mr-1 self-center">{valid && "✅"}</div>
-        </span>
+      <label
+        className={`${label ? "input-group" : ""} ${
+          valid ? "input-valid" : ""
+        }`}
+      >
+        {!!label && (
+          <span
+            style={{ width: "33%" }}
+            className="label-info-text flex justify-between pr-1"
+          >
+            <div>{label}</div>
+            <div className="mr-1 self-center">{valid && "✅"}</div>
+          </span>
+        )}
 
         <select
           disabled={disabled}
-          style={{ width: "67%" }}
+          style={{ width: label ? "67%" : "100%" }}
           className="full-width select-bordered select w-[60%]"
           onChange={(e: ChangeEvent<HTMLSelectElement>) => callback(e)}
           value={value}
