@@ -168,9 +168,9 @@ export const bookingsByDate = ({
     });
 };
 
-export const getProgressAccent = (booking: Booking) => {
+export const getProgressAccent = (booking: Booking, guestPlayers: number) => {
   const percentFilled = Math.floor(
-    (booking.players.length / (booking.maxPlayers || 4)) * 100
+    ((booking.players.length + guestPlayers) / (booking.maxPlayers || 4)) * 100
   );
 
   if (percentFilled <= 25) {

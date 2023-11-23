@@ -63,6 +63,13 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+model Guest {
+    id        String @id
+    name      String
+    bookingId String
+    invitedBy String
+}
+
 model Booking {
     id            String       @id
     players       String[]
@@ -76,6 +83,7 @@ model Booking {
     private       Boolean      @default(true)
     associationId String?
     facilityId    String?
+    guests        String[]
     joinable      Boolean      @default(true)
 }
 

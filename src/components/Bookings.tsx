@@ -1,4 +1,9 @@
-import { type User, type Booking, type Facility } from "@prisma/client";
+import {
+  type User,
+  type Booking,
+  type Facility,
+  type Guest,
+} from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { api } from "~/utils/api";
@@ -35,6 +40,8 @@ import useUser from "~/hooks/useUser";
 import useBooking from "~/hooks/useBooking";
 import useAssociations from "~/hooks/useUserAssociations";
 import useSessionUser from "~/hooks/useSessionUser";
+import useGuest from "~/hooks/useGuest";
+import { guestRouter } from "~/server/api/routers/guest";
 
 type Bookings = {
   data: Booking[];
@@ -59,6 +66,7 @@ export const Bookings = ({ bookings }: Props) => {
   const sessionUserId = session?.data?.user?.id;
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
+  const { allGuests, refetchAllGuests } = useGuest({ id: null });
 
   const historyOnly = router.asPath === "/history";
   const createdOnly = router.asPath === "/created";
@@ -249,6 +257,12 @@ export const Bookings = ({ bookings }: Props) => {
     sessionUserId,
   });
 
+  const getGuestsInBooking = (booking: Booking) =>
+    allGuests?.filter((guest) => guest.bookingId === booking.id);
+
+  const getNumberOfGuestsInBooking = (booking: Booking) =>
+    getGuestsInBooking(booking)?.length || 0;
+
   const showArrogantFrog =
     (!oldBookings?.length && historyOnly) ||
     (!bookingsToShow?.length && !historyOnly);
@@ -335,6 +349,17 @@ export const Bookings = ({ bookings }: Props) => {
               .map((user: User) => (
                 <Player key={user.id} user={user} booking={booking} />
               ));
+          const renderGuestPlayersInBooking = () => {
+            return allGuests
+              ?.filter((guest) => guest.bookingId === booking.id)
+              .map((guest: Guest) => (
+                <Player
+                  key={guest.id}
+                  user={{ name: `${guest.name} (guest)` } as User}
+                  booking={booking}
+                />
+              ));
+          };
 
           const renderPartyLeader = () => {
             const booker = getUsersByBooking(users, booking).find(
@@ -362,19 +387,22 @@ export const Bookings = ({ bookings }: Props) => {
                         booking.players.includes(sessionUserId)) ||
                       booking.userId === sessionUserId ? (
                         <Link
-                          //href={`/booking/details/${booking.id}`}
-                          href="#"
-                          className="font-bil card-title text-2xl font-bold"
+                          href={`/booking/details/${booking.id}`}
+                          className="font-bil link card-title text-2xl font-bold"
                         >
                           {parseDate(booking)}
-                          {booking.players.length === 4 &&
+                          {booking.players.length +
+                            getNumberOfGuestsInBooking(booking) ===
+                            4 &&
                             !historyOnly &&
                             " ✅"}
                         </Link>
                       ) : (
                         <div className="font-bil card-title text-2xl font-bold">
                           {parseDate(booking)}
-                          {booking.players.length === 4 &&
+                          {booking.players.length +
+                            getNumberOfGuestsInBooking(booking) ===
+                            4 &&
                             !historyOnly &&
                             " ✅"}
                         </div>
@@ -453,6 +481,7 @@ export const Bookings = ({ bookings }: Props) => {
                               <div>
                                 {renderPartyLeader()}
                                 {renderPlayersInBooking()}
+                                {renderGuestPlayersInBooking()}
                               </div>
                             )}
                           </>
@@ -474,7 +503,8 @@ export const Bookings = ({ bookings }: Props) => {
                         {!historyOnly && (
                           <div
                             className={`radial-progress self-center text-lg font-bold ${getProgressAccent(
-                              booking
+                              booking,
+                              getNumberOfGuestsInBooking(booking)
                             )}`}
                             style={{
                               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -482,12 +512,17 @@ export const Bookings = ({ bookings }: Props) => {
                               "--value":
                                 (!maxPlayers
                                   ? 100
-                                  : booking.players.length / maxPlayers) * 100,
+                                  : booking.players.length +
+                                    getNumberOfGuestsInBooking(booking) /
+                                      maxPlayers) * 100,
                               "--thickness": "3px",
                             }}
                           >
                             {booking.maxPlayers
-                              ? `${booking.players.length} / ${booking.maxPlayers}`
+                              ? `${
+                                  booking.players.length +
+                                  getNumberOfGuestsInBooking(booking)
+                                } / ${booking.maxPlayers}`
                               : booking.players.length}
                           </div>
                         )}
@@ -505,7 +540,7 @@ export const Bookings = ({ bookings }: Props) => {
                                     onClick={() =>
                                       void setBookingToChange(booking)
                                     }
-                                    className="btn btn-warning btn-sm text-white"
+                                    className="btn-warning btn-sm btn text-white"
                                   >
                                     {leaving.isWorking &&
                                     booking.id === leaving.bookingId ? (
@@ -537,7 +572,7 @@ export const Bookings = ({ bookings }: Props) => {
 
                             {!isMainPage &&
                               session?.data?.user?.id === booking?.userId && (
-                                <button className="btn btn-sm text-white">
+                                <button className="btn-sm btn text-white">
                                   <Link
                                     href={{
                                       pathname: `/booking/${booking.id}`,
@@ -555,7 +590,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn btn-error btn-sm text-white"
+                                  className="btn-error btn-sm btn text-white"
                                 >
                                   {deleting.isWorking &&
                                   booking.id === deleting.bookingId ? (
