@@ -1,42 +1,30 @@
 import { type Booking, type Facility } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { CheckAvailability } from "./CheckAvailability";
-import { parseDate, parseTime } from "~/utils/time.util";
 import { getBgColor } from "~/utils/color.util";
 import {
   bookingsByDate,
   emailDispatcher,
-  isOngoingGame,
   type EventType,
   type BookingAction,
 } from "~/utils/booking.util";
 import {
   getEmailRecipients,
-  joinBookingText,
-  leaveBookingText,
-  removeBookingText,
   renderToast,
   toastMessages,
 } from "~/utils/general.util";
 import { ArrogantFrog } from "./ArrogantFrog";
-import ActionModal from "./ActionModal";
-import { OngoingGame } from "./OngoingGame";
-import { CustomIcon } from "./CustomIcon";
 import { Toast } from "./Toast";
 import useEmail from "~/hooks/useEmail";
 import useUser from "~/hooks/useUser";
 import useBooking from "~/hooks/useBooking";
 import useAssociations from "~/hooks/useUserAssociations";
 import useSessionUser from "~/hooks/useSessionUser";
-import { AssociationSection } from "./AssociationSection";
-import { FacilitySection } from "./FacilitySection";
-import { PlayerSection } from "./PlayerSection";
-import { DurationAndCourtSection } from "./DurationAndCourtSection";
-import { ActionPanelSection } from "./ActionPanelSection";
+import { BookingItem } from "./BookingItem";
+import { BookingActionModalGroup } from "./BookingActionModalGroup";
 
 type Bookings = {
   data: Booking[];
@@ -82,16 +70,13 @@ export const Bookings = ({ bookings }: Props) => {
   const { sessionUser } = useSessionUser();
   const { user } = useUser({ email: sessionUserEmail });
 
-  const {
-    joinedAssociations: associations,
-    isInitialLoadingJoinedAssociations,
-  } = useAssociations({
+  const { joinedAssociations: associations } = useAssociations({
     associationIds: user?.associations,
   });
 
-  const { data: facilities = [] } = api.facility.getAll.useQuery();
-
   const { refetchBookings } = useBooking();
+
+  const { data: facilities } = api.facility.getAll.useQuery();
 
   const { sendEmail } = useEmail();
 
@@ -101,7 +86,7 @@ export const Bookings = ({ bookings }: Props) => {
     eventType: EventType
   ) => {
     const recipients = getEmailRecipients({
-      users,
+      users: users || [],
       playersInBooking: booking.players,
       sessionUserId: sessionUserId || "",
       eventType,
@@ -209,156 +194,30 @@ export const Bookings = ({ bookings }: Props) => {
 
   return (
     <div>
-      {["delete", "leave", "join"].flatMap((action) => {
-        let level = "error";
-        let body = "";
-        let callback;
-        let emoji = "";
-
-        switch (action) {
-          case "delete":
-            level = "error";
-            body = removeBookingText;
-            emoji = "☠️";
-            callback = deleteBooking;
-
-            break;
-          case "leave":
-            level = "warning";
-            body = leaveBookingText;
-            emoji = "🚪";
-            callback = leaveGame;
-            break;
-          case "join":
-            level = "success";
-            body = joinBookingText;
-            emoji = "🫂";
-            callback = joinGame;
-            break;
-          default:
-            callback = () => {
-              return null;
-            };
-        }
-
-        let title = `Confirm ${action} ${emoji}`;
-
-        let confirmButtonText =
-          action.charAt(0).toUpperCase() + action.slice(1);
-
-        if (!user?.name || user.name.length < 3) {
-          callback = async () => {
-            await router.push("/settings");
-          };
-          title = "What is your name?";
-          confirmButtonText = "Settings";
-          level = "info";
-          body = `Please go to settings and enter your name in order to ${action} this booking.`;
-        }
-
-        return (
-          <ActionModal
-            callback={callback}
-            data={bookingToChange}
-            tagRef={`${action}-booking`}
-            title={title}
-            body={body}
-            confirmButtonText={confirmButtonText}
-            cancelButtonText="Cancel"
-            level={level}
-          />
-        );
-      })}
+      <BookingActionModalGroup
+        bookingToChange={bookingToChange}
+        joinGame={joinGame}
+        leaveGame={leaveGame}
+        deleteBooking={deleteBooking}
+      />
       <div
         className={`bg-gradient-to-b ${bgColorDark} bookings-container h-full`}
       >
         {toastMessage && <Toast body={toastMessage} />}
         {bookingsToShow?.map((booking: Booking) => {
-          const maxPlayers = booking.maxPlayers || 0;
-
           return (
-            <div
+            <BookingItem
               key={booking.id}
-              className="smooth-render-in first:border-b-1 border-b border-zinc-400"
-            >
-              <div className="card-compact card">
-                <div
-                  className={`card-body flex-row justify-between text-primary-content`}
-                >
-                  <div className="flex flex-col">
-                    {isOngoingGame(booking) && <OngoingGame />}
-                    <div>
-                      {(sessionUserId &&
-                        booking.players.includes(sessionUserId)) ||
-                      booking.userId === sessionUserId ? (
-                        <Link
-                          //href={`/booking/details/${booking.id}`}
-                          href="#"
-                          className="font-bil card-title text-2xl font-bold"
-                        >
-                          {parseDate(booking)}
-                          {booking.players.length === 4 &&
-                            !historyOnly &&
-                            " ✅"}
-                        </Link>
-                      ) : (
-                        <div className="font-bil card-title text-2xl font-bold">
-                          {parseDate(booking)}
-                          {booking.players.length === 4 &&
-                            !historyOnly &&
-                            " ✅"}
-                        </div>
-                      )}
-                      <div className="flex flex-col pb-1 font-medium">
-                        <div className="flex flex-row self-start pb-2">
-                          <CustomIcon path="/svg/duration.svg" width={20} />
-                          <div className="pl-1 text-lg">
-                            {parseTime(booking)}
-                          </div>
-                        </div>
-
-                        <div
-                          style={{ maxWidth: "150px" }}
-                          className="transparent-background-grey self-start rounded-lg border border-slate-600 p-1"
-                        >
-                          {booking.associationId &&
-                            sessionUser?.associations.includes(
-                              booking.associationId
-                            ) && (
-                              <AssociationSection
-                                booking={booking}
-                                isLoading={isInitialLoadingJoinedAssociations}
-                                associations={associations}
-                              />
-                            )}
-                          {booking.facilityId && (
-                            <FacilitySection
-                              facilities={facilities}
-                              booking={booking}
-                            />
-                          )}
-                        </div>
-                      </div>
-                      {sessionUser?.id && <PlayerSection booking={booking} />}
-                    </div>
-                  </div>
-                  <div className={`${historyOnly ? "items-center" : "flex"}`}>
-                    <div className="flex flex-col self-end pb-2">
-                      <DurationAndCourtSection booking={booking} />
-                      <ActionPanelSection
-                        isMainPage={router.asPath !== "/"}
-                        leaving={leaving}
-                        joining={joining}
-                        deleting={deleting}
-                        booking={booking}
-                        sessionUserId={sessionUserId}
-                        onBookingChange={setBookingToChange}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              booking={booking}
+              sessionUser={sessionUser}
+              joining={joining}
+              leaving={leaving}
+              deleting={deleting}
+              router={router}
+              associations={associations || []}
+              facilities={facilities || []}
+              onBookingItemChange={setBookingToChange}
+            />
           );
         })}
         {createdOnly && <CheckAvailability />}

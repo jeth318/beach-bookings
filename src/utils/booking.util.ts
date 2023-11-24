@@ -1,4 +1,3 @@
-import { Player } from "./../components/Player";
 import {
   type User,
   type Association,
@@ -66,9 +65,10 @@ function padZero(value: number) {
   return value < 10 ? `0${value}` : value;
 }
 
-export const isBooker = (users: User[], booking: Booking) => !!getUsersByBooking(users, booking).find(
-  (user) => user.id === booking.userId
-);
+export const isBooker = (users: User[], booking: Booking) =>
+  !!getUsersByBooking(users, booking).find(
+    (user) => user.id === booking.userId
+  );
 
 export const getBookingEndDate = (booking: Booking) =>
   new Date(booking.date.getTime() + booking.duration * 60 * 1000).getTime();
