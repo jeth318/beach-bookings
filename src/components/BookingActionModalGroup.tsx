@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 import useSessionUser from "~/hooks/useSessionUser";
 import useUser from "~/hooks/useUser";
+import { useRouter } from "next/router";
 
 type Props = {
   bookingToChange?: Booking;
@@ -23,7 +24,7 @@ export const BookingActionModalGroup = ({
   leaveGame,
   deleteBooking,
 }: Props) => {
-  const router = useState();
+  const router = useRouter();
   const { sessionUser } = useSessionUser();
   const { user } = useUser({ email: sessionUser?.email });
 
@@ -67,9 +68,7 @@ export const BookingActionModalGroup = ({
           action.charAt(0).toUpperCase() + action.slice(1);
 
         if (!user?.name || user?.name?.length < 3) {
-          callback = () => {
-            router.push("/settings");
-          };
+          callback = () => void router.push("/settings");
           title = "What is your name?";
           confirmButtonText = "Settings";
           level = "info";
