@@ -13,3 +13,10 @@ export const getAssociationsToShow = (
 
   return mapped;
 };
+
+export const getAssociationById = (
+  id?: string | null | undefined,
+  associations?: Association[]
+) => {
+  return associations?.find((item) => item.id === id);
+};

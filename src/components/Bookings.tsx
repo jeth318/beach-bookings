@@ -6,7 +6,7 @@ import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { useRouter } from "next/router";
 import { CheckAvailability } from "./CheckAvailability";
-import { parseDate, parseTime, today } from "~/utils/time.util";
+import { parseDate, parseTime } from "~/utils/time.util";
 import { getBgColor } from "~/utils/color.util";
 import {
   bookingsByDate,
@@ -14,13 +14,16 @@ import {
   getProgressAccent,
   isOngoingGame,
   type EventType,
+  getJoinButtonClassName,
+  getJoinButtonText,
+  type BookingAction,
 } from "~/utils/booking.util";
 import {
   getEmailRecipients,
-  getUsersByBooking,
   joinBookingText,
   leaveBookingText,
   removeBookingText,
+  renderToast,
   toastMessages,
 } from "~/utils/general.util";
 import { ArrogantFrog } from "./ArrogantFrog";
@@ -35,6 +38,9 @@ import useUser from "~/hooks/useUser";
 import useBooking from "~/hooks/useBooking";
 import useAssociations from "~/hooks/useUserAssociations";
 import useSessionUser from "~/hooks/useSessionUser";
+import { AssociationSection } from "./AssociationSection";
+import { FacilitySection } from "./FacilitySection";
+import { PlayerSection } from "./PlayerSection";
 
 type Bookings = {
   data: Booking[];
@@ -43,11 +49,6 @@ type Bookings = {
 
 type Props = {
   bookings?: Booking[];
-};
-
-type BookingAction = {
-  isWorking: boolean;
-  bookingId?: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -88,9 +89,7 @@ export const Bookings = ({ bookings }: Props) => {
 
   const {
     joinedAssociations: associations,
-    isJoinedAssociationsFetched,
     isInitialLoadingJoinedAssociations,
-    isLoadingJoinedAssociations,
   } = useAssociations({
     associationIds: user?.associations,
   });
@@ -100,14 +99,6 @@ export const Bookings = ({ bookings }: Props) => {
   const { refetchBookings } = useBooking();
 
   const { sendEmail } = useEmail();
-
-  const getAssociation = (id: string) => {
-    return associations?.find((item) => item.id === id);
-  };
-
-  const getFacility = (id: string | null) => {
-    return facilities.find((item) => item.id === id);
-  };
 
   const handleMutationSuccess = (
     mutatedBooking: Booking,
@@ -137,7 +128,8 @@ export const Bookings = ({ bookings }: Props) => {
       setIsJoining({ isWorking: false, bookingId: undefined });
     });
 
-    toastMessages[eventType] && renderToast(toastMessages[eventType]);
+    toastMessages[eventType] &&
+      renderToast(toastMessages[eventType], setToastMessage);
   };
 
   const deleteBooking = (booking: Booking | undefined) => {
@@ -152,34 +144,6 @@ export const Bookings = ({ bookings }: Props) => {
         }
       );
     }
-  };
-
-  const getJoinButtonText = (booking: Booking) => {
-    const spotsAvailable =
-      !booking?.maxPlayers ||
-      (typeof booking?.maxPlayers === "number" &&
-        booking?.maxPlayers > booking.players.length);
-
-    return spotsAvailable
-      ? !booking?.joinable && booking.userId !== sessionUserId
-        ? "Locked"
-        : "Join"
-      : "Full";
-  };
-
-  const getJoinButtonClassName = (booking: Booking) => {
-    const spotsAvailable =
-      !booking?.maxPlayers ||
-      (typeof booking?.maxPlayers === "number" &&
-        booking?.maxPlayers > booking.players.length);
-
-    const btnVariant = spotsAvailable
-      ? !booking?.joinable && booking.userId !== sessionUserId
-        ? "btn-disabled"
-        : "btn-success"
-      : "btn-disabled";
-
-    return `btn-sm btn text-white ${btnVariant}`;
   };
 
   const joinGame = (booking: Booking) => {
@@ -228,17 +192,6 @@ export const Bookings = ({ bookings }: Props) => {
     );
   };
 
-  const renderToast = (body: string) => {
-    setToastMessage(body);
-    setTimeout(() => {
-      setToastMessage(undefined);
-    }, 3000);
-  };
-
-  const oldBookings = bookings?.filter(
-    (booking) => booking.date.getTime() < today
-  );
-
   const bgColorDark = getBgColor(router.asPath);
 
   const bookingsToShow = bookingsByDate({
@@ -249,9 +202,7 @@ export const Bookings = ({ bookings }: Props) => {
     sessionUserId,
   });
 
-  const showArrogantFrog =
-    (!oldBookings?.length && historyOnly) ||
-    (!bookingsToShow?.length && !historyOnly);
+  const showArrogantFrog = !bookingsToShow?.length && !historyOnly;
 
   if (showArrogantFrog) {
     return (
@@ -329,22 +280,6 @@ export const Bookings = ({ bookings }: Props) => {
         {toastMessage && <Toast body={toastMessage} />}
         {bookingsToShow?.map((booking: Booking) => {
           const maxPlayers = booking.maxPlayers || 0;
-          const renderPlayersInBooking = () =>
-            getUsersByBooking(users, booking)
-              .filter((player) => player.id !== booking.userId)
-              .map((user: User) => (
-                <Player key={user.id} user={user} booking={booking} />
-              ));
-
-          const renderPartyLeader = () => {
-            const booker = getUsersByBooking(users, booking).find(
-              (user) => user.id === booking.userId
-            );
-
-            if (booker) {
-              return <Player key={booker.id} user={booker} booking={booking} />;
-            }
-          };
 
           return (
             <div
@@ -395,69 +330,27 @@ export const Bookings = ({ bookings }: Props) => {
                             sessionUser?.associations.includes(
                               booking.associationId
                             ) && (
-                              <div className="flex flex-row items-center self-start pb-1 ">
-                                <span className="pr-1">
-                                  <CustomIcon
-                                    path="/svg/people.svg"
-                                    width={20}
-                                  />
-                                </span>
-                                <div
-                                  style={{ maxWidth: 100 }}
-                                  className="overflow-dots"
-                                >
-                                  {isInitialLoadingJoinedAssociations ? (
-                                    <BeatLoader size={6} color="white" />
-                                  ) : (
-                                    getAssociation(booking?.associationId)?.name
-                                  )}
-                                </div>
-                              </div>
+                              <AssociationSection
+                                booking={booking}
+                                isLoading={isInitialLoadingJoinedAssociations}
+                                associations={associations}
+                              />
                             )}
                           {booking.facilityId && (
-                            <div className="flex flex-row items-center justify-start">
-                              <span className="pr-1">
-                                <CustomIcon
-                                  path="/svg/location-arrow.svg"
-                                  width={20}
-                                />
-                              </span>
-                              <div>
-                                <div className="flex flex-row items-center">
-                                  {getFacility(booking?.facilityId)?.name}
-                                </div>
-                              </div>
-                              {!!getFacility(booking?.facilityId)?.durations
-                                .length && (
-                                <span className="pl-2">
-                                  <CustomIcon
-                                    alt="Game has costs"
-                                    path="/svg/coins.svg"
-                                    width={18}
-                                  />
-                                </span>
-                              )}
-                            </div>
+                            <FacilitySection
+                              facilities={facilities}
+                              booking={booking}
+                            />
                           )}
                         </div>
-                        <div></div>
                       </div>
-                      <div className="self-start pt-2">
-                        {isInitialLoadingUsers ? (
-                          <div className="flex justify-start">
-                            <BeatLoader size={10} color="#36d7b7" />
-                          </div>
-                        ) : (
-                          <>
-                            {!router.query.id && sessionUserId && (
-                              <div>
-                                {renderPartyLeader()}
-                                {renderPlayersInBooking()}
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
+                      {sessionUser?.id && (
+                        <PlayerSection
+                          users={users}
+                          booking={booking}
+                          isInitialLoadingUsers={isInitialLoadingUsers}
+                        />
+                      )}
                     </div>
                   </div>
                   <div className={`${historyOnly ? "items-center" : "flex"}`}>
@@ -505,7 +398,7 @@ export const Bookings = ({ bookings }: Props) => {
                                     onClick={() =>
                                       void setBookingToChange(booking)
                                     }
-                                    className="btn btn-warning btn-sm text-white"
+                                    className="btn-warning btn-sm btn text-white"
                                   >
                                     {leaving.isWorking &&
                                     booking.id === leaving.bookingId ? (
@@ -524,20 +417,23 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className={getJoinButtonClassName(booking)}
+                                  className={getJoinButtonClassName(
+                                    booking,
+                                    sessionUser?.id
+                                  )}
                                 >
                                   {joining.isWorking &&
                                   booking.id === joining.bookingId ? (
                                     <BeatLoader size={10} color="white" />
                                   ) : (
-                                    getJoinButtonText(booking)
+                                    getJoinButtonText(booking, sessionUser?.id)
                                   )}
                                 </label>
                               )}
 
                             {!isMainPage &&
                               session?.data?.user?.id === booking?.userId && (
-                                <button className="btn btn-sm text-white">
+                                <button className="btn-sm btn text-white">
                                   <Link
                                     href={{
                                       pathname: `/booking/${booking.id}`,
@@ -555,7 +451,7 @@ export const Bookings = ({ bookings }: Props) => {
                                   onClick={() =>
                                     void setBookingToChange(booking)
                                   }
-                                  className="btn btn-error btn-sm text-white"
+                                  className="btn-error btn-sm btn text-white"
                                 >
                                   {deleting.isWorking &&
                                   booking.id === deleting.bookingId ? (

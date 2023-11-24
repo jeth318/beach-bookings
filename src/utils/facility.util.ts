@@ -7,3 +7,7 @@ export const getFacilitiesToShow = (facilities?: Facility[]) =>
       id: facility.id,
       name: facility.name,
     })) || [];
+
+export const getFacility = (id: string | null, facilities?: Facility[]) => {
+  return facilities?.find((item) => item.id === id);
+};

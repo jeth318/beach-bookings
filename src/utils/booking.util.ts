@@ -1,7 +1,14 @@
-import { type User, type Association, type Booking } from "@prisma/client";
+import { Player } from "./../components/Player";
+import {
+  type User,
+  type Association,
+  type Booking,
+  type Facility,
+} from "@prisma/client";
 import { today } from "./time.util";
 import { buildHtmlInvitationTemplate } from "~/email/invitaion-template";
 import { buildHtmlTemplate } from "~/email/template";
+import { getUsersByBooking } from "./general.util";
 
 type BookingsByDateProps = {
   associations: Association[];
@@ -30,6 +37,16 @@ type EmailInviteDispatchProps = {
   sendEmail: any;
 };
 
+export type Bookings = {
+  data: Booking[];
+  facilities?: Facility[];
+};
+
+export type BookingAction = {
+  isWorking: boolean;
+  bookingId?: string;
+};
+
 export const isOngoingGame = (booking: Booking) => {
   const start = booking.date.getTime();
   const end = getBookingEndDate(booking);
@@ -48,6 +65,10 @@ export type EventType =
 function padZero(value: number) {
   return value < 10 ? `0${value}` : value;
 }
+
+export const isBooker = (users: User[], booking: Booking) => !!getUsersByBooking(users, booking).find(
+  (user) => user.id === booking.userId
+);
 
 export const getBookingEndDate = (booking: Booking) =>
   new Date(booking.date.getTime() + booking.duration * 60 * 1000).getTime();
@@ -186,4 +207,35 @@ export const getProgressAccent = (booking: Booking) => {
   }
 
   return "text-error";
+};
+
+export const getJoinButtonClassName = (
+  booking: Booking,
+  sessionUserId?: string
+) => {
+  const spotsAvailable =
+    !booking?.maxPlayers ||
+    (typeof booking?.maxPlayers === "number" &&
+      booking?.maxPlayers > booking.players.length);
+
+  const btnVariant = spotsAvailable
+    ? !booking?.joinable && booking.userId !== sessionUserId
+      ? "btn-disabled"
+      : "btn-success"
+    : "btn-disabled";
+
+  return `btn-sm btn text-white ${btnVariant}`;
+};
+
+export const getJoinButtonText = (booking: Booking, sessionUserId?: string) => {
+  const spotsAvailable =
+    !booking?.maxPlayers ||
+    (typeof booking?.maxPlayers === "number" &&
+      booking?.maxPlayers > booking?.players?.length);
+
+  return spotsAvailable
+    ? !booking?.joinable && booking.userId !== sessionUserId
+      ? "Locked"
+      : "Join"
+    : "Full";
 };
