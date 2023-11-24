@@ -88,8 +88,6 @@ const Booking = () => {
   const lss = getPrePopulationState(facilities);
 
   const setPrePopulateBookingState = () => {
-    console.log("PREPOPSET", facility);
-
     const now = new Date();
     // Five minutes
     const ttl = 60000 * 5;
@@ -115,8 +113,6 @@ const Booking = () => {
 
   // Populate from localStorage on mount
   const setInitialState = () => {
-    console.log("INITAIL");
-
     if (lss) {
       setDuration(lss?.duration);
       setCourt(lss?.court);
@@ -175,8 +171,6 @@ const Booking = () => {
       eventType: "ADD",
     });
 
-    console.log("association?.id", association?.id);
-
     try {
       const newBooking = await createBooking({
         userId: sessionData?.user.id,
@@ -222,11 +216,8 @@ const Booking = () => {
 
   const onFacilitySelect = (event: ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.options[event.target.selectedIndex];
-    console.log({ selected });
-
     const facilityId = selected?.dataset["id"];
     const facilityToSelect = facilities?.find((f) => f.id === facilityId);
-    console.log("SET ON F SEL", facilityToSelect);
     setFacility(facilityToSelect);
 
     setCourt(null);
@@ -328,7 +319,7 @@ const Booking = () => {
             If you want to publish or join a booking, you must first add your
             name in your account.
           </h3>
-          <Link href="/settings" className="btn btn-info mt-10 text-white">
+          <Link href="/settings" className="btn-info btn mt-10 text-white">
             Settings
           </Link>
         </div>

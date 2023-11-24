@@ -31,8 +31,6 @@ export const ActionPanelSection = ({
   isMainPage,
   onBookingChange,
 }: Props) => {
-  console.log({ isMainPage, sessionUserId, bookinguserid: booking.userId });
-
   return (
     <div className="mt-6 flex flex-col self-center">
       <div

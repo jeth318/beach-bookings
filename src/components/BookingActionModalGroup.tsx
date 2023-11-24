@@ -5,7 +5,6 @@ import {
   leaveBookingText,
   removeBookingText,
 } from "~/utils/general.util";
-import { useState } from "react";
 import useSessionUser from "~/hooks/useSessionUser";
 import useUser from "~/hooks/useUser";
 import { useRouter } from "next/router";

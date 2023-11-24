@@ -12,8 +12,6 @@ const PlayersInBooking = ({ users, booking }: Props) => {
     (player) => player.id !== booking.userId
   );
 
-  console.log({ players });
-
   return (
     <ul>
       {players.map((player) => (

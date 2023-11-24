@@ -19,13 +19,6 @@ const Association = () => {
     isJoinedAssociationsFetched,
   } = useUserAssociations({ associationIds: user?.associations });
 
-  console.log({
-    joinedAssociations,
-    isMultiGroupMember,
-    isWithoutGroup,
-    isOneGroupMember,
-  });
-
   if (!user || !isJoinedAssociationsFetched) {
     return (
       <>
@@ -56,7 +49,7 @@ const Association = () => {
 
           <Link
             href="/association/create"
-            className="btn btn-info mt-5 text-white"
+            className="btn-info btn mt-5 text-white"
           >
             Create a group
           </Link>
@@ -85,7 +78,7 @@ const Association = () => {
                   <Link
                     key={association.id}
                     href={`/association/${association.id}`}
-                    className="btn btn-secondary m-1 min-w-[250px] text-white"
+                    className="btn-secondary btn m-1 min-w-[250px] text-white"
                   >
                     <div className="">{association.name}</div>
                   </Link>
@@ -94,7 +87,7 @@ const Association = () => {
             </div>
           </div>
 
-          <Link href="/association/create" className="btn btn-accent mb-2">
+          <Link href="/association/create" className="btn-accent btn mb-2">
             <div className="flex flex-row items-center justify-between">
               <div className="mr-2">Create</div>
               <CustomIcon height={30} width={30} path="/svg/add-circle.svg" />

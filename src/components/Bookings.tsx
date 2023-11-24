@@ -64,8 +64,7 @@ export const Bookings = ({ bookings }: Props) => {
 
   const [toastMessage, setToastMessage] = useState<string>();
 
-  const { data: users = [], isInitialLoading: isInitialLoadingUsers } =
-    api.user.getAll.useQuery();
+  const { data: users = [] } = api.user.getAll.useQuery();
 
   const { sessionUser } = useSessionUser();
   const { user } = useUser({ email: sessionUserEmail });

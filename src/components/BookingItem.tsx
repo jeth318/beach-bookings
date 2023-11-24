@@ -40,6 +40,8 @@ export const BookingItem = ({
   facilities,
   onBookingItemChange,
 }: Props) => {
+  console.log(booking.userId === sessionUser?.id);
+
   return (
     <div
       key={booking?.id}
@@ -55,9 +57,8 @@ export const BookingItem = ({
               {(sessionUser && booking.players.includes(sessionUser.id)) ||
               booking.userId === sessionUser?.id ? (
                 <Link
-                  //href={`/booking/details/${booking.id}`}
-                  href="#"
-                  className="font-bil card-title text-2xl font-bold"
+                  href={`/booking/details/${booking.id}`}
+                  className="font-bil link card-title text-2xl font-bold"
                 >
                   {parseDate(booking)}
                   {booking.players.length === 4 && " ✅"}

@@ -55,7 +55,6 @@ const Invite = () => {
     const associations = getUserAssociations(user);
 
     try {
-      console.log("JOIN INVITE");
       await updateUserAssociations({ associations });
 
       void router.push(`/association/${association.id}`);

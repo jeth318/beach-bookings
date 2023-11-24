@@ -119,7 +119,6 @@ export const PlayersTable = ({ booking }: Props) => {
             player.name && player.name.length > 2
               ? player.name?.split(" ")[0]
               : `Player${player.id.slice(0, 3)}`;
-          console.log("player.id", `${player.id}-${index}`);
 
           return (
             <div
@@ -197,7 +196,7 @@ export const PlayersTable = ({ booking }: Props) => {
                       playersInBooking.length >= 2 && (
                         <label
                           onClick={() => setPlayerToRemove(player.id)}
-                          className="btn-outline btn btn-sm"
+                          className="btn-outline btn-sm btn"
                           htmlFor="action-modal-player-remove"
                         >
                           Kick 👋
