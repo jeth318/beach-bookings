@@ -51,7 +51,6 @@ type Props = {
 export const Bookings = ({ bookings }: Props) => {
   const session = useSession();
   const router = useRouter();
-  const isMainPage = router.asPath === "/";
   const sessionUserEmail = session.data?.user.email || "";
   const sessionUserId = session?.data?.user?.id;
   const removeBooking = api.booking.delete.useMutation();
@@ -340,20 +339,14 @@ export const Bookings = ({ bookings }: Props) => {
                           )}
                         </div>
                       </div>
-                      {sessionUser?.id && (
-                        <PlayerSection
-                          users={users}
-                          booking={booking}
-                          isInitialLoadingUsers={isInitialLoadingUsers}
-                        />
-                      )}
+                      {sessionUser?.id && <PlayerSection booking={booking} />}
                     </div>
                   </div>
                   <div className={`${historyOnly ? "items-center" : "flex"}`}>
                     <div className="flex flex-col self-end pb-2">
                       <DurationAndCourtSection booking={booking} />
                       <ActionPanelSection
-                        isMainPage
+                        isMainPage={router.asPath !== "/"}
                         leaving={leaving}
                         joining={joining}
                         deleting={deleting}
