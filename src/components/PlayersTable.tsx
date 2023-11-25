@@ -169,7 +169,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
         callback={removePlayer}
         data={playerToRemove}
         tagRef="player-remove"
-        title="Confirm kick 🦵👋"
+        title="Confirm removal 👋"
         body="If you remove this player from this booking, he or she will have to
         re-join them selfs."
         confirmButtonText="Remove player"
@@ -183,7 +183,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
           <BeatLoader size={20} color="#36d7b7" />
         </div>
       ) : (
-        playersInBooking?.map((player, index) => {
+        playersInBooking?.map((player) => {
           return (
             <div
               key={player.id}
@@ -225,7 +225,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {player.isGuest ? getAddedBy(player) : "playeremail@hej.da"}
+                    {player.isGuest ? getAddedBy(player) : ""}
                   </div>
                 </div>
               </div>
@@ -268,7 +268,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                           className="btn-outline btn-sm btn"
                           htmlFor="action-modal-player-remove"
                         >
-                          Remove 👋
+                          Bye 👋
                         </label>
                       )}
                   </>

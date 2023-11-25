@@ -11,7 +11,7 @@ export const userRouter = createTRPCRouter({
 
     return users.map((user) => ({ ...user, email: "" }));
   }),
-  getMultipleByIds: publicProcedure
+  getMultipleByIds: protectedProcedure
     .input(
       z.object({
         playerIds: z.string().array().or(z.null()),
