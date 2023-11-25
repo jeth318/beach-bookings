@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
 import { Toast } from "./Toast";
-import { getEmailRecipients } from "~/utils/general.util";
+import { getEmailRecipients, renderToast } from "~/utils/general.util";
 import { emailDispatcher } from "~/utils/booking.util";
 import { useSession } from "next-auth/react";
 import ActionModal from "./ActionModal";
@@ -60,7 +60,7 @@ export const GuestPlayers = ({ booking }: Props) => {
     (g) => g.invitedBy === session?.data?.user.id
   );
 
-  const onGuestAddClick = async (guestName: string) => {
+  const onGuestAddClick = async () => {
     if (!booking?.id) {
       return null;
     }
@@ -73,17 +73,20 @@ export const GuestPlayers = ({ booking }: Props) => {
       await refetchAllGuestsInBooking();
       setGuestName("");
       setIsLoading(false);
+      renderToast("Guest added", setToastMessage);
     }
   };
 
-  const onGuestRemoveClick = async (id: string) => {
-    if (!id) {
+  const onGuestRemoveClick = async () => {
+    if (!guestToRemove) {
       return null;
     }
-    setGuestToRemove(id);
-    await deleteGuest({ id });
+    setIsLoading(true);
+    await deleteGuest({ id: guestToRemove });
     await refetchAllGuestsInBooking();
     setGuestToRemove(undefined);
+    setIsLoading(false);
+    renderToast("Guest removed", setToastMessage);
   };
 
   useEffect(() => {
@@ -92,58 +95,26 @@ export const GuestPlayers = ({ booking }: Props) => {
     );
   }, [booking, usersInBooking]);
 
-  const renderToast = (body: string) => {
-    setToastMessage(body);
-    setTimeout(() => {
-      setToastMessage(undefined);
-    }, 3000);
-  };
-
-  const removePlayer = (playerId: string) => {
-    const recipients = getEmailRecipients({
-      playersInBooking: booking.players,
-      users: playersInBooking || [],
-      sessionUserId: "",
-      eventType: "KICK",
-    });
-
-    void updateBooking.mutate(
-      {
-        ...booking,
-        players: booking.players.filter((id) => id !== playerId),
-        association: booking.associationId,
-        facility: booking.facilityId,
-      },
-      {
-        onSuccess: (mutatedBooking: Booking) => {
-          setPlayersInBooking(
-            playersInBooking?.filter((player) => player.id !== playerId)
-          );
-          emailDispatcher({
-            recipients,
-            playerName: session.data?.user.id || "A player",
-            originalBooking: booking,
-            mutatedBooking,
-            eventType: "KICK",
-            sendEmail,
-          });
-          renderToast(`Player was removed from the booking.`);
-          void refetchBookings();
-        },
-      }
-    );
-  };
-
   return (
     <div>
       {toastMessage && <Toast body={toastMessage} />}
       <ActionModal
-        callback={removePlayer}
-        tagRef="player-remove"
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        callback={onGuestRemoveClick}
+        tagRef="guest-remove"
         title="Confirm kick 🦵👋"
         body="If you remove this guest from this booking, he or she will have to
         re-join them selfs."
-        confirmButtonText="Remove player"
+        confirmButtonText="Remove guest"
+        cancelButtonText="Cancel"
+      />
+      <ActionModal
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        callback={onGuestAddClick}
+        tagRef="guest-add"
+        title="Confirm new guest"
+        body="The other players in this booking will get notified by email."
+        confirmButtonText="Add guest"
         cancelButtonText="Cancel"
       />
 
@@ -176,17 +147,20 @@ export const GuestPlayers = ({ booking }: Props) => {
                       />
                     </div>
                     {guest.invitedBy === session.data?.user.id && (
-                      <button
+                      <label
+                        htmlFor="action-modal-guest-remove"
                         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                        onClick={() => onGuestRemoveClick(guest.id)}
-                        disabled={isLoading || guestToRemove !== undefined}
-                        className="btn-warning btn-sm btn min-w-[78px] self-center"
+                        // disabled={isLoading || guestToRemove !== undefined}
+                        className={`btn-warning btn-sm btn min-w-[78px] self-center ${
+                          isLoading ? "btn-disabled" : ""
+                        }`}
+                        onClick={() => setGuestToRemove(guest.id)}
                       >
                         <BeatLoaderButton
                           value="Remove"
-                          isLoading={guestToRemove === guest.id}
+                          isLoading={isLoading && guestToRemove === guest.id}
                         />
-                      </button>
+                      </label>
                     )}
                   </div>
                 </div>
@@ -211,18 +185,23 @@ export const GuestPlayers = ({ booking }: Props) => {
                     className="input-bordered input"
                   />
                 </div>
-                <button
+                <label
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  onClick={() => onGuestAddClick(guestName || "")}
-                  disabled={
+                  htmlFor="action-modal-guest-add"
+                  /* disabled={
                     isLoading ||
                     guestToRemove !== undefined ||
                     !guestName?.length
-                  }
-                  className="btn-accent btn-sm btn min-w-[70px] self-center"
+                  } */
+                  className={`btn-accent btn-sm btn min-w-[70px] self-center ${
+                    isLoading ? "btn-disabled" : ""
+                  }`}
                 >
-                  <BeatLoaderButton value="Add" isLoading={isLoading} />
-                </button>
+                  <BeatLoaderButton
+                    value="Add"
+                    isLoading={isLoading && !guestToRemove}
+                  />
+                </label>
               </div>
             </div>
           )}
