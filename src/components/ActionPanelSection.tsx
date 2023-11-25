@@ -1,6 +1,5 @@
-import { type Booking, type Facility } from "@prisma/client";
+import { type Guest, type Booking } from "@prisma/client";
 import Link from "next/link";
-import { useState } from "react";
 import { BeatLoader } from "react-spinners";
 import {
   type BookingAction,
