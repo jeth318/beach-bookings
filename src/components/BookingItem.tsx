@@ -106,7 +106,6 @@ export const BookingItem = ({
             <div className="flex flex-col self-end pb-2">
               <DurationAndCourtSection booking={booking} />
               <ActionPanelSection
-                isMainPage={router.asPath === "/"}
                 leaving={leaving}
                 joining={joining}
                 deleting={deleting}

@@ -102,19 +102,20 @@ export const GuestPlayers = ({ booking }: Props) => {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         callback={onGuestRemoveClick}
         tagRef="guest-remove"
-        title="Confirm kick 🦵👋"
-        body="If you remove this guest from this booking, he or she will have to
-        re-join them selfs."
-        confirmButtonText="Remove guest"
+        title="Confirm removal 🦵👋"
+        level="error"
+        body="The other players in this booking will get notified by email that a player has left. Try to find a replacement"
+        confirmButtonText="Remove"
         cancelButtonText="Cancel"
       />
       <ActionModal
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         callback={onGuestAddClick}
         tagRef="guest-add"
-        title="Confirm new guest"
+        level="success"
+        title="Confirm guest"
         body="The other players in this booking will get notified by email."
-        confirmButtonText="Add guest"
+        confirmButtonText="Add"
         cancelButtonText="Cancel"
       />
 
@@ -151,7 +152,7 @@ export const GuestPlayers = ({ booking }: Props) => {
                         htmlFor="action-modal-guest-remove"
                         // eslint-disable-next-line @typescript-eslint/no-misused-promises
                         // disabled={isLoading || guestToRemove !== undefined}
-                        className={`btn-warning btn-sm btn min-w-[78px] self-center ${
+                        className={`btn-error btn-sm btn min-w-[78px] self-center ${
                           isLoading ? "btn-disabled" : ""
                         }`}
                         onClick={() => setGuestToRemove(guest.id)}
@@ -194,7 +195,11 @@ export const GuestPlayers = ({ booking }: Props) => {
                     !guestName?.length
                   } */
                   className={`btn-accent btn-sm btn min-w-[70px] self-center ${
-                    isLoading ? "btn-disabled" : ""
+                    isLoading ||
+                    guestToRemove !== undefined ||
+                    !guestName?.length
+                      ? "btn-disabled"
+                      : ""
                   }`}
                 >
                   <BeatLoaderButton

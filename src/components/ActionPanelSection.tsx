@@ -9,13 +9,13 @@ import {
   isOngoingGame,
 } from "~/utils/booking.util";
 import BeatLoaderButton from "./BeatLoaderButton";
+import { useRouter } from "next/router";
 
 export type Props = {
   booking: Booking;
   guestPlayers?: Guest[];
   maxPlayers?: number;
   sessionUserId?: string;
-  isMainPage?: boolean;
   joining: BookingAction;
   leaving: BookingAction;
   deleting: BookingAction;
@@ -29,10 +29,10 @@ export const ActionPanelSection = ({
   leaving,
   joining,
   deleting,
-  isMainPage,
   guestPlayers,
   onBookingChange,
 }: Props) => {
+  const router = useRouter();
   const guestPlayerCount = Number(guestPlayers?.length) || 0;
   const radialProgressValue =
     (!maxPlayers
@@ -43,6 +43,11 @@ export const ActionPanelSection = ({
     ? `${booking.players.length + guestPlayerCount} / ${booking.maxPlayers}`
     : booking.players.length;
 
+  const isMainPage = router.isReady && router.asPath === "/";
+
+  if (!router.isReady) {
+    return null;
+  }
   return (
     <div className="mt-6 flex flex-col self-center">
       <div
