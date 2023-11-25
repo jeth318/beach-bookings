@@ -1,4 +1,4 @@
-import { type Booking } from "@prisma/client";
+import { type Guest, type Booking } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
@@ -11,24 +11,22 @@ import useBooking from "~/hooks/useBooking";
 import useUsersInBooking from "~/hooks/useUsersInBooking";
 import useEmail from "~/hooks/useEmail";
 import useGuest from "~/hooks/useGuest";
+import BeatLoaderButton from "./BeatLoaderButton";
 
 type Props = {
   booking: Booking;
+  guests?: Guest[];
+  onGuestAdded: (name: string) => void;
+  onGuestKicked: (id: string) => void;
 };
 
-export const GuestPlayers = ({ booking }: Props) => {
+export const GuestPlayers = ({
+  booking,
+  guests,
+  onGuestAdded,
+  onGuestKicked,
+}: Props) => {
   const session = useSession();
-
-  const {
-    createGuest,
-    deleteGuest,
-    refetchAllGuestsInBooking,
-    allGuestsInBooking,
-  } = useGuest({
-    bookingId: booking?.id,
-  });
-
-  console.log({ allGuestsInBooking });
 
   type PlayerInBooking = {
     id: string;
@@ -107,22 +105,6 @@ export const GuestPlayers = ({ booking }: Props) => {
     Array(Number(booking.maxPlayers) - Number(booking.players.length)).keys()
   );
 
-  const onAddGuestClicked = async () => {
-    if (!booking.id) {
-      return null;
-    }
-    await createGuest({ bookingId: booking?.id, name: guestName || "" });
-    await refetchAllGuestsInBooking();
-  };
-
-  const onKickGuestClicked = async (id: string) => {
-    if (!id) {
-      return null;
-    }
-    await deleteGuest({ id });
-    await refetchAllGuestsInBooking();
-  };
-
   return (
     <div>
       {toastMessage && <Toast body={toastMessage} />}
@@ -145,8 +127,8 @@ export const GuestPlayers = ({ booking }: Props) => {
         </div>
       ) : (
         <div>
-          {allGuestsInBooking &&
-            allGuestsInBooking?.map((guest, index) => {
+          {guests &&
+            guests?.map((guest, index) => {
               return (
                 <div
                   key={index}
@@ -168,7 +150,7 @@ export const GuestPlayers = ({ booking }: Props) => {
                     {guest.invitedBy === session.data?.user.id && (
                       <button
                         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                        onClick={() => onKickGuestClicked(guest.id)}
+                        onClick={() => onGuestKicked(guest.id)}
                         className="btn-warning btn-sm btn self-center "
                       >
                         Kick
@@ -179,7 +161,7 @@ export const GuestPlayers = ({ booking }: Props) => {
               );
             })}
 
-          {booking.players.length + Number(allGuestsInBooking?.length) <
+          {booking.players.length + Number(guests?.length) <
             Number(booking?.maxPlayers) && (
             <div
               style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
@@ -199,7 +181,7 @@ export const GuestPlayers = ({ booking }: Props) => {
                 </div>
                 <button
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  onClick={onAddGuestClicked}
+                  onClick={() => onGuestAdded(guestName || "")}
                   className="btn-accent btn-sm btn self-center"
                 >
                   Add

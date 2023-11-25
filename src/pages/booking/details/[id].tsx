@@ -13,9 +13,30 @@ const BookingDetails = () => {
     facilityId: booking?.facilityId || undefined,
   });
 
-  const { allGuestsInBooking, createGuest } = useGuest({
+  const {
+    createGuest,
+    refetchAllGuestsInBooking,
+    deleteGuest,
+    allGuestsInBooking,
+  } = useGuest({
     bookingId: booking?.id,
   });
+
+  const onAddGuestClicked = async (guestName: string) => {
+    if (!booking?.id) {
+      return null;
+    }
+    await createGuest({ bookingId: booking?.id, name: guestName || "" });
+    await refetchAllGuestsInBooking();
+  };
+
+  const onKickGuestClicked = async (id: string) => {
+    if (!id) {
+      return null;
+    }
+    await deleteGuest({ id });
+    await refetchAllGuestsInBooking();
+  };
 
   return (
     <main className="min-w-sm pd-3 flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
@@ -31,7 +52,18 @@ const BookingDetails = () => {
         <div>{!!booking && <PlayersTable booking={booking} />}</div>
         <h2 className="mt-4 text-center text-xl">Guest players</h2>
 
-        <div>{!!booking && <GuestPlayers booking={booking} />}</div>
+        <div>
+          {!!booking && (
+            <GuestPlayers
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onGuestAdded={onAddGuestClicked}
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onGuestKicked={onKickGuestClicked}
+              guests={allGuestsInBooking}
+              booking={booking}
+            />
+          )}
+        </div>
       </div>
     </main>
   );
