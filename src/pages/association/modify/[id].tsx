@@ -93,7 +93,7 @@ const ModifyAssociation = () => {
           <div style={{ width: "100%" }} className="mb-5 mt-10 gap-4">
             <div style={{ width: "100%" }} className="form-control">
               <label className="flex-start label flex flex-col items-start">
-                <span className="label-text text-white">
+                <span className="label-text ">
                   What should this group be called?
                 </span>
               </label>
@@ -115,12 +115,10 @@ const ModifyAssociation = () => {
             </div>
             <div className="form-control">
               <label className="label">
-                <span className="label-text text-white">
+                <span className="label-text ">
                   A short description about this group
                 </span>
-                <span className="label-text-alt text-white">
-                  {charsRemaining}
-                </span>
+                <span className="label-text-alt ">{charsRemaining}</span>
               </label>
               <textarea
                 maxLength={200}
@@ -135,7 +133,7 @@ const ModifyAssociation = () => {
                   disabled={!validName || !hasAnythingChanged}
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   onClick={onSaveChangesClicked}
-                  className={`btn btn-success flex min-w-[150px] flex-col items-center text-white`}
+                  className={`btn-success btn flex min-w-[150px] flex-col items-center `}
                 >
                   {isLoading ? (
                     <BeatLoader size={12} color="white" />

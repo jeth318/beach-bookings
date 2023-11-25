@@ -42,15 +42,12 @@ const Association = () => {
             src="/beach-game.png"
           />
           <h2 className="mb-4 text-center text-4xl">No groups joined</h2>
-          <h3 className="text-center text-xl text-white">
+          <h3 className="text-center text-xl ">
             You are not a part of a group yet. Group members can invite you.
             Meanwhile, you can join public bookings from the home page.
           </h3>
 
-          <Link
-            href="/association/create"
-            className="btn-info btn mt-5 text-white"
-          >
+          <Link href="/association/create" className="btn-info btn mt-5 ">
             Create a group
           </Link>
         </div>
@@ -70,7 +67,7 @@ const Association = () => {
             src="/beach-game.png"
           />
           <div className="mb-10 mt-2 flex flex-col items-center justify-center rounded-md border p-4">
-            <h2 className="mb-4 text-4xl text-white">My groups</h2>
+            <h2 className="mb-4 text-4xl ">My groups</h2>
 
             <div className="flex flex-col items-center justify-center">
               {joinedAssociations?.map((association) => {
@@ -78,7 +75,7 @@ const Association = () => {
                   <Link
                     key={association.id}
                     href={`/association/${association.id}`}
-                    className="btn-secondary btn m-1 min-w-[250px] text-white"
+                    className="btn-secondary btn m-1 min-w-[250px] "
                   >
                     <div className="">{association.name}</div>
                   </Link>

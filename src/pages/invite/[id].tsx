@@ -114,7 +114,7 @@ const Invite = () => {
   }
 
   return (
-    <main className="min-w-sm flex min-w-fit flex-col text-white">
+    <main className="min-w-sm flex min-w-fit flex-col ">
       <SubHeader title="Invitation" />
       <div
         style={{ marginTop: "-91px" }}
@@ -162,9 +162,9 @@ const Invite = () => {
                 // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 onClick={onJoinConfirmed}
                 disabled={isAcceptingInvite || !user?.name}
-                className={`btn btn-primary ${
+                className={`btn-primary btn ${
                   !!user?.name ? "animate-pulse" : ""
-                } text-white`}
+                } `}
               >
                 Accept invite
               </button>

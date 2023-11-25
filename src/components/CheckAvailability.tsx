@@ -8,7 +8,7 @@ export const CheckAvailability = () => {
         <div className="pl-4">
           <a
             target="_blank"
-            className="btn-info btn text-white"
+            className="btn-info btn "
             href="https://gbc.goactivebooking.com/book-service/27?facility=1"
           >
             Check availability

@@ -31,7 +31,7 @@ export const GroupSelectInput = ({
   return (
     <div>
       <label className="label">
-        <span className="label-text text-white">{description}</span>
+        <span className="label-text ">{description}</span>
       </label>
       <label className={`input-group ${valid ? "input-valid" : ""}`}>
         <select

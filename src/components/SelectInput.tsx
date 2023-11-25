@@ -33,7 +33,7 @@ export const SelectInput = ({
   return (
     <div>
       <label className="label">
-        <span className="label-text text-white">{description}</span>
+        <span className="label-text ">{description}</span>
       </label>
       <label
         className={`${label ? "input-group" : ""} ${

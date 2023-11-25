@@ -224,7 +224,7 @@ export const getJoinButtonClassName = (
       : "btn-success"
     : "btn-disabled";
 
-  return `btn-sm btn text-white ${btnVariant}`;
+  return `btn-sm btn  ${btnVariant}`;
 };
 
 export const getJoinButtonText = (booking: Booking, sessionUserId?: string) => {

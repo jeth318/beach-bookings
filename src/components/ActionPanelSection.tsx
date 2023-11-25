@@ -9,6 +9,7 @@ import {
   getProgressAccent,
   isOngoingGame,
 } from "~/utils/booking.util";
+import BeatLoaderButton from "./BeatLoaderButton";
 
 export type Props = {
   booking: Booking;
@@ -61,7 +62,7 @@ export const ActionPanelSection = ({
                 <label
                   htmlFor="action-modal-leave-booking"
                   onClick={() => void onBookingChange(booking)}
-                  className="btn-warning btn-sm btn text-white"
+                  className="btn-warning btn-sm btn "
                 >
                   {leaving.isWorking && booking.id === leaving.bookingId ? (
                     <BeatLoader size={10} color="white" />
@@ -79,16 +80,17 @@ export const ActionPanelSection = ({
                 onClick={() => void onBookingChange(booking)}
                 className={getJoinButtonClassName(booking, sessionUserId)}
               >
-                {joining.isWorking && booking.id === joining.bookingId ? (
-                  <BeatLoader size={10} color="white" />
-                ) : (
-                  getJoinButtonText(booking, sessionUserId)
-                )}
+                <BeatLoaderButton
+                  value={getJoinButtonText(booking, sessionUserId)}
+                  isLoading={
+                    joining.bookingId === booking.id && joining.isWorking
+                  }
+                />
               </label>
             )}
 
           {!isMainPage && sessionUserId === booking?.userId && (
-            <button className="btn-sm btn text-white">
+            <button className="btn-sm btn ">
               <Link
                 href={{
                   pathname: `/booking/${booking.id}`,
@@ -102,7 +104,7 @@ export const ActionPanelSection = ({
             <label
               htmlFor="action-modal-delete-booking"
               onClick={() => void onBookingChange(booking)}
-              className="btn-error btn-sm btn text-white"
+              className="btn-error btn-sm btn "
             >
               {deleting.isWorking && booking.id === deleting.bookingId ? (
                 <BeatLoader size={10} color="white" />

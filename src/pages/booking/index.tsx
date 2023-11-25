@@ -314,12 +314,12 @@ const Booking = () => {
             height={300}
             src="/beach-spike.png"
           />
-          <h2 className="mb-4 text-4xl text-white">Hello stranger! 👋</h2>
-          <h3 className="text-center text-xl text-white">
+          <h2 className="mb-4 text-4xl ">Hello stranger! 👋</h2>
+          <h3 className="text-center text-xl ">
             If you want to publish or join a booking, you must first add your
             name in your account.
           </h3>
-          <Link href="/settings" className="btn-info btn mt-10 text-white">
+          <Link href="/settings" className="btn-info btn mt-10 ">
             Settings
           </Link>
         </div>
@@ -333,7 +333,7 @@ const Booking = () => {
       <main className="min-w-sm pd-3 dark:color-white flex flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex flex-col items-center justify-center p-3">
-            <h2 className="text-center text-2xl text-white">
+            <h2 className="text-center text-2xl ">
               If you want to add or edit bookings, you have to be logged in.
             </h2>
           </div>
@@ -395,7 +395,7 @@ const Booking = () => {
                   {!!associationsToShow.length && (
                     <div className="1px solid rounded-md border border-slate-500 p-2">
                       <label className="label">
-                        <span className="label-text text-white">
+                        <span className="label-text ">
                           Visible for everyone or for a private group only?
                         </span>
                       </label>
@@ -407,7 +407,7 @@ const Booking = () => {
                           }}
                           className={`btn-${
                             privateBooking ? "inactive" : "active"
-                          } btn  w-[50%] text-white`}
+                          } btn  w-[50%] `}
                         >
                           Public
                         </button>
@@ -416,7 +416,7 @@ const Booking = () => {
                           style={{ position: "relative" }}
                           className={`btn btn-${
                             privateBooking ? "active" : "inactive"
-                          } w-[50%] text-white`}
+                          } w-[50%] `}
                         >
                           Private
                         </button>
@@ -438,7 +438,7 @@ const Booking = () => {
                   {showFacility() && (
                     <div className="1px solid rounded-md border border-slate-500 p-2">
                       {facility?.name === "GBC Kviberg" && (
-                        <div className="alert alert-info mt-2 flex flex-row text-sm text-white">
+                        <div className="alert alert-info mt-2 flex flex-row text-sm ">
                           <div>
                             <Image
                               className="mr-2 rounded-full shadow-sm shadow-black"
@@ -520,7 +520,7 @@ const Booking = () => {
                 <div className="mb-20 mt-10 flex flex-col items-center justify-center gap-2">
                   <label
                     htmlFor="action-modal-booking-cancel"
-                    className="btn-outline btn w-[200px] text-white"
+                    className="btn-outline btn w-[200px] "
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   >
                     Reset
@@ -529,7 +529,7 @@ const Booking = () => {
                   <label
                     className={`${
                       validBooking ? "btn-success" : "btn-disabled"
-                    } btn w-[200px] text-white`}
+                    } btn w-[200px] `}
                     htmlFor="action-modal-booking"
                   >
                     Publish

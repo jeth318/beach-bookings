@@ -280,7 +280,7 @@ const Booking = () => {
       <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
-            <h2 className="text-center text-2xl text-white">
+            <h2 className="text-center text-2xl ">
               If you want to add or edit bookings, you have to be logged in.
             </h2>
           </div>
@@ -339,7 +339,7 @@ const Booking = () => {
                   {!!associationsToShow.length && (
                     <div className="1px solid rounded-md border border-slate-500 p-2">
                       <label className="label">
-                        <span className="label-text text-white">
+                        <span className="label-text ">
                           Visible for everyone or for a private group only?
                         </span>
                       </label>
@@ -351,7 +351,7 @@ const Booking = () => {
                           }}
                           className={`btn-${
                             privateBooking ? "inactive" : "active"
-                          } btn  w-[50%] text-white`}
+                          } btn  w-[50%] `}
                         >
                           Public
                         </button>
@@ -360,7 +360,7 @@ const Booking = () => {
                           style={{ position: "relative" }}
                           className={`btn btn-${
                             privateBooking ? "active" : "inactive"
-                          } w-[50%] text-white`}
+                          } w-[50%] `}
                         >
                           Private
                         </button>
@@ -432,7 +432,7 @@ const Booking = () => {
                         validBooking && !isLoadingUpdateBooking
                           ? "btn-success"
                           : "btn-disabled"
-                      } btn text-white`}
+                      } btn `}
                       htmlFor="action-modal-booking"
                     >
                       Save changes

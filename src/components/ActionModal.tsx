@@ -59,7 +59,7 @@ export default function ActionModal({
               {!hideConfirm && (
                 <label
                   htmlFor={`action-modal-${tagRef}`}
-                  className={`btn-${level} btn text-white`}
+                  className={`btn-${level} btn`}
                   onClick={() => {
                     callback(data);
                   }}

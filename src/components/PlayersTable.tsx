@@ -183,7 +183,7 @@ export const PlayersTable = ({ booking }: Props) => {
                         )}
                         {player.email && (
                           <a
-                            className="btn-outline btn btn-info btn-sm text-white"
+                            className="btn-outline btn btn-info btn-sm "
                             href={`mailto:${
                               player.email || ""
                             }?subject=Regarding the booking on ${booking.date.toDateString()}`}
