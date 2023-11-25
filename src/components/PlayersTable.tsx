@@ -62,7 +62,9 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
       adder?.id === session.data?.user.id
         ? "you"
         : getDisplayName(adder as PlayerInBooking);
-    return adder?.name ? `Added by ${displayName || "unknown player"}` : "";
+    return adder?.name
+      ? `Added by ${displayName || "unknown player"}`
+      : "Added by former player";
   };
   useEffect(() => {
     const og =
