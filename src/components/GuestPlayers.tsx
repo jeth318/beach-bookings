@@ -1,17 +1,13 @@
 import { type Booking } from "@prisma/client";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
 import { Toast } from "./Toast";
-import { CustomIcon } from "./CustomIcon";
 import { getEmailRecipients } from "~/utils/general.util";
 import { emailDispatcher } from "~/utils/booking.util";
 import { useSession } from "next-auth/react";
 import ActionModal from "./ActionModal";
 import useBooking from "~/hooks/useBooking";
-import useUser from "~/hooks/useUser";
-import useSessionUser from "~/hooks/useSessionUser";
 import useUsersInBooking from "~/hooks/useUsersInBooking";
 import useEmail from "~/hooks/useEmail";
 import useGuest from "~/hooks/useGuest";

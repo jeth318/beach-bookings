@@ -4,9 +4,10 @@ import { CustomIcon } from "./CustomIcon";
 export type Props = {
   user: User;
   booking: Booking;
+  isGuest?: boolean;
 };
 
-export const Player = ({ user, booking }: Props) => {
+export const Player = ({ user, booking, isGuest = false }: Props) => {
   const displayName =
     user.name && user.name.length > 2
       ? user.name
@@ -15,9 +16,9 @@ export const Player = ({ user, booking }: Props) => {
     <div
       key={user.id}
       style={{ marginTop: "-15" }}
-      className="smooth-render-in-slower flex flex-row items-center"
+      className="flex flex-row items-center"
     >
-      {displayName}
+      {displayName} {isGuest ? "(guest)" : ""}
       {booking.userId === user.id && (
         <div className="pl-2">
           <CustomIcon path="/svg/crown.svg" width={17} />

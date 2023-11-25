@@ -13,6 +13,7 @@ import BeatLoaderButton from "./BeatLoaderButton";
 
 export type Props = {
   booking: Booking;
+  guestPlayers?: Guest[];
   maxPlayers?: number;
   sessionUserId?: string;
   isMainPage?: boolean;
@@ -30,25 +31,36 @@ export const ActionPanelSection = ({
   joining,
   deleting,
   isMainPage,
+  guestPlayers,
   onBookingChange,
 }: Props) => {
+  const radialProgressValue =
+    (!maxPlayers
+      ? 100
+      : (booking.players.length + Number(guestPlayers?.length)) / maxPlayers) *
+    100;
+
+  const totalPlayerCount = booking.maxPlayers
+    ? `${booking.players.length + Number(guestPlayers?.length)} / ${
+        booking.maxPlayers
+      }`
+    : booking.players.length;
+
   return (
     <div className="mt-6 flex flex-col self-center">
       <div
         className={`radial-progress self-center text-lg font-bold ${getProgressAccent(
-          booking
+          booking,
+          guestPlayers?.length || 0
         )}`}
         style={{
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          "--value":
-            (!maxPlayers ? 100 : booking.players.length / maxPlayers) * 100,
+          "--value": radialProgressValue,
           "--thickness": "3px",
         }}
       >
-        {booking.maxPlayers
-          ? `${booking.players.length} / ${booking.maxPlayers}`
-          : booking.players.length}
+        {totalPlayerCount}
       </div>
 
       {sessionUserId ? (

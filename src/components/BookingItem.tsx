@@ -15,6 +15,7 @@ import { DurationAndCourtSection } from "./DurationAndCourtSection";
 import { ActionPanelSection } from "./ActionPanelSection";
 import { CustomIcon } from "./CustomIcon";
 import { type NextRouter } from "next/router";
+import useGuest from "~/hooks/useGuest";
 
 type Props = {
   booking: Booking;
@@ -41,11 +42,11 @@ export const BookingItem = ({
   onBookingItemChange,
 }: Props) => {
   console.log(booking.userId === sessionUser?.id);
-
+  const { allGuestsInBooking } = useGuest({ bookingId: booking.id });
   return (
     <div
       key={booking?.id}
-      className="smooth-render-in first:border-b-1 border-b border-zinc-400"
+      className="first:border-b-1 border-b border-zinc-400"
     >
       <div className="card-compact card">
         <div
@@ -108,6 +109,7 @@ export const BookingItem = ({
                 joining={joining}
                 deleting={deleting}
                 booking={booking}
+                guestPlayers={allGuestsInBooking}
                 sessionUserId={sessionUser?.id}
                 onBookingChange={onBookingItemChange}
               />
