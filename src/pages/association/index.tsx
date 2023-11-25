@@ -85,7 +85,7 @@ const Association = () => {
       <main className="min-w-sm flex min-w-fit flex-col">
         <div
           style={{ height: "calc(100vh - 65px)" }}
-          className="flex flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] p-3 text-white"
+          className="flex flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] p-3 "
         >
           <Image
             alt="beach-game"
@@ -94,15 +94,12 @@ const Association = () => {
             src="/beach-game.png"
           />
           <h2 className="mb-4 text-center text-4xl">No groups joined</h2>
-          <h3 className="text-center text-xl text-white">
+          <h3 className="text-center text-xl ">
             You are not a part of a group yet. Group members can invite you.
             Meanwhile, you can join public bookings from the home page.
           </h3>
 
-          <Link
-            href="/association/create"
-            className="btn btn-accent mt-5 text-white"
-          >
+          <Link href="/association/create" className="btn-accent btn mt-5 ">
             Create a group
           </Link>
         </div>
@@ -238,13 +235,13 @@ const Association = () => {
                                 onClick={() =>
                                   setAssociationToLeave(association)
                                 }
-                                className="btn btn-warning btn-sm min-w-[75px] text-white"
+                                className="btn-warning btn-sm btn min-w-[75px] "
                               >
                                 Leave
                               </label>
 
                               {!!user?.id && association.userId === user.id && (
-                                <button className="btn btn-sm text-white">
+                                <button className="btn-sm btn ">
                                   <Link
                                     href={{
                                       pathname: `/association/modify/${association.id}`,
@@ -258,7 +255,7 @@ const Association = () => {
                                 <label
                                   htmlFor="action-modal-delete-association"
                                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                                  className="btn btn-error btn-sm text-white"
+                                  className="btn-error btn-sm btn "
                                   onClick={() =>
                                     setAssociationToDelete(association)
                                   }

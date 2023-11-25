@@ -31,6 +31,10 @@ main {
   background-color: rgba(0, 0, 0, 0.3);
 }
 
+.label-text {
+  color: white;
+}
+
 .input-valid {
   /*outline: 2px solid #0fe80f;
   border-radius: 10px; */

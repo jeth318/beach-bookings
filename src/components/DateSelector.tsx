@@ -53,9 +53,7 @@ export const DateSelector = ({ date, time, callback }: Props) => {
   return (
     <div>
       <label className="label">
-        <span className="label-text text-white">
-          What date and time are you playing?
-        </span>
+        <span className="label-text ">What date and time are you playing?</span>
       </label>
 
       <div className="custom-datepicker-wrapper">

@@ -119,8 +119,8 @@ const Group = () => {
       {toastMessage && <Toast body={toastMessage} />}
       {errorToastMessage && <Toast level="error" body={errorToastMessage} />}
 
-      <main className="min-w-sm pd-3 smooth-render-in flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] dark:text-white ">
-        <div className="4 mt-4 flex flex-row items-center justify-center text-white">
+      <main className="min-w-sm pd-3 smooth-render-in dark: flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] ">
+        <div className="4 mt-4 flex flex-row items-center justify-center ">
           <Image
             alt="beach-game"
             width={100}
@@ -169,7 +169,7 @@ const Group = () => {
                         association.userId !== member.id && (
                           <>
                             <br />
-                            <span className="badge badge-ghost badge-sm">
+                            <span className="badge-ghost badge badge-sm">
                               administrator
                             </span>
                           </>
@@ -177,7 +177,7 @@ const Group = () => {
                       {association.userId === member.id && (
                         <>
                           <br />
-                          <span className="badge badge-ghost badge-sm">
+                          <span className="badge-ghost badge badge-sm">
                             group owner
                           </span>
                         </>
@@ -218,7 +218,7 @@ const Group = () => {
             />
             <button
               type="submit"
-              className="btn btn-accent mt-4 self-end"
+              className="btn-accent btn mt-4 self-end"
               disabled={
                 isLoadingInviteCreate ||
                 !searchQuery?.length ||

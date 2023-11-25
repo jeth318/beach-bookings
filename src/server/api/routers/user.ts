@@ -129,6 +129,19 @@ export const userRouter = createTRPCRouter({
   getAllWithEmail: publicProcedure.query(async ({ ctx }) => {
     return ctx.prisma.user.findMany({});
   }),
+  getMultipleByIdsIncludingEmailAndConsents: protectedProcedure
+    .input(
+      z.object({
+        playerIds: z.string().array(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.user.findMany({
+        where: {
+          id: { in: input.playerIds },
+        },
+      });
+    }),
   getUserIdsWithAddConsent: protectedProcedure.query(async ({ ctx }) => {
     const users = await ctx.prisma.user.findMany({
       where: {

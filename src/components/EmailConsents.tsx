@@ -101,7 +101,7 @@ export const EmailConsents = () => {
       {toastMessage && <Toast body={toastMessage} />}
       <div className="flex flex-col justify-center text-center">
         <div className="pb-5  text-xl text-white">
-          <strong>Select email notifications 📥</strong>
+          Select email notifications 📥
         </div>
       </div>
       <div className="flex items-center justify-center pb-4">

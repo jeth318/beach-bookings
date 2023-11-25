@@ -80,7 +80,7 @@ const CreateAssociation = () => {
           <div style={{ width: "100%" }} className="mb-5 mt-10 gap-4">
             <div style={{ width: "100%" }} className="form-control">
               <label className="flex-start label flex flex-col items-start">
-                <span className="label-text text-white">
+                <span className="label-text ">
                   What should this group be called?
                 </span>
               </label>
@@ -102,12 +102,10 @@ const CreateAssociation = () => {
             </div>
             <div className="form-control">
               <label className="label">
-                <span className="label-text text-white">
+                <span className="label-text ">
                   A short description about this group
                 </span>
-                <span className="label-text-alt text-white">
-                  {charsRemaining}
-                </span>
+                <span className="label-text-alt ">{charsRemaining}</span>
               </label>
               <textarea
                 maxLength={200}
@@ -120,7 +118,7 @@ const CreateAssociation = () => {
                 <label
                   className={`${
                     validName ? "btn-success" : "btn-disabled"
-                  } btn text-white`}
+                  } btn `}
                   htmlFor="action-modal-create-association"
                 >
                   Create

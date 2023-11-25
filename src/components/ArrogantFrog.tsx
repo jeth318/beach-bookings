@@ -25,13 +25,13 @@ export const ArrogantFrog = () => {
           width={210}
           height={210}
         />
-        <div className="p-4 text-center text-xl text-white">
+        <div className="p-4 text-center text-xl ">
           <div
             dangerouslySetInnerHTML={{ __html: getFrogText(router.asPath) }}
           ></div>
           {main && (
             <div className="flex items-center justify-center">
-              <Link className="btn btn-info text-white" href="/booking">
+              <Link className="btn-info btn " href="/booking">
                 Publish
               </Link>
             </div>
@@ -39,7 +39,7 @@ export const ArrogantFrog = () => {
           {joined && (
             <div className="flex flex-col items-center">
               <div>
-                <Link className="btn btn-secondary text-white" href="/">
+                <Link className="btn-secondary btn " href="/">
                   Join bookings
                 </Link>
               </div>

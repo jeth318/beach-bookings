@@ -90,7 +90,7 @@ export const PlayerInfo = ({
         <div style={{ width: "100%" }} className="mb-5 gap-4">
           <div style={{ width: "100%" }} className="form-control">
             <label className="label">
-              <span className="label-text text-white">What is your name?</span>
+              <span className="label-text ">What is your name?</span>
             </label>
             <label
               className={`input-group ${!validName ? "input-invalid " : ""}`}
@@ -120,7 +120,7 @@ export const PlayerInfo = ({
             {!hidePhone && (
               <>
                 <label className="label">
-                  <span className="label-text text-white">
+                  <span className="label-text ">
                     When players needs to reach you quickly
                   </span>
                 </label>
@@ -160,7 +160,7 @@ export const PlayerInfo = ({
             {!hideEmail && (
               <>
                 <label className="label">
-                  <span className="label-text text-white">
+                  <span className="label-text ">
                     Your email (can not be changed)
                   </span>
                 </label>
@@ -187,7 +187,7 @@ export const PlayerInfo = ({
         <div className="flex flex-col items-center gap-2 self-center">
           <button
             disabled={!hasContactInfoChanged || !validPhone || !validName}
-            className={`btn btn-md text-white ${
+            className={`btn-md btn  ${
               hasContactInfoChanged
                 ? validName
                   ? "btn-success animate-pulse"
