@@ -57,8 +57,6 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
 
   const getAddedBy = (guestPlayer: PlayerInBooking) => {
     const guest = allGuestsInBooking?.find((g) => g.id === guestPlayer.id);
-    console.log("GUEST", guest);
-    console.log("Usersin", usersInBooking);
     const adder = usersInBooking?.find((user) => user?.id === guest?.invitedBy);
     const displayName =
       adder?.id === session.data?.user.id

@@ -41,7 +41,6 @@ export const BookingItem = ({
   facilities,
   onBookingItemChange,
 }: Props) => {
-  console.log(booking.userId === sessionUser?.id);
   const { allGuestsInBooking } = useGuest({
     bookingId: booking.id,
   });
