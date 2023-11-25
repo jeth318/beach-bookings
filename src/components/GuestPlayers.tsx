@@ -56,6 +56,10 @@ export const GuestPlayers = ({ booking }: Props) => {
     bookingId: booking?.id,
   });
 
+  const userGuests = guests?.filter(
+    (g) => g.invitedBy === session?.data?.user.id
+  );
+
   const onGuestAddClick = async (guestName: string) => {
     if (!booking?.id) {
       return null;
@@ -151,8 +155,8 @@ export const GuestPlayers = ({ booking }: Props) => {
         </div>
       ) : (
         <div>
-          {guests &&
-            guests?.map((guest, index) => {
+          {userGuests &&
+            userGuests?.map((guest, index) => {
               return (
                 <div
                   key={index}

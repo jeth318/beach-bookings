@@ -58,7 +58,10 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
     console.log("GUEST", guest);
     console.log("Usersin", usersInBooking);
     const adder = usersInBooking?.find((user) => user?.id === guest?.invitedBy);
-    const displayName = getDisplayName(adder as PlayerInBooking);
+    const displayName =
+      adder?.id === session.data?.user.id
+        ? "you"
+        : getDisplayName(adder as PlayerInBooking);
     return adder?.name ? `Added by ${displayName || "unknown player"}` : "";
   };
   useEffect(() => {
@@ -183,100 +186,82 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
           <BeatLoader size={20} color="#36d7b7" />
         </div>
       ) : (
-        playersInBooking?.map((player) => {
-          return (
-            <div
-              key={player.id}
-              style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
-              className="flex flex-row justify-between bg-slate-200 dark:bg-slate-800"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="avatar">
-                  <div className="mask mask-squircle h-12 w-12">
-                    <Image
-                      height={100}
-                      width={100}
-                      alt="user-icon-default"
-                      src={player.image || "/user-default.png"}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div
-                    style={{
-                      overflow: "hidden",
-                      maxWidth: "150px",
-                      textOverflow: "ellipsis",
-                    }}
-                    className="font-bold"
-                  >
-                    {getDisplayName(player)}
-                    {player.isGuest && (
-                      <span className="ml-2">
-                        <i>(guest)</i>
-                      </span>
-                    )}
-                  </div>
-                  <div
-                    className="ellips text-sm opacity-50"
-                    style={{
-                      overflow: "hidden",
-                      maxWidth: "150px",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {player.isGuest ? getAddedBy(player) : ""}
-                  </div>
-                </div>
-              </div>
-              <div
-                className="flex  items-center justify-between gap-2 self-center pr-2"
-                style={{ textAlign: "center" }}
-              >
-                {player.id === booking.userId && (
-                  <div className="flex items-center gap-2">
-                    <div>Booker</div>
-                    <CustomIcon path="/svg/crown.svg" />
-                  </div>
-                )}
-                {player.id !== session.data?.user.id && (
-                  <>
-                    <div className="br-3 flex flex-row gap-2">
-                      {/* {player.email && (
-                          <a
-                            className="btn-outline btn btn-accent btn-sm"
-                            href={`sms:${""}`}
+        <div className="max-h- overflow-x-auto">
+          <table className="table-xs table-pin-rows table-pin-cols table w-full">
+            <thead>
+              <tr>
+                <td colSpan={3} className="text-md text-center text-xl">
+                  Players
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {playersInBooking?.map((player) => {
+                return (
+                  <tr key={player.id}>
+                    <td className="flex-flow flex items-center p-1 pl-2 pr-2">
+                      <div className="flex w-full flex-row items-center">
+                        <div className="avatar">
+                          <div className="mask mask-squircle mr-2 h-12 w-12">
+                            <Image
+                              height={100}
+                              width={100}
+                              className="p-1 pl-0"
+                              alt="user-icon-default"
+                              src={player.image || "/user-default.png"}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-col">
+                          <div
+                            style={{
+                              overflow: "hidden",
+                              maxWidth: "150px",
+                              textOverflow: "ellipsis",
+                            }}
+                            className="font-bold"
                           >
-                            SMS
-                          </a>
+                            {getDisplayName(player)}
+                            {player.isGuest && (
+                              <span className="ml-2">
+                                <i>(guest)</i>
+                              </span>
+                            )}
+                          </div>
+                          <div
+                            className="ellips text-sm opacity-50"
+                            style={{
+                              overflow: "hidden",
+                              maxWidth: "150px",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {player.isGuest ? getAddedBy(player) : ""}
+                          </div>
+                        </div>
+                      </div>
+                      {session.data?.user.id === booking.userId &&
+                        playersInBooking.length >= 2 && (
+                          <label
+                            onClick={() => setPlayerToRemove(player.id)}
+                            className="btn-outline btn-sm btn"
+                            htmlFor="action-modal-player-remove"
+                          >
+                            Bye 👋
+                          </label>
                         )}
-                        {player.email && (
-                          <a
-                            className="btn-outline btn btn-info btn-sm "
-                            href={`mailto:${
-                              player.email || ""
-                            }?subject=Regarding the booking on ${booking.date.toDateString()}`}
-                          >
-                            EMAIL
-                          </a>
-                        )} */}
-                    </div>
-                    {session.data?.user.id === booking.userId &&
-                      playersInBooking.length >= 2 && (
-                        <label
-                          onClick={() => setPlayerToRemove(player.id)}
-                          className="btn-outline btn-sm btn"
-                          htmlFor="action-modal-player-remove"
-                        >
-                          Bye 👋
-                        </label>
-                      )}
-                  </>
-                )}
-              </div>
-            </div>
-          );
-        })
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       )}
     </div>
   );
