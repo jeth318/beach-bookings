@@ -53,6 +53,8 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
   });
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
 
+  const booker = usersInBooking?.find((user) => user.id === booking.userId);
+
   const getAddedBy = (guestPlayer: PlayerInBooking) => {
     const guest = allGuestsInBooking?.find((g) => g.id === guestPlayer.id);
     console.log("GUEST", guest);
@@ -67,7 +69,9 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
   useEffect(() => {
     const og =
       usersInBooking
+
         ?.filter((user) => booking.players.includes(user.id))
+        .filter((user) => user.id !== booking.userId)
         .map((user) => {
           return {
             ...user,
@@ -87,7 +91,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
 
   const getDisplayName = (player: PlayerInBooking) =>
     player?.name && player?.name?.length > 2
-      ? player?.name?.split(" ")[0]
+      ? player?.name
       : `Player${player?.id?.slice(0, 3)}`;
 
   const renderToast = (body: string) => {
@@ -196,6 +200,43 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
               </tr>
             </thead>
             <tbody>
+              {!!booker && (
+                <tr key={"jek"}>
+                  <td className="flex-flow flex items-center p-1 pl-2 pr-2">
+                    <div className="flex w-full flex-row items-center justify-between">
+                      <div className="flex flex-row items-center">
+                        <div className="avatar">
+                          <div className="mask mask-squircle mr-2 h-12 w-12">
+                            <Image
+                              height={100}
+                              width={100}
+                              className="p-1 pl-0"
+                              alt="user-icon-default"
+                              src={booker.image || "/user-default.png"}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-col">
+                          <div
+                            style={{
+                              overflow: "hidden",
+                              maxWidth: "170px",
+                              textOverflow: "ellipsis",
+                            }}
+                            className="font-bold"
+                          >
+                            {getDisplayName(booker as PlayerInBooking)}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="ml-1 flex items-center gap-2">
+                        <div>Booker</div>
+                        <CustomIcon path="/svg/crown.svg" />
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
               {playersInBooking?.map((player) => {
                 return (
                   <tr key={player.id}>
@@ -240,6 +281,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                           </div>
                         </div>
                       </div>
+
                       {session.data?.user.id === booking.userId &&
                         playersInBooking.length >= 2 && (
                           <label
