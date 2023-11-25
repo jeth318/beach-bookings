@@ -30,7 +30,7 @@ export const PlayerSection = ({ booking }: Props) => {
           <BeatLoader size={10} color="#36d7b7" />
         </div>
       ) : (
-        <>
+        <div className="smooth-render-in ">
           <PartyLeader users={usersInBooking as User[]} booking={booking} />
           <PlayersInBooking
             users={usersInBooking as User[]}
@@ -40,7 +40,7 @@ export const PlayerSection = ({ booking }: Props) => {
             guests={allGuestsInBooking}
             booking={booking}
           />
-        </>
+        </div>
       )}
     </div>
   );

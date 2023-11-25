@@ -33,16 +33,14 @@ export const ActionPanelSection = ({
   guestPlayers,
   onBookingChange,
 }: Props) => {
+  const guestPlayerCount = Number(guestPlayers?.length) || 0;
   const radialProgressValue =
     (!maxPlayers
       ? 100
-      : (booking.players.length + Number(guestPlayers?.length)) / maxPlayers) *
-    100;
+      : (booking.players.length + guestPlayerCount) / maxPlayers) * 100;
 
   const totalPlayerCount = booking.maxPlayers
-    ? `${booking.players.length + Number(guestPlayers?.length)} / ${
-        booking.maxPlayers
-      }`
+    ? `${booking.players.length + guestPlayerCount} / ${booking.maxPlayers}`
     : booking.players.length;
 
   return (

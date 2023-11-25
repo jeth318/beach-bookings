@@ -1,4 +1,4 @@
-import { type Booking } from "@prisma/client";
+import { type Guest, type Booking } from "@prisma/client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
@@ -16,10 +16,11 @@ import useUsersInBooking from "~/hooks/useUsersInBooking";
 import useEmail from "~/hooks/useEmail";
 
 type Props = {
+  guests: Guest[] | undefined;
   booking: Booking;
 };
 
-export const PlayersTable = ({ booking }: Props) => {
+export const PlayersTable = ({ booking, guests = [] }: Props) => {
   const session = useSession();
 
   type PlayerInBooking = {
@@ -27,6 +28,7 @@ export const PlayersTable = ({ booking }: Props) => {
     emailConsents: string[];
     name: string | null;
     image: string | null;
+    isGuest: boolean;
   };
 
   const [playersInBooking, setPlayersInBooking] = useState<
@@ -46,10 +48,25 @@ export const PlayersTable = ({ booking }: Props) => {
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
 
   useEffect(() => {
-    setPlayersInBooking(
-      usersInBooking?.filter((user) => booking.players.includes(user.id))
-    );
-  }, [booking, usersInBooking]);
+    const og =
+      usersInBooking
+        ?.filter((user) => booking.players.includes(user.id))
+        .map((user) => {
+          return {
+            ...user,
+            isGuest: false,
+          };
+        }) || [];
+
+    const g = guests.map((guest) => {
+      return {
+        id: guest.id,
+        name: guest.name,
+        isGuest: true,
+      } as PlayerInBooking;
+    });
+    setPlayersInBooking([...og, ...g]);
+  }, [booking, usersInBooking, guests]);
 
   const renderToast = (body: string) => {
     setToastMessage(body);
@@ -147,6 +164,11 @@ export const PlayersTable = ({ booking }: Props) => {
                     className="font-bold"
                   >
                     {displayName}
+                    {player.isGuest && (
+                      <span className="ml-2">
+                        <i>(guest)</i>
+                      </span>
+                    )}
                   </div>
                   <div
                     className="ellips text-sm opacity-50"
@@ -156,7 +178,9 @@ export const PlayersTable = ({ booking }: Props) => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    playeremail
+                    {player.isGuest
+                      ? "Added by player x"
+                      : "playeremail@hej.da"}
                   </div>
                 </div>
               </div>
@@ -199,7 +223,7 @@ export const PlayersTable = ({ booking }: Props) => {
                           className="btn-outline btn-sm btn"
                           htmlFor="action-modal-player-remove"
                         >
-                          Kick 👋
+                          Remove 👋
                         </label>
                       )}
                   </>
