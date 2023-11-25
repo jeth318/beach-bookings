@@ -1,4 +1,4 @@
-import { type Guest, type Booking } from "@prisma/client";
+import { type Booking } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { api } from "~/utils/api";
@@ -137,7 +137,7 @@ export const GuestPlayers = ({ booking }: Props) => {
         callback={removePlayer}
         tagRef="player-remove"
         title="Confirm kick 🦵👋"
-        body="If you remove this player from this booking, he or she will have to
+        body="If you remove this guest from this booking, he or she will have to
         re-join them selfs."
         confirmButtonText="Remove player"
         cancelButtonText="Cancel"

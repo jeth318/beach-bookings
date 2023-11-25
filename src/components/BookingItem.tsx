@@ -42,10 +42,10 @@ export const BookingItem = ({
   onBookingItemChange,
 }: Props) => {
   console.log(booking.userId === sessionUser?.id);
-  const { allGuestsInBooking, isGuestFetched } = useGuest({
+  const { allGuestsInBooking } = useGuest({
     bookingId: booking.id,
   });
-  return !isGuestFetched ? null : (
+  return (
     <div
       key={booking?.id}
       className="smooth-render-in first:border-b-1 border-b border-zinc-400"

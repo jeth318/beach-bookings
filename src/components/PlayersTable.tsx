@@ -14,6 +14,7 @@ import useUser from "~/hooks/useUser";
 import useSessionUser from "~/hooks/useSessionUser";
 import useUsersInBooking from "~/hooks/useUsersInBooking";
 import useEmail from "~/hooks/useEmail";
+import useGuest from "~/hooks/useGuest";
 
 type Props = {
   guests: Guest[] | undefined;
@@ -40,6 +41,11 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
 
   const { sendEmail } = useEmail();
 
+  const { allGuestsInBooking, deleteGuest, refetchAllGuestsInBooking } =
+    useGuest({
+      bookingId: booking.id,
+    });
+
   const updateBooking = api.booking.update.useMutation();
 
   const { usersInBooking, isInitialLoadingUsersInBooking } = useUsersInBooking({
@@ -47,6 +53,14 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
   });
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
 
+  const getAddedBy = (guestPlayer: PlayerInBooking) => {
+    const guest = allGuestsInBooking?.find((g) => g.id === guestPlayer.id);
+    console.log("GUEST", guest);
+    console.log("Usersin", usersInBooking);
+    const adder = usersInBooking?.find((user) => user?.id === guest?.invitedBy);
+    const displayName = getDisplayName(adder as PlayerInBooking);
+    return adder?.name ? `Added by ${displayName || "unknown player"}` : "";
+  };
   useEffect(() => {
     const og =
       usersInBooking
@@ -68,6 +82,11 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
     setPlayersInBooking([...og, ...g]);
   }, [booking, usersInBooking, guests]);
 
+  const getDisplayName = (player: PlayerInBooking) =>
+    player?.name && player?.name?.length > 2
+      ? player?.name?.split(" ")[0]
+      : `Player${player?.id?.slice(0, 3)}`;
+
   const renderToast = (body: string) => {
     setToastMessage(body);
     setTimeout(() => {
@@ -76,6 +95,13 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
   };
 
   const removePlayer = (playerId: string) => {
+    const isRegularPlayer = booking.players.includes(playerId);
+    return isRegularPlayer
+      ? removeRegularPlayer(playerId)
+      : removeGuestPlayer(playerId);
+  };
+
+  const removeRegularPlayer = (playerId: string) => {
     const recipients = getEmailRecipients({
       playersInBooking: booking.players,
       users: playersInBooking || [],
@@ -110,10 +136,36 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
     );
   };
 
+  const removeGuestPlayer = async (playerId: string) => {
+    const recipients = getEmailRecipients({
+      playersInBooking: booking.players,
+      users: playersInBooking || [],
+      sessionUserId: "",
+      eventType: "KICK",
+    });
+
+    const deletedUser = await deleteGuest({ id: playerId });
+
+    if (deletedUser) {
+      emailDispatcher({
+        recipients,
+        playerName: session.data?.user.id || "A player",
+        originalBooking: booking,
+        mutatedBooking: booking,
+        eventType: "KICK",
+        sendEmail,
+      });
+      renderToast(`Player was removed from the booking.`);
+      void refetchBookings();
+      void refetchAllGuestsInBooking();
+    }
+  };
+
   return (
     <div>
       {toastMessage && <Toast body={toastMessage} />}
       <ActionModal
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         callback={removePlayer}
         data={playerToRemove}
         tagRef="player-remove"
@@ -132,11 +184,6 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
         </div>
       ) : (
         playersInBooking?.map((player, index) => {
-          const displayName =
-            player.name && player.name.length > 2
-              ? player.name?.split(" ")[0]
-              : `Player${player.id.slice(0, 3)}`;
-
           return (
             <div
               key={player.id}
@@ -163,7 +210,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                     }}
                     className="font-bold"
                   >
-                    {displayName}
+                    {getDisplayName(player)}
                     {player.isGuest && (
                       <span className="ml-2">
                         <i>(guest)</i>
@@ -178,9 +225,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {player.isGuest
-                      ? "Added by player x"
-                      : "playeremail@hej.da"}
+                    {player.isGuest ? getAddedBy(player) : "playeremail@hej.da"}
                   </div>
                 </div>
               </div>
