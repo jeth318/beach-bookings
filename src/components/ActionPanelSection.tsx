@@ -92,10 +92,10 @@ export const ActionPanelSection = ({
               <label
                 htmlFor="action-modal-join-booking"
                 onClick={() => void onBookingChange(booking)}
-                className={getJoinButtonClassName(booking, sessionUserId)}
+                className={getJoinButtonClassName(booking, guestPlayerCount, sessionUserId)}
               >
                 <BeatLoaderButton
-                  value={getJoinButtonText(booking, sessionUserId)}
+                  value={getJoinButtonText(booking, guestPlayerCount, sessionUserId)}
                   isLoading={
                     joining.bookingId === booking.id && joining.isWorking
                   }

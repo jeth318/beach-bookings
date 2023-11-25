@@ -3,6 +3,7 @@ import {
   type Association,
   type Booking,
   type Facility,
+  Guest,
 } from "@prisma/client";
 import { today } from "./time.util";
 import { buildHtmlInvitationTemplate } from "~/email/invitaion-template";
@@ -211,12 +212,13 @@ export const getProgressAccent = (booking: Booking, guestPlayers: number) => {
 
 export const getJoinButtonClassName = (
   booking: Booking,
+  guestPlayersCount: number,
   sessionUserId?: string
 ) => {
   const spotsAvailable =
     !booking?.maxPlayers ||
     (typeof booking?.maxPlayers === "number" &&
-      booking?.maxPlayers > booking.players.length);
+      booking?.maxPlayers > booking.players.length + guestPlayersCount);
 
   const btnVariant = spotsAvailable
     ? !booking?.joinable && booking.userId !== sessionUserId
@@ -227,11 +229,15 @@ export const getJoinButtonClassName = (
   return `btn-sm btn  ${btnVariant}`;
 };
 
-export const getJoinButtonText = (booking: Booking, sessionUserId?: string) => {
+export const getJoinButtonText = (
+  booking: Booking,
+  guestPlayerCount: number,
+  sessionUserId?: string
+) => {
   const spotsAvailable =
     !booking?.maxPlayers ||
     (typeof booking?.maxPlayers === "number" &&
-      booking?.maxPlayers > booking?.players?.length);
+      booking?.maxPlayers > booking?.players?.length + guestPlayerCount);
 
   return spotsAvailable
     ? !booking?.joinable && booking.userId !== sessionUserId
