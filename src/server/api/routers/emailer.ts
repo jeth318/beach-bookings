@@ -40,11 +40,8 @@ export const emailerRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const subject = getEmailHeading(input.eventType);
 
-      console.log(input);
-
       try {
         const users = await ctx.prisma.user.findMany({});
-        console.log({ users });
 
         const emailAddresses =
           input.eventType === "ADD"

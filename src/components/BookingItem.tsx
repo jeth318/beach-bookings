@@ -44,10 +44,6 @@ export const BookingItem = ({
     bookingId: booking.id,
   });
 
-  console.log(
-    allGuestsInBooking?.some((guest) => guest.invitedBy === sessionUser?.id)
-  );
-
   const showLink =
     (sessionUser && booking.players.includes(sessionUser.id)) ||
     booking.userId === sessionUser?.id ||

@@ -120,8 +120,6 @@ export const emailDispatcher = ({
   eventType,
   guests,
 }: EmailDispatchProps) => {
-  console.log("sendEmail", sendEmail);
-
   const htmlString = buildHtmlTemplate({
     bookerName,
     playerName,
