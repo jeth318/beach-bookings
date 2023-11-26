@@ -25,7 +25,7 @@ export const ArrogantFrog = () => {
           width={210}
           height={210}
         />
-        <div className="p-4 text-center text-xl ">
+        <div className="p-4 text-center text-xl text-white">
           <div
             dangerouslySetInnerHTML={{ __html: getFrogText(router.asPath) }}
           ></div>
@@ -39,17 +39,17 @@ export const ArrogantFrog = () => {
           {joined && (
             <div className="flex flex-col items-center">
               <div>
-                <Link className="btn-secondary btn " href="/">
-                  Join bookings
+                <Link className="btn-secondary btn mt-4" href="/">
+                  All bookings
                 </Link>
               </div>
               <div className="divider"></div>
-              <div className="text-sm">
+              {/* <div className="text-sm">
                 Or perhaps create a booking your self?
-              </div>
+              </div> */}
             </div>
           )}
-          {(created || joined) && <CheckAvailability />}
+          {/* {(created || joined) && <CheckAvailability />} */}
         </div>
       </div>
     </div>

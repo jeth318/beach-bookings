@@ -248,11 +248,11 @@ export const getFrogText = (path: string) => {
   const association = path.startsWith("/association");
 
   if (joined) {
-    return "Ey, this is looking quite lonely.";
+    return "You have not joined any upcoming bookings 🐸";
   }
 
   if (created) {
-    return "You have no active bookings 🐸";
+    return "You have not published any upcoming bookings 🐸";
   }
 
   if (history) {
