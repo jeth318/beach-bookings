@@ -11,7 +11,6 @@ import useUsersInBooking from "~/hooks/useUsersInBooking";
 import { getBgColor } from "~/utils/color.util";
 import { getQueryId } from "~/utils/general.util";
 
-
 type UserInBooking = {
   id: string;
   emailConsents: string[];
@@ -69,7 +68,7 @@ const BookingDetails = () => {
 
             <div>
               {!!booking && (
-                <GuestPlayers users={usersInBooking} booking={booking} />
+                <GuestPlayers users={usersInBooking || []} booking={booking} />
               )}
             </div>
             <h4 className="mb-2 mt-4 text-center text-white">
