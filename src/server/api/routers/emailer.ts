@@ -35,14 +35,42 @@ export const emailerRouter = createTRPCRouter({
         recipients: z.string().array(),
         eventType: z.string(),
         htmlString: z.string(),
+        associationId: z.string().or(z.null()),
+        bookingId: z.string().or(z.null()),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const subject = getEmailHeading(input.eventType);
-
       try {
-        const users = await ctx.prisma.user.findMany({});
+        const bookingId = input.bookingId || "";
+        const associationId = input.associationId || "";
 
+        const booking = await ctx.prisma.booking.findUnique({
+          where: {
+            id: bookingId,
+          },
+        });
+
+        const findPlayersInBookingQuery = {
+          where: {
+            id: { in: booking?.players },
+          },
+        };
+
+        const findPlayersInAssociationQuery = {
+          where: { associations: { has: associationId } },
+        };
+
+        const query =
+          bookingId.length && input.eventType !== "ADD"
+            ? findPlayersInBookingQuery
+            : associationId.length
+            ? findPlayersInAssociationQuery
+            : {};
+
+        console.log({ query });
+        const users = await ctx.prisma.user.findMany(query);
+        console.log({ users });
         const emailAddresses =
           input.eventType === "ADD"
             ? users

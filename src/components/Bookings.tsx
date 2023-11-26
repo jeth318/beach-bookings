@@ -101,6 +101,7 @@ export const Bookings = ({ bookings }: Props) => {
       mutatedBooking,
       bookings: bookings || [],
       eventType,
+      associationId: booking.associationId || null,
       guests: allGuests?.filter((guest) => guest.bookingId === booking.id),
       sendEmail,
     });

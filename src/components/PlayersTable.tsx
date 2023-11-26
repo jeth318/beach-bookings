@@ -133,6 +133,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
             mutatedBooking,
             eventType: "KICK",
             guests: allGuestsInBooking,
+            associationId: booking.associationId,
             sendEmail,
           });
           renderToast(`Player was removed from the booking.`);
@@ -159,6 +160,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
         originalBooking: booking,
         mutatedBooking: booking,
         eventType: "KICK",
+        associationId: booking.associationId,
         sendEmail,
       });
       renderToast(`Player was removed from the booking.`);

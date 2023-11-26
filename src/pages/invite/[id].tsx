@@ -127,7 +127,7 @@ const Invite = () => {
           height={300}
           src="/beach-game.png"
         />
-        <div className="flex flex-col items-center justify-center pl-4 pr-4">
+        <div className="flex flex-col items-center justify-center pl-4 pr-4 text-white">
           <h4 className="text-center">
             {inviter?.name || "A player"} has invited you to join their group{" "}
           </h4>

@@ -28,6 +28,7 @@ type EmailDispatchProps = {
   recipients?: string[];
   guests?: Guest[];
   sendEmail: any;
+  associationId?: string | null;
 };
 
 type EmailInviteDispatchProps = {
@@ -119,6 +120,7 @@ export const emailDispatcher = ({
   sendEmail,
   eventType,
   guests,
+  associationId,
 }: EmailDispatchProps) => {
   const htmlString = buildHtmlTemplate({
     bookerName,
@@ -129,12 +131,15 @@ export const emailDispatcher = ({
     bookings,
     guests,
   });
+
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   sendEmail(
     {
       recipients,
       eventType,
       htmlString,
+      associationId,
+      bookingId: mutatedBooking?.id || originalBooking.id,
     },
     {
       onSuccess: () => null,

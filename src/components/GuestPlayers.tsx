@@ -88,6 +88,7 @@ export const GuestPlayers = ({ booking, users }: Props) => {
         bookings: [],
         eventType: "JOIN",
         recipients,
+        associationId: booking.associationId,
         sendEmail,
       });
     }
@@ -118,6 +119,7 @@ export const GuestPlayers = ({ booking, users }: Props) => {
       bookings: [],
       eventType: "LEAVE",
       recipients,
+      associationId: booking.associationId,
       sendEmail,
     });
   };

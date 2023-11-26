@@ -93,13 +93,15 @@ const Association = () => {
             height={300}
             src="/beach-game.png"
           />
-          <h2 className="mb-4 text-center text-4xl">No groups joined</h2>
-          <h3 className="text-center text-xl ">
+          <h2 className="mb-4 text-center text-4xl text-white">
+            No groups joined
+          </h2>
+          <h3 className="text-center text-xl text-white">
             You are not a part of a group yet. Group members can invite you.
             Meanwhile, you can join public bookings from the home page.
           </h3>
 
-          <Link href="/association/create" className="btn-accent btn mt-5 ">
+          <Link href="/association/create" className="btn-accent btn mt-5">
             Create a group
           </Link>
         </div>
@@ -185,35 +187,6 @@ const Association = () => {
                           {association.name}
                         </Link>
                         <div className="flex flex-col pb-1 font-medium">
-                          {/*                         <div
-                          style={{ maxWidth: "150px" }}
-                          className="transparent-background-grey self-start rounded-lg border border-slate-600 p-1"
-                        >
-                          <div className="flex flex-row items-center self-start pb-1 ">
-                            <span className="pr-2">
-                              <CustomIcon path="/svg/people.svg" width={18} />
-                            </span>
-                            <div
-                              style={{ maxWidth: 100 }}
-                              className="overflow-dots"
-                            >
-                              12 members
-                            </div>
-                          </div>
-                          <div className="flex flex-row items-center justify-start">
-                            <span className="pr-1">
-                              <CustomIcon
-                                path="/svg/location-arrow.svg"
-                                width={20}
-                              />
-                            </span>
-                            <div>
-                              <div className="flex flex-row items-center">
-                                GBC Kviberg
-                              </div>
-                            </div>
-                          </div>
-                        </div> */}
                           <div className="pr-2">{association.description}</div>
                         </div>
                       </div>

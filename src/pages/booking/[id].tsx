@@ -183,6 +183,7 @@ const Booking = () => {
             eventType: "MODIFY",
             recipients,
             guests: allGuestsInBooking,
+            associationId: booking.associationId,
             sendEmail,
           });
           refetchBooking().catch(() => null);

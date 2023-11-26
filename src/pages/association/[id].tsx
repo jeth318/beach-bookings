@@ -119,7 +119,7 @@ const Group = () => {
       {toastMessage && <Toast body={toastMessage} />}
       {errorToastMessage && <Toast level="error" body={errorToastMessage} />}
 
-      <main className="min-w-sm pd-3 smooth-render-in dark: flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] ">
+      <main className="min-w-sm pd-3 smooth-render-in dark: flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c]">
         <div className="4 mt-4 flex flex-row items-center justify-center ">
           <Image
             alt="beach-game"
@@ -127,14 +127,9 @@ const Group = () => {
             height={100}
             src="/beach-game.png"
           />
-          <div className="flex flex-col items-start">
-            <h2
-              className="heading 
-            text-3xl "
-            >
-              {association.name}
-            </h2>
-            <h4 className="">{association.description}</h4>
+          <div className="flex flex-col items-start p-2">
+            <h2 className="heading text-3xl text-white">{association.name}</h2>
+            <h4 className="p-1 text-white">{association.description}</h4>
           </div>
         </div>
 
@@ -203,7 +198,7 @@ const Group = () => {
         <hr style={{ width: "100%", color: "lightgrey" }} />
         <div className="flex w-screen max-w-md flex-col p-4">
           <form className="flex flex-col" onSubmit={onInviteClicked}>
-            <label className="label" htmlFor="email">
+            <label className="label text-white" htmlFor="email">
               Invite a friend
             </label>
             <input

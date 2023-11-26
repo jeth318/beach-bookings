@@ -188,6 +188,7 @@ const Booking = () => {
         bookerName: sessionData.user.name || "Someone",
         bookings: [],
         eventType: "ADD",
+        associationId: newBooking.associationId,
         sendEmail,
       });
 
@@ -518,7 +519,7 @@ const Booking = () => {
                 <div className="mb-20 mt-10 flex flex-col items-center justify-center gap-2">
                   <label
                     htmlFor="action-modal-booking-cancel"
-                    className="btn-outline btn w-[200px] "
+                    className="btn-outline btn w-[200px]  text-white"
                     // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   >
                     Reset

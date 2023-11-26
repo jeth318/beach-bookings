@@ -105,7 +105,9 @@ const CreateAssociation = () => {
                 <span className="label-text ">
                   A short description about this group
                 </span>
-                <span className="label-text-alt ">{charsRemaining}</span>
+                <span className="label-text-alt text-white">
+                  {charsRemaining}
+                </span>
               </label>
               <textarea
                 maxLength={200}
