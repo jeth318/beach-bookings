@@ -1,44 +1,41 @@
 import { type Booking } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
-import { api } from "~/utils/api";
 import { Toast } from "./Toast";
 import { getEmailRecipients, renderToast } from "~/utils/general.util";
-import { emailDispatcher } from "~/utils/booking.util";
 import { useSession } from "next-auth/react";
 import ActionModal from "./ActionModal";
 import useBooking from "~/hooks/useBooking";
 import useUsersInBooking from "~/hooks/useUsersInBooking";
-import useEmail from "~/hooks/useEmail";
 import BeatLoaderButton from "./BeatLoaderButton";
 import useGuest from "~/hooks/useGuest";
+import { emailDispatcher } from "~/utils/booking.util";
+import useEmail from "~/hooks/useEmail";
+
+type UserInBooking = {
+  id: string;
+  emailConsents: string[];
+  name: string | null;
+  image: string | null;
+};
 
 type Props = {
   booking: Booking;
+  users: UserInBooking[];
 };
 
-export const GuestPlayers = ({ booking }: Props) => {
+export const GuestPlayers = ({ booking, users }: Props) => {
   const session = useSession();
-
-  type PlayerInBooking = {
-    id: string;
-    emailConsents: string[];
-    name: string | null;
-    image: string | null;
-  };
+  const { sendEmail } = useEmail();
 
   const [playersInBooking, setPlayersInBooking] = useState<
-    PlayerInBooking[] | undefined
+    UserInBooking[] | undefined
   >();
   const [toastMessage, setToastMessage] = useState<string>();
 
   const [guestName, setGuestName] = useState<string>();
 
-  const { refetchBookings, isInitialLoadingRefetch } = useBooking();
-
-  const { sendEmail } = useEmail();
-
-  const updateBooking = api.booking.update.useMutation();
+  const { isInitialLoadingRefetch } = useBooking();
 
   const { usersInBooking, isInitialLoadingUsersInBooking } = useUsersInBooking({
     booking,
@@ -73,7 +70,26 @@ export const GuestPlayers = ({ booking }: Props) => {
       await refetchAllGuestsInBooking();
       setGuestName("");
       setIsLoading(false);
+
       renderToast("Guest added", setToastMessage);
+
+      const recipients = getEmailRecipients({
+        users: users,
+        playersInBooking: booking?.players,
+        sessionUserId: session?.data?.user.id as string,
+        eventType: "JOIN",
+      });
+
+      emailDispatcher({
+        originalBooking: booking,
+        mutatedBooking: booking,
+        bookerName: undefined,
+        playerName: guest.name,
+        bookings: [],
+        eventType: "JOIN",
+        recipients,
+        sendEmail,
+      });
     }
   };
 
@@ -82,11 +98,28 @@ export const GuestPlayers = ({ booking }: Props) => {
       return null;
     }
     setIsLoading(true);
-    await deleteGuest({ id: guestToRemove });
+    const deletedGuest = await deleteGuest({ id: guestToRemove });
     await refetchAllGuestsInBooking();
     setGuestToRemove(undefined);
     setIsLoading(false);
     renderToast("Guest removed", setToastMessage);
+
+    const recipients = getEmailRecipients({
+      users: users,
+      playersInBooking: booking?.players,
+      sessionUserId: session?.data?.user.id as string,
+      eventType: "LEAVE",
+    });
+    emailDispatcher({
+      originalBooking: booking,
+      mutatedBooking: booking,
+      bookerName: undefined,
+      playerName: deletedGuest.name,
+      bookings: [],
+      eventType: "LEAVE",
+      recipients,
+      sendEmail,
+    });
   };
 
   useEffect(() => {
@@ -140,8 +173,8 @@ export const GuestPlayers = ({ booking }: Props) => {
                       <input
                         style={{ width: "100%" }}
                         type="text"
-                        maxLength={30}
                         disabled
+                        maxLength={30}
                         value={guest.name}
                         placeholder="Name"
                         className="input-bordered input"
@@ -150,8 +183,6 @@ export const GuestPlayers = ({ booking }: Props) => {
                     {guest.invitedBy === session.data?.user.id && (
                       <label
                         htmlFor="action-modal-guest-remove"
-                        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                        // disabled={isLoading || guestToRemove !== undefined}
                         className={`btn-error btn-sm btn min-w-[78px] self-center ${
                           isLoading ? "btn-disabled" : ""
                         }`}
@@ -173,41 +204,38 @@ export const GuestPlayers = ({ booking }: Props) => {
               style={{ borderRadius: "0.5rem", marginBottom: "5px" }}
               className="flex flex-row justify-between bg-slate-200 dark:bg-slate-800"
             >
-              <div className="flex w-full items-center space-x-3 pr-2">
-                <div className="flex w-full flex-col gap-1">
-                  <input
-                    style={{ width: "100%" }}
-                    type="text"
-                    maxLength={30}
-                    value={guestName}
-                    disabled={isLoading}
-                    onChange={(e) => setGuestName(e.target.value)}
-                    placeholder="New guest name"
-                    className="input-bordered input"
-                  />
-                </div>
-                <label
-                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  htmlFor="action-modal-guest-add"
-                  /* disabled={
-                    isLoading ||
-                    guestToRemove !== undefined ||
-                    !guestName?.length
-                  } */
-                  className={`btn-accent btn-sm btn min-w-[70px] self-center ${
-                    isLoading ||
-                    guestToRemove !== undefined ||
-                    !guestName?.length
-                      ? "btn-disabled"
-                      : ""
-                  }`}
-                >
-                  <BeatLoaderButton
-                    value="Add"
-                    isLoading={isLoading && !guestToRemove}
-                  />
-                </label>
-              </div>
+              {session.data?.user.id &&
+                booking.players.includes(session.data.user.id) && (
+                  <div className="flex w-full items-center space-x-3 pr-2">
+                    <div className="flex w-full flex-col gap-1">
+                      <input
+                        style={{ width: "100%" }}
+                        type="text"
+                        maxLength={30}
+                        value={guestName}
+                        disabled={isLoading}
+                        onChange={(e) => setGuestName(e.target.value)}
+                        placeholder="New guest name"
+                        className="input-bordered input"
+                      />
+                    </div>
+                    <label
+                      htmlFor="action-modal-guest-add"
+                      className={`btn-success btn-sm btn min-w-[70px] self-center ${
+                        isLoading ||
+                        guestToRemove !== undefined ||
+                        !guestName?.length
+                          ? "btn-disabled"
+                          : ""
+                      }`}
+                    >
+                      <BeatLoaderButton
+                        value="Add"
+                        isLoading={isLoading && !guestToRemove}
+                      />
+                    </label>
+                  </div>
+                )}
             </div>
           )}
         </div>

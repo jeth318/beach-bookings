@@ -25,6 +25,7 @@ import useAssociations from "~/hooks/useUserAssociations";
 import useSessionUser from "~/hooks/useSessionUser";
 import { BookingItem } from "./BookingItem";
 import { BookingActionModalGroup } from "./BookingActionModalGroup";
+import useGuest from "~/hooks/useGuest";
 
 type Bookings = {
   data: Booking[];
@@ -73,6 +74,8 @@ export const Bookings = ({ bookings }: Props) => {
     associationIds: user?.associations,
   });
 
+  const { allGuests } = useGuest({});
+
   const { refetchBookings } = useBooking();
 
   const { data: facilities } = api.facility.getAll.useQuery();
@@ -98,6 +101,7 @@ export const Bookings = ({ bookings }: Props) => {
       mutatedBooking,
       bookings: bookings || [],
       eventType,
+      guests: allGuests?.filter((guest) => guest.bookingId === booking.id),
       sendEmail,
     });
 

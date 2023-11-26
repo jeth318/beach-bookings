@@ -26,6 +26,7 @@ import useUserAssociations from "../../hooks/useUserAssociations";
 import useUser from "../../hooks/useUser";
 import { getFacilitiesToShow } from "~/utils/facility.util";
 import { getAssociationsToShow } from "~/utils/association.util";
+import useGuest from "~/hooks/useGuest";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -42,7 +43,6 @@ const Booking = () => {
   const [toastMessage, setToastMessage] = useState<string>();
   const [isInitialStateLoaded, setIsInitialStateLoaded] = useState<boolean>();
 
-  const [originalStateHash, setOriginalStateHash] = useState<string>();
   const session = useSession();
   const isInitialLoading = sessionStatus === "loading";
 
@@ -58,6 +58,7 @@ const Booking = () => {
     refetchBooking,
   } = useSingleBooking({ id: getQueryId(router) });
 
+  const { allGuestsInBooking } = useGuest({ bookingId: booking?.id });
   const { usersInBooking, isUsersInBookingFetched } = useUsersInBooking({
     booking,
   });
@@ -181,6 +182,7 @@ const Booking = () => {
             bookings: [],
             eventType: "MODIFY",
             recipients,
+            guests: allGuestsInBooking,
             sendEmail,
           });
           refetchBooking().catch(() => null);

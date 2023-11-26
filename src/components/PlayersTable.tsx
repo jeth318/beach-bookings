@@ -10,8 +10,6 @@ import { emailDispatcher } from "~/utils/booking.util";
 import { useSession } from "next-auth/react";
 import ActionModal from "./ActionModal";
 import useBooking from "~/hooks/useBooking";
-import useUser from "~/hooks/useUser";
-import useSessionUser from "~/hooks/useSessionUser";
 import useUsersInBooking from "~/hooks/useUsersInBooking";
 import useEmail from "~/hooks/useEmail";
 import useGuest from "~/hooks/useGuest";
@@ -134,6 +132,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
             originalBooking: booking,
             mutatedBooking,
             eventType: "KICK",
+            guests: allGuestsInBooking,
             sendEmail,
           });
           renderToast(`Player was removed from the booking.`);
@@ -210,7 +209,6 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                             <Image
                               height={100}
                               width={100}
-                              className="p-1 pl-0"
                               alt="user-icon-default"
                               src={booker.image || "/user-default.png"}
                             />
@@ -247,7 +245,6 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                             <Image
                               height={100}
                               width={100}
-                              className="p-1 pl-0"
                               alt="user-icon-default"
                               src={player.image || "/user-default.png"}
                             />
@@ -257,7 +254,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                           <div
                             style={{
                               overflow: "hidden",
-                              maxWidth: "150px",
+                              maxWidth: "180px",
                               textOverflow: "ellipsis",
                             }}
                             className="font-bold"
@@ -273,7 +270,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                             className="ellips text-sm opacity-50"
                             style={{
                               overflow: "hidden",
-                              maxWidth: "150px",
+                              maxWidth: "175px",
                               textOverflow: "ellipsis",
                             }}
                           >

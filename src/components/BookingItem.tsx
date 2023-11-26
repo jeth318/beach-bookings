@@ -36,14 +36,22 @@ export const BookingItem = ({
   joining,
   leaving,
   deleting,
-  router,
   associations,
   facilities,
   onBookingItemChange,
 }: Props) => {
-  const { allGuestsInBooking } = useGuest({
+  const { allGuestsInBooking, isGuestFetched } = useGuest({
     bookingId: booking.id,
   });
+
+  console.log(
+    allGuestsInBooking?.some((guest) => guest.invitedBy === sessionUser?.id)
+  );
+
+  const showLink =
+    (sessionUser && booking.players.includes(sessionUser.id)) ||
+    booking.userId === sessionUser?.id ||
+    allGuestsInBooking?.some((guest) => guest.invitedBy === sessionUser?.id);
   return (
     <div
       key={booking?.id}
@@ -56,8 +64,7 @@ export const BookingItem = ({
           <div className="flex flex-col">
             {isOngoingGame(booking) && <OngoingGame />}
             <div>
-              {(sessionUser && booking.players.includes(sessionUser.id)) ||
-              booking.userId === sessionUser?.id ? (
+              {showLink ? (
                 <Link
                   href={`/booking/details/${booking.id}`}
                   className="font-bil link card-title text-2xl font-bold"
@@ -104,15 +111,17 @@ export const BookingItem = ({
           <div className="flex">
             <div className="flex flex-col self-end pb-2">
               <DurationAndCourtSection booking={booking} />
-              <ActionPanelSection
-                leaving={leaving}
-                joining={joining}
-                deleting={deleting}
-                booking={booking}
-                guestPlayers={allGuestsInBooking}
-                sessionUserId={sessionUser?.id}
-                onBookingChange={onBookingItemChange}
-              />
+              {isGuestFetched && (
+                <ActionPanelSection
+                  leaving={leaving}
+                  joining={joining}
+                  deleting={deleting}
+                  booking={booking}
+                  guestPlayers={allGuestsInBooking}
+                  sessionUserId={sessionUser?.id}
+                  onBookingChange={onBookingItemChange}
+                />
+              )}
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@ import {
   type Association,
   type Booking,
   type Facility,
-  Guest,
+  type Guest,
 } from "@prisma/client";
 import { today } from "./time.util";
 import { buildHtmlInvitationTemplate } from "~/email/invitaion-template";
@@ -26,6 +26,7 @@ type EmailDispatchProps = {
   mutatedBooking?: Booking;
   eventType: EventType;
   recipients?: string[];
+  guests?: Guest[];
   sendEmail: any;
 };
 
@@ -117,6 +118,7 @@ export const emailDispatcher = ({
   mutatedBooking,
   sendEmail,
   eventType,
+  guests,
 }: EmailDispatchProps) => {
   console.log("sendEmail", sendEmail);
 
@@ -127,6 +129,7 @@ export const emailDispatcher = ({
     mutatedBooking,
     originalBooking,
     bookings,
+    guests,
   });
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   sendEmail(

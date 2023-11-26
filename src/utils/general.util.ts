@@ -244,6 +244,7 @@ export const getFrogText = (path: string) => {
   const joined = path === "/joined";
   const created = path === "/created";
   const invite = path.startsWith("/invite");
+  const details = path.startsWith("/booking/details");
   const association = path.startsWith("/association");
 
   if (joined) {
@@ -260,6 +261,10 @@ export const getFrogText = (path: string) => {
 
   if (invite) {
     return "Hmm, looks like this invite link is invalid. Talk to the inviter.";
+  }
+
+  if (details) {
+    return "Hmm, looks like this booking is for another group of players.";
   }
 
   if (association) {

@@ -22,8 +22,6 @@ import useUser from "../../hooks/useUser";
 import useUserAssociations from "../../hooks/useUserAssociations";
 import useSingleBooking from "../../hooks/useSingleBooking";
 import { getAssociationsToShow } from "~/utils/association.util";
-import { Toggle } from "~/components/Toggle";
-import { CustomIcon } from "~/components/CustomIcon";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();

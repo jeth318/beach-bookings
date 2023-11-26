@@ -26,6 +26,7 @@ export const userRouter = createTRPCRouter({
           id: { in: input.playerIds },
         },
       });
+      
 
       return users.map((user) => ({
         id: user.id,
