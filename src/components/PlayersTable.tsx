@@ -15,11 +15,10 @@ import useEmail from "~/hooks/useEmail";
 import useGuest from "~/hooks/useGuest";
 
 type Props = {
-  guests: Guest[] | undefined;
   booking: Booking;
 };
 
-export const PlayersTable = ({ booking, guests = [] }: Props) => {
+export const PlayersTable = ({ booking }: Props) => {
   const session = useSession();
 
   type PlayerInBooking = {
@@ -28,6 +27,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
     name: string | null;
     image: string | null;
     isGuest: boolean;
+    invitedBy?: string;
   };
 
   const [playersInBooking, setPlayersInBooking] = useState<
@@ -53,6 +53,17 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
 
   const booker = usersInBooking?.find((user) => user.id === booking.userId);
 
+  const getCanShowRemovePlayerButton = (player: PlayerInBooking) => {
+    console.log(player);
+
+    return (
+      (session.data?.user.id === booking.userId &&
+        playersInBooking?.length &&
+        playersInBooking.length >= 2) ||
+      player.invitedBy === session.data?.user?.id
+    );
+  };
+
   const getAddedBy = (guestPlayer: PlayerInBooking) => {
     const guest = allGuestsInBooking?.find((g) => g.id === guestPlayer.id);
     const adder = usersInBooking?.find((user) => user?.id === guest?.invitedBy);
@@ -77,15 +88,17 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
           };
         }) || [];
 
-    const g = guests.map((guest) => {
-      return {
-        id: guest.id,
-        name: guest.name,
-        isGuest: true,
-      } as PlayerInBooking;
-    });
+    const g =
+      allGuestsInBooking?.map((guest) => {
+        return {
+          id: guest.id,
+          name: guest.name,
+          isGuest: true,
+          invitedBy: guest.invitedBy,
+        } as PlayerInBooking;
+      }) || [];
     setPlayersInBooking([...og, ...g]);
-  }, [booking, usersInBooking, guests]);
+  }, [booking, usersInBooking, allGuestsInBooking]);
 
   const getDisplayName = (player: PlayerInBooking) =>
     player?.name && player?.name?.length > 2
@@ -195,8 +208,8 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
           <table className="table-xs table-pin-rows table-pin-cols table w-full">
             <thead>
               <tr>
-                <td colSpan={3} className="text-md text-center text-xl">
-                  Players
+                <td colSpan={3} className="text-md text-center text-sm">
+                  Player information
                 </td>
               </tr>
             </thead>
@@ -207,7 +220,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                     <div className="flex w-full flex-row items-center justify-between">
                       <div className="flex flex-row items-center">
                         <div className="avatar">
-                          <div className="mask mask-squircle mr-2 h-12 w-12">
+                          <div className="mask mask-squircle mr-2 h-8 w-8">
                             <Image
                               height={100}
                               width={100}
@@ -243,7 +256,7 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                     <td className="flex-flow flex items-center p-1 pl-2 pr-2">
                       <div className="flex w-full flex-row items-center">
                         <div className="avatar">
-                          <div className="mask mask-squircle mr-2 h-12 w-12">
+                          <div className="mask mask-squircle mr-2 h-8 w-8">
                             <Image
                               height={100}
                               width={100}
@@ -276,21 +289,34 @@ export const PlayersTable = ({ booking, guests = [] }: Props) => {
                               textOverflow: "ellipsis",
                             }}
                           >
-                            {player.isGuest ? getAddedBy(player) : ""}
+                            {player.isGuest ? (
+                              getAddedBy(player)
+                            ) : (
+                              <a
+                                href={`mailto:admin@beachbookings.se?subject=Booking support - ${booking.id}`}
+                                className="link"
+                                onClick={() =>
+                                  alert(
+                                    "The players contact number will be shown here later. This feature is coming later. Meanwhile, you can contact me (creator) at admin@beachbooking.se if you need help."
+                                  )
+                                }
+                              >
+                                admin@beachbookings.se
+                              </a>
+                            )}
                           </div>
                         </div>
                       </div>
 
-                      {session.data?.user.id === booking.userId &&
-                        playersInBooking.length >= 2 && (
-                          <label
-                            onClick={() => setPlayerToRemove(player.id)}
-                            className="btn-outline btn-sm btn"
-                            htmlFor="action-modal-player-remove"
-                          >
-                            Bye 👋
-                          </label>
-                        )}
+                      {getCanShowRemovePlayerButton(player) && (
+                        <label
+                          onClick={() => setPlayerToRemove(player.id)}
+                          className="btn-outline btn-sm btn"
+                          htmlFor="action-modal-player-remove"
+                        >
+                          Remove 👋
+                        </label>
+                      )}
                     </td>
                   </tr>
                 );

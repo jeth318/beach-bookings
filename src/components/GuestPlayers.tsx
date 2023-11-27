@@ -162,7 +162,7 @@ export const GuestPlayers = ({ booking, users }: Props) => {
         </div>
       ) : (
         <div>
-          {userGuests &&
+          {/*           {userGuests &&
             userGuests?.map((guest, index) => {
               return (
                 <div
@@ -199,7 +199,7 @@ export const GuestPlayers = ({ booking, users }: Props) => {
                   </div>
                 </div>
               );
-            })}
+            })} */}
           {booking.players.length + Number(guests?.length) <
             Number(booking?.maxPlayers) && (
             <div

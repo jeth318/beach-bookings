@@ -31,12 +31,24 @@ const Help = () => {
           height={300}
           src="/beach-spike.png"
         />
+        <div className="flex flex-col ">
+          <h2 className=" text-lg">
+            If you need help or have any questions, contact me at the email
+            below:
+          </h2>
+          <a className="link mt-4 text-xl" href="mailto:admin@beachbookings.se">
+            admin@beachbookings.se
+          </a>
+        </div>
+        <br />
+        <br />
+
         <h1 className="dark: mb-4 text-3xl font-extrabold text-gray-900 md:text-5xl lg:text-6xl">
           <span className="bg-gradient-to-r from-sky-400 to-emerald-600 bg-clip-text text-transparent">
             How to beach book
           </span>{" "}
           <br />
-          Some advices.
+          <p className="text-white">Some advices.</p>
         </h1>
         <br />
         <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
