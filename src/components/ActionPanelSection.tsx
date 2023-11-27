@@ -127,7 +127,7 @@ export const ActionPanelSection = ({
             <label
               htmlFor="action-modal-delete-booking"
               onClick={() => void onBookingChange(booking)}
-              className="btn-error btn-sm btn text-white"
+              className="btn-error btn-sm btn"
             >
               {deleting.isWorking && booking.id === deleting.bookingId ? (
                 <BeatLoader size={10} color="white" />
