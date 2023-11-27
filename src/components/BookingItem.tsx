@@ -49,6 +49,10 @@ export const BookingItem = ({
     (sessionUser && booking.players.includes(sessionUser.id)) ||
     booking.userId === sessionUser?.id ||
     allGuestsInBooking?.some((guest) => guest.invitedBy === sessionUser?.id);
+  const guestPlayersLength = allGuestsInBooking?.length
+    ? allGuestsInBooking?.length
+    : 0;
+  const totalPlayersLength = booking.players.length + guestPlayersLength;
   return (
     <div
       key={booking?.id}
@@ -67,12 +71,12 @@ export const BookingItem = ({
                   className="font-bil link card-title text-2xl font-bold"
                 >
                   {parseDate(booking)}
-                  {booking.players.length === 4 && " ✅"}
+                  {totalPlayersLength === 4 && " ✅"}
                 </Link>
               ) : (
                 <div className="font-bil card-title text-2xl font-bold">
                   {parseDate(booking)}
-                  {booking.players.length === 4 && " ✅"}
+                  {totalPlayersLength === 4 && " ✅"}
                 </div>
               )}
               <div className="flex flex-col pb-1 font-medium">
