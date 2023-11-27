@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 
 type Props = {
@@ -6,6 +7,7 @@ type Props = {
 };
 
 const useGuest = ({ id = "", bookingId = "" }: Props) => {
+  const session = useSession();
   const {
     data: guest,
     isFetched: isGuestFetched,
@@ -13,26 +15,35 @@ const useGuest = ({ id = "", bookingId = "" }: Props) => {
     isError: isGuestError,
     refetch: refetchGuest,
     isLoading: isGuestLoading,
-  } = api.guest.get.useQuery({ id: id || "" });
-
+  } = api.guest.get.useQuery(
+    { id: id || "" },
+    { enabled: !!session.data?.user.id }
+  );
   const { mutateAsync: updateGuest } = api.guest.update.useMutation();
 
   const { mutateAsync: deleteGuest } = api.guest.delete.useMutation();
   const { mutateAsync: createGuest } = api.guest.create.useMutation();
-  const { data: allGuestsInBooking, refetch: refetchAllGuestsInBooking } =
-    api.guest.getAllInBooking.useQuery(
-      {
-        bookingId,
-      },
-      { enabled: !!bookingId }
-    );
+
+  const {
+    data: allGuestsInBooking,
+    isFetched: isAllGuestsInBookingFetched,
+    refetch: refetchAllGuestsInBooking,
+  } = api.guest.getAllInBooking.useQuery(
+    {
+      bookingId,
+    },
+    { enabled: !!bookingId }
+  );
 
   const { data: allGuests, refetch: refetchAllGuests } =
-    api.guest.getAll.useQuery();
+    api.guest.getAll.useQuery(undefined, {
+      enabled: !!session.data?.user.id,
+    });
 
   return {
     guest,
     isGuestFetched,
+    isAllGuestsInBookingFetched,
     isGuestError,
     isGuestSuccess,
     isGuestLoading,

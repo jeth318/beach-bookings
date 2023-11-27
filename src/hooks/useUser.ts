@@ -1,11 +1,12 @@
+import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 
 type Props = {
   email?: string | null | undefined;
-  enabled?: boolean;
 };
 
-const useUser = ({ email = "", enabled }: Props) => {
+const useUser = ({ email = "" }: Props) => {
+  const session = useSession();
   const {
     data: user,
     isFetched: isUserFetched,
@@ -13,7 +14,10 @@ const useUser = ({ email = "", enabled }: Props) => {
     isError: isUserError,
     refetch: refetchUser,
     isLoading: isUserLoading,
-  } = api.user.getSingle.useQuery({ email: email || "" }, { enabled: enabled });
+  } = api.user.getSingle.useQuery(
+    { email: email || "" },
+    { enabled: !!session.data?.user.id }
+  );
 
   const { mutateAsync: updateUserAssociations } =
     api.user.updateAssociations.useMutation();

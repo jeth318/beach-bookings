@@ -9,7 +9,10 @@ import useSessionUser from "~/hooks/useSessionUser";
 
 export const AccountControl = () => {
   const { sessionUser } = useSessionUser();
-  const { deleteUser } = useUser({ email: sessionUser?.email });
+  const { deleteUser } = useUser({
+    email: sessionUser?.email,
+    enabled: !!sessionUser?.id,
+  });
 
   const { upcomingBookingsCreated, upcomingBookingsJoined } = useBooking();
 
@@ -119,7 +122,7 @@ export const AccountControl = () => {
       <div className="mb-20 mt-5 flex flex-col items-center justify-center">
         <label
           htmlFor="action-modal-remove-account"
-          className="btn-outline btn btn-error btn-ghost btn-sm"
+          className="btn-outline btn-error btn-ghost btn-sm btn"
         >
           Remove account
         </label>

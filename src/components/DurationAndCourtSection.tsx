@@ -7,7 +7,7 @@ export type Props = {
 
 export const DurationAndCourtSection = ({ booking }: Props) => {
   return (
-    <div className="flex flex-col self-end pb-2">
+    <div className="flex flex-col self-center">
       {!!booking.duration && (
         <div className="self-center">{booking.duration} min</div>
       )}

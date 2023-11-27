@@ -16,6 +16,7 @@ import { ActionPanelSection } from "./ActionPanelSection";
 import { CustomIcon } from "./CustomIcon";
 import { type NextRouter } from "next/router";
 import useGuest from "~/hooks/useGuest";
+import { BeatLoader } from "react-spinners";
 
 type Props = {
   booking: Booking;
@@ -40,7 +41,7 @@ export const BookingItem = ({
   facilities,
   onBookingItemChange,
 }: Props) => {
-  const { allGuestsInBooking, isGuestFetched } = useGuest({
+  const { allGuestsInBooking, isAllGuestsInBookingFetched } = useGuest({
     bookingId: booking.id,
   });
 
@@ -107,7 +108,7 @@ export const BookingItem = ({
           <div className="flex">
             <div className="flex flex-col self-end pb-2">
               <DurationAndCourtSection booking={booking} />
-              {isGuestFetched && (
+              {isAllGuestsInBookingFetched ? (
                 <ActionPanelSection
                   leaving={leaving}
                   joining={joining}
@@ -117,6 +118,10 @@ export const BookingItem = ({
                   sessionUserId={sessionUser?.id}
                   onBookingChange={onBookingItemChange}
                 />
+              ) : (
+                <div className="flex h-[148px] w-[70px] flex-col items-center justify-center">
+                  <BeatLoader size={10} color="cyan" />
+                </div>
               )}
             </div>
           </div>

@@ -11,7 +11,12 @@ const useUserAssociations = ({ associationIds }: Props) => {
     isLoading: isLoadingJoinedAssociations,
     isInitialLoading: isInitialLoadingJoinedAssociations,
     refetch: refetchUserAssociations,
-  } = api.association.getMultipleByIds.useQuery({ ids: associationIds || [] });
+  } = api.association.getMultipleByIds.useQuery(
+    { ids: associationIds || [] },
+    {
+      enabled: !!associationIds?.length,
+    }
+  );
 
   const isWithoutGroup =
     isJoinedAssociationsFetched && !joinedAssociations?.length;

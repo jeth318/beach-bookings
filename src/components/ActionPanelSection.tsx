@@ -48,8 +48,9 @@ export const ActionPanelSection = ({
   if (!router.isReady) {
     return null;
   }
+
   return (
-    <div className="mt-6 flex flex-col self-center">
+    <div className="smooth-render-in mt-3 flex flex-col self-center">
       <div
         className={`radial-progress self-center text-lg font-bold ${getProgressAccent(
           booking,
@@ -68,7 +69,7 @@ export const ActionPanelSection = ({
       {sessionUserId ? (
         <div
           style={{ width: "auto" }}
-          className="smooth-render-in-slower btn-group btn-group-vertical mt-7 flex"
+          className="smooth-render-in-slower btn-group btn-group-vertical mt-4 flex"
         >
           {booking.players.includes(sessionUserId) &&
             !isOngoingGame(booking) && (
@@ -92,10 +93,18 @@ export const ActionPanelSection = ({
               <label
                 htmlFor="action-modal-join-booking"
                 onClick={() => void onBookingChange(booking)}
-                className={getJoinButtonClassName(booking, guestPlayerCount, sessionUserId)}
+                className={getJoinButtonClassName(
+                  booking,
+                  guestPlayerCount,
+                  sessionUserId
+                )}
               >
                 <BeatLoaderButton
-                  value={getJoinButtonText(booking, guestPlayerCount, sessionUserId)}
+                  value={getJoinButtonText(
+                    booking,
+                    guestPlayerCount,
+                    sessionUserId
+                  )}
                   isLoading={
                     joining.bookingId === booking.id && joining.isWorking
                   }

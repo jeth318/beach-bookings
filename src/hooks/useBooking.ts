@@ -1,6 +1,9 @@
+import { Session } from "inspector";
+import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 
 const useBooking = () => {
+  const session = useSession();
   const { mutate: mutateBooking, isLoading: isLoadingBookingMutation } =
     api.booking.update.useMutation({});
 
@@ -8,11 +11,18 @@ const useBooking = () => {
     api.booking.updateJoinable.useMutation({});
 
   const { data: upcomingBookingsCreated } =
-    api.booking.getUpcomingForUser.useQuery();
+    api.booking.getUpcomingForUser.useQuery(undefined, {
+      enabled: !!session.data?.user.id,
+    });
   const { data: upcomingBookingsJoined } =
-    api.booking.getJoinedUpcoming.useQuery();
+    api.booking.getJoinedUpcoming.useQuery(undefined, {
+      enabled: !!session.data?.user.id,
+    });
 
-  const { refetch: refetchBookings, isInitialLoading: isInitialLoadingRefetch } = api.booking.getAll.useQuery(undefined, {
+  const {
+    refetch: refetchBookings,
+    isInitialLoading: isInitialLoadingRefetch,
+  } = api.booking.getAll.useQuery(undefined, {
     refetchIntervalInBackground: true,
     refetchInterval: 15000,
   });
@@ -25,7 +35,7 @@ const useBooking = () => {
     upcomingBookingsCreated,
     upcomingBookingsJoined,
     refetchBookings,
-    isInitialLoadingRefetch
+    isInitialLoadingRefetch,
   };
 };
 

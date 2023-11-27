@@ -1,7 +1,11 @@
 import { z } from "zod";
 import crypto from "crypto";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 
 export const guestRouter = createTRPCRouter({
   get: protectedProcedure
@@ -13,7 +17,7 @@ export const guestRouter = createTRPCRouter({
         },
       });
     }),
-  getAllInBooking: protectedProcedure
+  getAllInBooking: publicProcedure
     .input(z.object({ bookingId: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.prisma.guest.findMany({
@@ -22,7 +26,7 @@ export const guestRouter = createTRPCRouter({
         },
       });
     }),
-  getAll: protectedProcedure.query(({ ctx }) => {
+  getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.guest.findMany({});
   }),
   update: protectedProcedure

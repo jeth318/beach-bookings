@@ -1,4 +1,4 @@
-import { type Booking, type Facility } from "@prisma/client";
+import { Guest, type Booking, type Facility } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useState } from "react";
@@ -34,6 +34,8 @@ type Bookings = {
 
 type Props = {
   bookings?: Booking[];
+  guests?: Guest[];
+  facilities?: Facility[];
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -65,7 +67,9 @@ export const Bookings = ({ bookings }: Props) => {
 
   const [toastMessage, setToastMessage] = useState<string>();
 
-  const { data: users = [] } = api.user.getAll.useQuery();
+  const { data: users = [] } = api.user.getAll.useQuery(undefined, {
+    enabled: !!session.data?.user.id,
+  });
 
   const { sessionUser } = useSessionUser();
   const { user } = useUser({ email: sessionUserEmail });

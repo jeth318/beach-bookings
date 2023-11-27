@@ -31,7 +31,9 @@ export const EmailConsents = () => {
     data: user,
     refetch: refetchUser,
     isInitialLoading: isInitialLoadingUser,
-  } = api.user.get.useQuery();
+  } = api.user.get.useQuery(undefined, {
+    enabled: !!session.data?.user.id,
+  });
 
   useEffect(() => {
     if (emailConsents === undefined) {
