@@ -27,6 +27,13 @@ main {
   margin: 0 auto;
 }
 
+.btn-success,
+.btn-warning,
+.btn-error,
+.btn-info {
+  color: black;
+}
+
 .transparent-background-grey {
   background-color: rgba(0, 0, 0, 0.3);
 }

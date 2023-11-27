@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 import { type ChangeEvent, useEffect, useState } from "react";
 
@@ -22,6 +22,7 @@ import useUser from "../../hooks/useUser";
 import useUserAssociations from "../../hooks/useUserAssociations";
 import useSingleBooking from "../../hooks/useSingleBooking";
 import { getAssociationsToShow } from "~/utils/association.util";
+import { PageLoader } from "~/components/PageLoader";
 
 export async function getStaticProps() {
   await serverSideHelpers.facility.getAll.prefetch();
@@ -65,7 +66,9 @@ const Booking = () => {
     });
 
   const { data: usersWithAddConsent } =
-    api.user.getUserIdsWithAddConsent.useQuery();
+    api.user.getUserIdsWithAddConsent.useQuery(undefined, {
+      enabled: sessionStatus === "authenticated",
+    });
 
   const { createBooking, isLoadingCreateBooking } = useSingleBooking({});
 
@@ -295,11 +298,18 @@ const Booking = () => {
     }
   };
 
-  if (isInitialLoading || !isUserFetched || !isJoinedAssociationsFetched) {
+  if (
+    sessionStatus === "authenticated" &&
+    (isInitialLoading || !isUserFetched || !isJoinedAssociationsFetched)
+  ) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <PageLoader
+        isMainPage
+        bgColor={"bg-gradient-to-b from-[#2c0168] to-[#000000]"}
+      />
+      /*       <div className="flex h-screen items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <BeatLoader size={20} color="white" />
-      </div>
+      </div> */
     );
   }
 
@@ -329,12 +339,26 @@ const Booking = () => {
   return (
     <>
       <SubHeader title={"Publish booking"} />
-      <main className="min-w-sm pd-3 dark:color-white flex flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="min-w-sm pd-3 dark:color-white flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
-          <div className="flex flex-col items-center justify-center p-3">
-            <h2 className="text-center text-2xl ">
-              If you want to add or edit bookings, you have to be logged in.
-            </h2>
+          <div className="flex flex-col items-center p-3 text-white">
+            <Image
+              alt="beach-spike"
+              width={300}
+              height={300}
+              src="/beach-spike.png"
+            />
+            <h2 className="mb-4 text-4xl ">Hello stranger! 👋</h2>
+            <h3 className="text-center text-xl ">
+              If you want to publish or join a booking you must first login.
+            </h3>
+
+            <button
+              onClick={void signIn()}
+              className="btn-info btn mt-10"
+            >
+              Login
+            </button>
           </div>
         ) : (
           <div className="smooth-render-in container max-w-md p-4">
@@ -528,7 +552,7 @@ const Booking = () => {
                   <label
                     className={`${
                       validBooking ? "btn-success" : "btn-disabled"
-                    } btn w-[200px] `}
+                    } btn w-[200px]  dark:text-white`}
                     htmlFor="action-modal-booking"
                   >
                     Publish

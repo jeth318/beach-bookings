@@ -133,7 +133,7 @@ const ModifyAssociation = () => {
                   disabled={!validName || !hasAnythingChanged}
                   // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   onClick={onSaveChangesClicked}
-                  className={`btn-success btn flex min-w-[150px] flex-col items-center `}
+                  className={`btn-success btn flex min-w-[150px] flex-col items-center`}
                 >
                   {isLoading ? (
                     <BeatLoader size={12} color="white" />

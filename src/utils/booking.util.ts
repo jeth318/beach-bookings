@@ -229,10 +229,10 @@ export const getJoinButtonClassName = (
   const btnVariant = spotsAvailable
     ? !booking?.joinable && booking.userId !== sessionUserId
       ? "btn-disabled"
-      : "btn-success"
+      : "btn-accent"
     : "btn-disabled";
 
-  return `btn-sm btn  ${btnVariant}`;
+  return `btn-sm btn text-white' ${btnVariant}`;
 };
 
 export const getJoinButtonText = (

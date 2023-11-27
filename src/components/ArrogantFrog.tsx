@@ -31,7 +31,7 @@ export const ArrogantFrog = () => {
           ></div>
           {main && (
             <div className="flex items-center justify-center">
-              <Link className="btn-info btn " href="/booking">
+              <Link className="btn-info btn mt-4" href="/booking">
                 Publish
               </Link>
             </div>
