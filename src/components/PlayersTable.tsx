@@ -240,6 +240,26 @@ export const PlayersTable = ({ booking }: Props) => {
                           >
                             {getDisplayName(booker as PlayerInBooking)}
                           </div>
+                          <div
+                            className="ellips text-sm opacity-50"
+                            style={{
+                              overflow: "hidden",
+                              maxWidth: "175px",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            <a
+                              href={`mailto:admin@beachbookings.se?subject=Booking support - ${booking.id}`}
+                              className="link"
+                              onClick={() =>
+                                alert(
+                                  "The players contact number will be shown here later. This feature is coming later. Meanwhile, you can contact me (creator) at admin@beachbooking.se if you need help."
+                                )
+                              }
+                            >
+                              admin@beachbookings.se
+                            </a>
+                          </div>
                         </div>
                       </div>
                       <div className="ml-1 flex items-center gap-2">

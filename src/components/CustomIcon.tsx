@@ -6,15 +6,16 @@ type Props = {
   width?: number;
   height?: number;
   fill?: string;
+  rounded?: boolean;
 };
 
-export const CustomIcon = ({ path, width, height, alt }: Props) => (
+export const CustomIcon = ({ path, width, height, alt, rounded }: Props) => (
   <Image
     src={path}
     width={width || 20}
     height={height || width || 20}
     alt={alt || path}
-    className="stroke-cyan-500"
+    className={`stroke-cyan-500 ${rounded ? "rounded" : ""}`}
     color="white"
   />
 );
