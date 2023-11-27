@@ -1,6 +1,6 @@
 import ActionModal from "./ActionModal";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { BeatLoader } from "react-spinners";
 import { useState } from "react";
 import useUser from "~/hooks/useUser";
@@ -11,7 +11,6 @@ export const AccountControl = () => {
   const { sessionUser } = useSessionUser();
   const { deleteUser } = useUser({
     email: sessionUser?.email,
-    enabled: !!sessionUser?.id,
   });
 
   const { upcomingBookingsCreated, upcomingBookingsJoined } = useBooking();
