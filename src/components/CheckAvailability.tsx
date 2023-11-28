@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export const CheckAvailability = () => {
   return (
-    <div className="flex flex-col items-center pb-6">
+    <div className="flex flex-col items-center self-end">
       <div className="flex items-center pt-6">
         <Image src="/gbc-logo.png" alt="/gbc-logo.png" height={35} width={35} />
         <div className="pl-4">

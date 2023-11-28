@@ -48,6 +48,7 @@ export const Bookings = ({ bookings }: Props) => {
   const updateBooking = api.booking.update.useMutation();
 
   const createdOnly = router.asPath === "/created";
+  const joinedOnly = router.asPath === "/joined";
 
   const [bookingToChange, setBookingToChange] = useState<Booking | undefined>();
 
@@ -190,11 +191,7 @@ export const Bookings = ({ bookings }: Props) => {
   const showArrogantFrog = !bookingsToShow?.length;
 
   if (showArrogantFrog) {
-    return (
-      <div>
-        <ArrogantFrog />
-      </div>
-    );
+    return <ArrogantFrog submenu={joinedOnly || createdOnly} />;
   }
 
   return (

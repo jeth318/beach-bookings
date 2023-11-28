@@ -4,18 +4,17 @@ import { getFrogText } from "~/utils/general.util";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-export const ArrogantFrog = () => {
+type Props = {
+  submenu?: boolean;
+};
+
+export const ArrogantFrog = ({ submenu = true }: Props) => {
   const router = useRouter();
-  const bgColor = getBgColor(router.asPath);
   const created = router.asPath === "/created";
   const joined = router.asPath === "/joined";
   const main = router.asPath === "/";
   return (
-    <div
-      className={`bg-min-height${
-        main ? "-no-submenu" : ""
-      } smooth-render-in bg-gradient-to-b pt-12 ${bgColor} h-screen`}
-    >
+    <div className={`bg-min-height${!submenu ? "-no-submenu" : ""}`}>
       <div className="flex flex-col items-center">
         <Image
           className="rounded-full"

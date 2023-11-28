@@ -168,84 +168,88 @@ const Association = () => {
             />
           );
         })}
-        {joinedAssociations?.map((association: Association) => {
-          return (
-            <div
-              key={association.id}
-              className="smooth-render-in first:border-b-1 border-b border-zinc-400"
-            >
-              <div className="card-compact card">
-                <div
-                  className={`card-body flex-row justify-between text-primary-content`}
-                >
-                  <div className="flex flex-col">
-                    <div>
-                      <Link
-                        href={`/association/${association.id}`}
-                        className="font-bil link card-title text-2xl font-bold"
-                      >
-                        {association.name}
-                      </Link>
-                      <div className="flex flex-col pb-1 font-medium">
-                        <div className="pr-2">{association.description}</div>
+        <div className="mt-2">
+          {joinedAssociations?.map((association: Association) => {
+            return (
+              <div
+                key={association.id}
+                className="smooth-render-in first:border-b-1 border-b border-zinc-400"
+              >
+                <div className="card-compact card">
+                  <div
+                    className={`card-body flex-row justify-between text-primary-content`}
+                  >
+                    <div className="flex flex-col">
+                      <div>
+                        <Link
+                          href={`/association/${association.id}`}
+                          className="font-bil link card-title text-2xl font-bold"
+                        >
+                          {association.name}
+                        </Link>
+                        <div className="flex flex-col pb-1 font-medium">
+                          <div className="pr-2">{association.description}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex">
-                    <div className="flex flex-col self-end pb-2">
-                      <div
-                        style={{ marginTop: "1.5rem" }}
-                        className="flex flex-col self-center"
-                      >
-                        {!!user.id ? (
-                          <div
-                            style={{ width: "auto" }}
-                            className="smooth-render-in-slower btn-group btn-group-vertical flex"
-                          >
-                            <label
-                              htmlFor="action-modal-leave-association"
-                              // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                              onClick={() => setAssociationToLeave(association)}
-                              className="btn-warning btn-sm btn min-w-[75px] "
+                    <div className="flex">
+                      <div className="flex flex-col self-end pb-2">
+                        <div
+                          style={{ marginTop: "1.5rem" }}
+                          className="flex flex-col self-center"
+                        >
+                          {!!user.id ? (
+                            <div
+                              style={{ width: "auto" }}
+                              className="smooth-render-in-slower btn-group btn-group-vertical flex"
                             >
-                              Leave
-                            </label>
-
-                            {!!user?.id && association.userId === user.id && (
-                              <button className="btn-sm btn ">
-                                <Link
-                                  href={{
-                                    pathname: `/association/modify/${association.id}`,
-                                  }}
-                                >
-                                  Edit
-                                </Link>
-                              </button>
-                            )}
-                            {!!user?.id && association.userId === user.id && (
                               <label
-                                htmlFor="action-modal-delete-association"
+                                htmlFor="action-modal-leave-association"
                                 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                                className="btn-error btn-sm btn "
                                 onClick={() =>
-                                  setAssociationToDelete(association)
+                                  setAssociationToLeave(association)
                                 }
+                                className="btn-warning btn-sm btn min-w-[75px] "
                               >
-                                Delete
+                                Leave
                               </label>
-                            )}
-                          </div>
-                        ) : (
-                          <div style={{ height: "32px" }}></div>
-                        )}
+
+                              {!!user?.id && association.userId === user.id && (
+                                <button className="btn-sm btn ">
+                                  <Link
+                                    href={{
+                                      pathname: `/association/modify/${association.id}`,
+                                    }}
+                                  >
+                                    Edit
+                                  </Link>
+                                </button>
+                              )}
+                              {!!user?.id && association.userId === user.id && (
+                                <label
+                                  htmlFor="action-modal-delete-association"
+                                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                                  className="btn-error btn-sm btn "
+                                  onClick={() =>
+                                    setAssociationToDelete(association)
+                                  }
+                                >
+                                  Delete
+                                </label>
+                              )}
+                            </div>
+                          ) : (
+                            <div style={{ height: "32px" }}></div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </MainContainer>
       <div className="mt-4 flex justify-center border-zinc-400">
         <Link href="/association/create" className={`btn-outline`}>

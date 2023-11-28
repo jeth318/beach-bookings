@@ -76,11 +76,11 @@ main {
 }
 
 .bg-min-height {
-  min-height: calc(100vh - 90px);
+  min-height: calc(100vh - 91px);
 }
 
 .bg-min-height-no-submenu {
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 64.5px);
 }
 
 .sub-header {

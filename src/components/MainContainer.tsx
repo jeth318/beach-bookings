@@ -11,8 +11,7 @@ const MainContainer = ({
   bgTo = "000000",
   heightType = "h-screen",
 }: Props) => {
-  const baseClasses =
-    "min-w-sm pd-3 smooth-render-in min-w-fit bg-gradient-to-b";
+  const baseClasses = "min-w-sm smooth-render-in min-w-fit bg-gradient-to-b";
 
   return (
     <main

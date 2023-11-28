@@ -88,7 +88,11 @@ const Invite = () => {
     hasFetchedInvite &&
     invite === null
   ) {
-    return <ArrogantFrog />;
+    return (
+      <MainContainer bgFrom="a31da1">
+        <ArrogantFrog />
+      </MainContainer>
+    );
   }
 
   if (
@@ -115,70 +119,72 @@ const Invite = () => {
   }
 
   return (
-    <MainContainer heightType="h-screen">
-      <SubHeader title="Invitation" />
-      <div
-        style={{ marginTop: "-91px" }}
-        className={`smooth-render-in flex h-screen flex-col justify-center bg-gradient-to-b from-[#a31da1] to-[#000000]`}
-      >
-        <Image
-          alt="beach-game"
-          className="self-center"
-          width={300}
-          height={300}
-          src="/beach-game.png"
-        />
-        <div className="flex flex-col items-center justify-center pl-4 pr-4 text-white">
-          <h4 className="text-center">
-            {inviter?.name || "A player"} has invited you to join their group{" "}
-          </h4>
-          <h2 className="text-2xl">{association?.name}</h2>
+    <>
+      <SubHeader title="Invitaion" />
+      <MainContainer heightType="h-full" bgFrom="a31da1">
+        <div className={`bg-min-height`}>
+          <div className=" flex flex-col justify-center">
+            <Image
+              alt="beach-game"
+              className="self-center"
+              width={200}
+              height={200}
+              src="/beach-game.png"
+            />
+            <div className="flex flex-col items-center justify-center pl-4 pr-4 text-white">
+              <h4 className="text-center">
+                {inviter?.name || "A player"} has invited you to join their
+                group{" "}
+              </h4>
+              <h2 className="text-2xl">{association?.name}</h2>
 
-          {user && !user?.name && isUserFetched && (
-            <div className="m-4">
-              <div className="stack">
-                <div className="card-compact card mb-4 bg-primary text-primary-content shadow-md">
-                  <div className="card-body">
-                    <p>
-                      Before you can accept the invite, please submit your name
-                      (you can edit this later in settings).
-                    </p>
+              {user && !user?.name && isUserFetched && (
+                <div className="m-4">
+                  <div className="stack">
+                    <div className="card-compact card mb-4 bg-primary text-primary-content shadow-md">
+                      <div className="card-body">
+                        <p>
+                          Before you can accept the invite, please submit your
+                          name (you can edit this later in settings).
+                        </p>
+                      </div>
+                    </div>
                   </div>
+                  {sessionUser && (
+                    <PlayerInfo
+                      user={sessionUser}
+                      hideTitle
+                      hidePhone
+                      hideEmail
+                      refetchUser={refetchUser}
+                    />
+                  )}
                 </div>
-              </div>
-              {sessionUser && (
-                <PlayerInfo
-                  user={sessionUser}
-                  hideTitle
-                  hidePhone
-                  hideEmail
-                  refetchUser={refetchUser}
-                />
+              )}
+              {user?.name && (
+                <div className="mb-4 mt-4 flex flex-col items-center">
+                  <button
+                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                    onClick={onJoinConfirmed}
+                    disabled={isAcceptingInvite || !user?.name}
+                    className={`btn-primary btn ${
+                      !!user?.name ? "animate-pulse" : ""
+                    } `}
+                  >
+                    Accept invite
+                  </button>
+                  {isAcceptingInvite ? (
+                    <BeatLoader className="mt-2" color="white" size={15} />
+                  ) : (
+                    <div className="h-[27px]"></div>
+                  )}
+                </div>
               )}
             </div>
-          )}
-          {user?.name && (
-            <div className="mb-4 mt-4 flex flex-col items-center">
-              <button
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                onClick={onJoinConfirmed}
-                disabled={isAcceptingInvite || !user?.name}
-                className={`btn-primary btn ${
-                  !!user?.name ? "animate-pulse" : ""
-                } `}
-              >
-                Accept invite
-              </button>
-              {isAcceptingInvite ? (
-                <BeatLoader className="mt-2" color="white" size={15} />
-              ) : (
-                <div className="h-[27px]"></div>
-              )}
-            </div>
-          )}
+          </div>
         </div>
-      </div>
-    </MainContainer>
+      </MainContainer>
+    </>
   );
 };
 
