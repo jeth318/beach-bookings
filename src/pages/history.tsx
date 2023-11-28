@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
+import MainContainer from "~/components/MainContainer";
 import { SubHeader } from "~/components/SubHeader";
 import { api } from "~/utils/api";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
@@ -34,7 +35,7 @@ const History = () => {
     <MainContainer>
       <SubHeader title="History" />
       <Bookings bookings={bookings || []} />
-    </MainContainer>ontainer>
+    </MainContainer>
   );
 };
 
