@@ -28,7 +28,7 @@ const Joined = () => {
   return (
     <>
       <SubHeader title="Joined" />
-      <MainContainer bgFrom="005e1ba6">
+      <MainContainer bgFrom="005e1ba6" heightType="h-full">
         <div className="pt-2">
           <Bookings bookings={upcomingBookingsJoined} />
         </div>

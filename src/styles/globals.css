@@ -27,12 +27,6 @@ main {
   margin: 0 auto;
 }
 
-.navbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
 .subheader {
   position: absolute;
   top: 60px;

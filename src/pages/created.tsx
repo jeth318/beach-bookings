@@ -31,7 +31,7 @@ const Created = () => {
   return (
     <>
       <SubHeader title="Booked by me" />
-      <MainContainer bgFrom="01797391">
+      <MainContainer bgFrom="01797391" heightType="h-full">
         <div className="pt-2">
           <Bookings bookings={upcomingBookingsCreated} />
         </div>

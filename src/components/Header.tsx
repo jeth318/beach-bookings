@@ -48,7 +48,7 @@ export const Header = () => {
 
   return (
     <div
-      className={`dark:color-white navbar sticky top-0  z-50 bg-white dark:bg-slate-900 ${
+      className={`dark:color-white navbar sticky top-0 z-50 bg-white dark:bg-slate-900 ${
         noBoxShadow ? "" : "shadow-md shadow-black"
       }`}
     >

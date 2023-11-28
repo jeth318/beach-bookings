@@ -16,7 +16,7 @@ const MainContainer = ({
 
   return (
     <main
-      className={`${baseClasses} ${heightType} bg-gradient-to-b pt-[90px] from-[#${bgFrom}] to-[#${bgTo}]`}
+      className={`${baseClasses} ${heightType} bg-gradient-to-b from-[#${bgFrom}] to-[#${bgTo}]`}
     >
       {children}
     </main>

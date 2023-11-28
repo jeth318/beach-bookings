@@ -13,13 +13,6 @@ import useUsersInBooking from "~/hooks/useUsersInBooking";
 import { getBgColor } from "~/utils/color.util";
 import { getQueryId } from "~/utils/general.util";
 
-type UserInBooking = {
-  id: string;
-  emailConsents: string[];
-  name: string | null;
-  image: string | null;
-};
-
 const BookingDetails = () => {
   const router = useRouter();
   const session = useSession();
@@ -58,15 +51,16 @@ const BookingDetails = () => {
       <>
         <SubHeader title="Details" />
         <MainContainer bgFrom="2e026d">
-          <div className="smooth-render-in container max-w-md p-4">
+          <div className="smooth-render-in container mt-4 max-w-md p-4">
             <div className="mb-4 text-center text-white">
               <h2 className="text-2xl">
                 {booking?.date.toLocaleDateString("sv-SE")}
               </h2>
-              {/*             <h4>{booking?.date.toLocaleTimeString("sv-SE")}</h4>
-            <div className="mt-2"></div>
-            <h4>{facility?.name}</h4>
-          <h4>{facility?.address}</h4> */}
+              <div className="rounded-md border border-zinc-400 p-2">
+                <div className="mt-2"></div>
+                <h4>{facility?.name}</h4>
+                <h4>{facility?.address}</h4>
+              </div>
             </div>
             <div>{!!booking && <PlayersTable booking={booking} />}</div>
 
