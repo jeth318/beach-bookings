@@ -27,6 +27,7 @@ import useUser from "../../hooks/useUser";
 import { getFacilitiesToShow } from "~/utils/facility.util";
 import { getAssociationsToShow } from "~/utils/association.util";
 import useGuest from "~/hooks/useGuest";
+import MainContainer from "~/components/MainContainer";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -274,13 +275,15 @@ const Booking = () => {
     joinedAssociations,
     maxPlayers,
     time,
+    isInitialStateLoaded,
+    isJoinedAssociationsFetched,
   ]);
 
   return (
     <>
       {toastMessage && <Toast body={toastMessage} />}
       <SubHeader title="Change booking" />
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <MainContainer bgFrom="2e026d" bgTo="15162c" heightType="h-full">
         {!isInitialLoading && sessionStatus === "unauthenticated" ? (
           <div className="flex h-screen flex-col items-center justify-center p-3">
             <h2 className="text-center text-2xl ">
@@ -455,7 +458,7 @@ const Booking = () => {
             )}
           </div>
         )}
-      </main>
+      </MainContainer>
     </>
   );
 };

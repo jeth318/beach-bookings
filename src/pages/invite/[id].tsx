@@ -12,6 +12,7 @@ import useGroupInviter from "../../hooks/useGroupInviter";
 import useSessionUser from "../../hooks/useSessionUser";
 import useSingleAssociation from "../../hooks/useSingleAssociation";
 import Image from "next/image";
+import MainContainer from "~/components/MainContainer";
 
 const Invite = () => {
   const [isAcceptingInvite, setIsAcceptingInvite] = useState<boolean>(false);
@@ -114,7 +115,7 @@ const Invite = () => {
   }
 
   return (
-    <main className="min-w-sm flex min-w-fit flex-col ">
+    <MainContainer heightType="h-screen">
       <SubHeader title="Invitation" />
       <div
         style={{ marginTop: "-91px" }}
@@ -177,7 +178,7 @@ const Invite = () => {
           )}
         </div>
       </div>
-    </main>
+    </MainContainer>
   );
 };
 

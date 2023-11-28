@@ -31,10 +31,10 @@ const History = () => {
   }
 
   return (
-    <main className="min-w-sm flex min-w-fit flex-col">
+    <MainContainer>
       <SubHeader title="History" />
       <Bookings bookings={bookings || []} />
-    </main>
+    </MainContainer>ontainer>
   );
 };
 

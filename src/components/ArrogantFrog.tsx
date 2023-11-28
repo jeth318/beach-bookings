@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { getBgColor } from "~/utils/color.util";
-import { CheckAvailability } from "./CheckAvailability";
 import { getFrogText } from "~/utils/general.util";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -15,7 +14,7 @@ export const ArrogantFrog = () => {
     <div
       className={`bg-min-height${
         main ? "-no-submenu" : ""
-      } smooth-render-in bg-gradient-to-b pt-12 ${bgColor}`}
+      } smooth-render-in bg-gradient-to-b pt-12 ${bgColor} h-screen`}
     >
       <div className="flex flex-col items-center">
         <Image

@@ -18,6 +18,7 @@ import useAssociation from "../../hooks/useAssociation";
 import { parseErrorMessage } from "~/utils/error.util";
 import { useState } from "react";
 import { Toast } from "~/components/Toast";
+import MainContainer from "~/components/MainContainer";
 
 const Association = () => {
   const router = useRouter();
@@ -79,13 +80,14 @@ const Association = () => {
       </>
     );
   }
-
+  const bgFrom = "a31da1";
+  const bgTo = "15162c";
   if (isWithoutGroup) {
     return (
-      <main className="min-w-sm flex min-w-fit flex-col">
+      <MainContainer bgFrom={bgFrom} bgTo={bgTo}>
         <div
           style={{ height: "calc(100vh - 65px)" }}
-          className="flex flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c] p-3 "
+          className="flex flex-col items-center p-3 "
         >
           <Image
             alt="beach-game"
@@ -105,15 +107,14 @@ const Association = () => {
             Create a group
           </Link>
         </div>
-      </main>
+      </MainContainer>
     );
   }
-
   return (
     <>
       {toastMessage && <Toast body={toastMessage} />}
       <SubHeader title="My groups" />
-      <main className="min-w-sm pd-3 flex h-full min-w-fit flex-col bg-gradient-to-b from-[#a31da1] to-[#15162c]">
+      <MainContainer bgFrom="a31da1">
         {["delete", "leave"].flatMap((action) => {
           let level = "error";
           let body = "";
@@ -167,90 +168,86 @@ const Association = () => {
             />
           );
         })}
-        <div className="mt-4">
-          {joinedAssociations?.map((association: Association) => {
-            return (
-              <div
-                key={association.id}
-                className="smooth-render-in first:border-b-1 border-b border-zinc-400"
-              >
-                <div className="card-compact card">
-                  <div
-                    className={`card-body flex-row justify-between text-primary-content`}
-                  >
-                    <div className="flex flex-col">
-                      <div>
-                        <Link
-                          href={`/association/${association.id}`}
-                          className="font-bil link card-title text-2xl font-bold"
-                        >
-                          {association.name}
-                        </Link>
-                        <div className="flex flex-col pb-1 font-medium">
-                          <div className="pr-2">{association.description}</div>
-                        </div>
+        {joinedAssociations?.map((association: Association) => {
+          return (
+            <div
+              key={association.id}
+              className="smooth-render-in first:border-b-1 border-b border-zinc-400"
+            >
+              <div className="card-compact card">
+                <div
+                  className={`card-body flex-row justify-between text-primary-content`}
+                >
+                  <div className="flex flex-col">
+                    <div>
+                      <Link
+                        href={`/association/${association.id}`}
+                        className="font-bil link card-title text-2xl font-bold"
+                      >
+                        {association.name}
+                      </Link>
+                      <div className="flex flex-col pb-1 font-medium">
+                        <div className="pr-2">{association.description}</div>
                       </div>
                     </div>
-                    <div className="flex">
-                      <div className="flex flex-col self-end pb-2">
-                        <div
-                          style={{ marginTop: "1.5rem" }}
-                          className="flex flex-col self-center"
-                        >
-                          {!!user.id ? (
-                            <div
-                              style={{ width: "auto" }}
-                              className="smooth-render-in-slower btn-group btn-group-vertical flex"
+                  </div>
+                  <div className="flex">
+                    <div className="flex flex-col self-end pb-2">
+                      <div
+                        style={{ marginTop: "1.5rem" }}
+                        className="flex flex-col self-center"
+                      >
+                        {!!user.id ? (
+                          <div
+                            style={{ width: "auto" }}
+                            className="smooth-render-in-slower btn-group btn-group-vertical flex"
+                          >
+                            <label
+                              htmlFor="action-modal-leave-association"
+                              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                              onClick={() => setAssociationToLeave(association)}
+                              className="btn-warning btn-sm btn min-w-[75px] "
                             >
-                              <label
-                                htmlFor="action-modal-leave-association"
-                                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                                onClick={() =>
-                                  setAssociationToLeave(association)
-                                }
-                                className="btn-warning btn-sm btn min-w-[75px] "
-                              >
-                                Leave
-                              </label>
+                              Leave
+                            </label>
 
-                              {!!user?.id && association.userId === user.id && (
-                                <button className="btn-sm btn ">
-                                  <Link
-                                    href={{
-                                      pathname: `/association/modify/${association.id}`,
-                                    }}
-                                  >
-                                    Edit
-                                  </Link>
-                                </button>
-                              )}
-                              {!!user?.id && association.userId === user.id && (
-                                <label
-                                  htmlFor="action-modal-delete-association"
-                                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                                  className="btn-error btn-sm btn "
-                                  onClick={() =>
-                                    setAssociationToDelete(association)
-                                  }
+                            {!!user?.id && association.userId === user.id && (
+                              <button className="btn-sm btn ">
+                                <Link
+                                  href={{
+                                    pathname: `/association/modify/${association.id}`,
+                                  }}
                                 >
-                                  Delete
-                                </label>
-                              )}
-                            </div>
-                          ) : (
-                            <div style={{ height: "32px" }}></div>
-                          )}
-                        </div>
+                                  Edit
+                                </Link>
+                              </button>
+                            )}
+                            {!!user?.id && association.userId === user.id && (
+                              <label
+                                htmlFor="action-modal-delete-association"
+                                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                                className="btn-error btn-sm btn "
+                                onClick={() =>
+                                  setAssociationToDelete(association)
+                                }
+                              >
+                                Delete
+                              </label>
+                            )}
+                          </div>
+                        ) : (
+                          <div style={{ height: "32px" }}></div>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      </main>
-      <div className="m-4 flex justify-center border-zinc-400">
+            </div>
+          );
+        })}
+      </MainContainer>
+      <div className="mt-4 flex justify-center border-zinc-400">
         <Link href="/association/create" className={`btn-outline`}>
           Create new
         </Link>

@@ -2,46 +2,23 @@ import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
-import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
 import { PageLoader } from "~/components/PageLoader";
-import { serverSideHelpers } from "~/utils/staticPropsUtil";
-
-export async function getStaticProps() {
-  await serverSideHelpers.booking.getAll.prefetch();
-  return {
-    props: {
-      trpcState: serverSideHelpers.dehydrate(),
-    },
-    revalidate: 1,
-  };
-}
+import MainContainer from "~/components/MainContainer";
+import useBooking from "~/hooks/useBooking";
 
 const Created = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
 
-  const bookingsQuery = api.booking.getAll.useQuery(undefined, {
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
-  });
-
-  if (bookingsQuery.status !== "success") {
-    // won't happen since we're using `fallback: "blocking"`
-    return (
-      <PageLoader
-        isMainPage={false}
-        bgColor={"bg-gradient-to-b from-[#01797391] to-[#000000]"}
-      />
-    );
-  }
-  const { data: bookings } = bookingsQuery;
+  const { upcomingBookingsCreated, isUpcomingCreatedBookingsFetched } =
+    useBooking();
 
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
   }
 
-  if (sessionStatus === "loading") {
+  if (sessionStatus === "loading" || !isUpcomingCreatedBookingsFetched) {
     return (
       <PageLoader
         isMainPage={false}
@@ -52,10 +29,14 @@ const Created = () => {
   }
 
   return (
-    <main className="min-w-sm flex min-w-fit flex-col">
+    <>
       <SubHeader title="Booked by me" />
-      <Bookings bookings={bookings || []} />
-    </main>
+      <MainContainer bgFrom="01797391">
+        <div className="pt-2">
+          <Bookings bookings={upcomingBookingsCreated} />
+        </div>
+      </MainContainer>
+    </>
   );
 };
 

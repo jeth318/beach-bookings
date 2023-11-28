@@ -6,6 +6,7 @@ import useUser from "../../hooks/useUser";
 import { useSession } from "next-auth/react";
 import { PageLoader } from "~/components/PageLoader";
 import { CustomIcon } from "~/components/CustomIcon";
+import MainContainer from "~/components/MainContainer";
 
 const Association = () => {
   const { data: sessionData } = useSession();
@@ -54,11 +55,12 @@ const Association = () => {
       </main>
     );
   }
-
+  const bgFrom = "a31da1";
+  const bgTo = "15162c";
   return (
     <>
       <SubHeader title="Groups" />
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c]">
+      <MainContainer bgFrom={bgFrom} bgTo={bgTo}>
         <div className="flex h-screen flex-col items-center p-3">
           <Image
             alt="beach-game"
@@ -91,7 +93,7 @@ const Association = () => {
             </div>
           </Link>
         </div>
-      </main>
+      </MainContainer>
     </>
   );
 };

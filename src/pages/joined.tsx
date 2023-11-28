@@ -1,19 +1,15 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
-import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
 import { PageLoader } from "~/components/PageLoader";
+import MainContainer from "~/components/MainContainer";
+import useBooking from "~/hooks/useBooking";
 
 const Joined = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
-  const bookingsQuery = api.booking.getAll.useQuery(undefined, {
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: bookings } = bookingsQuery;
+  const { upcomingBookingsJoined } = useBooking();
 
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
@@ -30,10 +26,14 @@ const Joined = () => {
   }
 
   return (
-    <main className="min-w-sm flex min-w-fit flex-col">
+    <>
       <SubHeader title="Joined" />
-      <Bookings bookings={bookings || []} />
-    </main>
+      <MainContainer bgFrom="005e1ba6">
+        <div className="pt-2">
+          <Bookings bookings={upcomingBookingsJoined} />
+        </div>
+      </MainContainer>
+    </>
   );
 };
 

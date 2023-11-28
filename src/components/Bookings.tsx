@@ -1,4 +1,4 @@
-import { Guest, type Booking, type Facility } from "@prisma/client";
+import { type Guest, type Booking, type Facility } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { useState } from "react";
@@ -47,7 +47,6 @@ export const Bookings = ({ bookings }: Props) => {
   const removeBooking = api.booking.delete.useMutation();
   const updateBooking = api.booking.update.useMutation();
 
-  const historyOnly = router.asPath === "/history";
   const createdOnly = router.asPath === "/created";
 
   const [bookingToChange, setBookingToChange] = useState<Booking | undefined>();
@@ -180,8 +179,6 @@ export const Bookings = ({ bookings }: Props) => {
     );
   };
 
-  const bgColorDark = getBgColor(router.asPath);
-
   const bookingsToShow = bookingsByDate({
     associations: associations || [],
     user: sessionUser,
@@ -190,7 +187,7 @@ export const Bookings = ({ bookings }: Props) => {
     sessionUserId,
   });
 
-  const showArrogantFrog = !bookingsToShow?.length && !historyOnly;
+  const showArrogantFrog = !bookingsToShow?.length;
 
   if (showArrogantFrog) {
     return (
@@ -201,35 +198,32 @@ export const Bookings = ({ bookings }: Props) => {
   }
 
   return (
-    <div>
+    <>
       <BookingActionModalGroup
         bookingToChange={bookingToChange}
         joinGame={joinGame}
         leaveGame={leaveGame}
         deleteBooking={deleteBooking}
       />
-      <div
-        className={`bg-gradient-to-b ${bgColorDark} bookings-container h-full`}
-      >
-        {toastMessage && <Toast body={toastMessage} />}
-        {bookingsToShow?.map((booking: Booking) => {
-          return (
-            <BookingItem
-              key={booking.id}
-              booking={booking}
-              sessionUser={sessionUser}
-              joining={joining}
-              leaving={leaving}
-              deleting={deleting}
-              router={router}
-              associations={associations || []}
-              facilities={facilities || []}
-              onBookingItemChange={setBookingToChange}
-            />
-          );
-        })}
-        {createdOnly && <CheckAvailability />}
-      </div>
-    </div>
+
+      {toastMessage && <Toast body={toastMessage} />}
+      {bookingsToShow?.map((booking: Booking) => {
+        return (
+          <BookingItem
+            key={booking.id}
+            booking={booking}
+            sessionUser={sessionUser}
+            joining={joining}
+            leaving={leaving}
+            deleting={deleting}
+            router={router}
+            associations={associations || []}
+            facilities={facilities || []}
+            onBookingItemChange={setBookingToChange}
+          />
+        );
+      })}
+      {createdOnly && <CheckAvailability />}
+    </>
   );
 };

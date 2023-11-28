@@ -15,6 +15,7 @@ import { PageLoader } from "~/components/PageLoader";
 import useUser from "~/hooks/useUser";
 import { Toast } from "~/components/Toast";
 import { JoinableToggle } from "~/components/JoinableToggle";
+import MainContainer from "~/components/MainContainer";
 
 const ModifyAssociation = () => {
   const session = useSession();
@@ -84,11 +85,13 @@ const ModifyAssociation = () => {
   const hasAnythingChanged =
     name !== association.name || description !== association.description;
 
+  const bgFrom = "a31da1";
+  const bgTo = "15162c";
   return (
     <div>
       {toastMessage && <Toast body={toastMessage} />}
       <SubHeader title="Modify group information" />
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#a31da1] to-[#15162c]">
+      <MainContainer bgFrom={bgFrom} bgTo={bgTo}>
         <div className="smooth-render-in container h-screen max-w-md p-4">
           <div style={{ width: "100%" }} className="mb-5 mt-10 gap-4">
             <div style={{ width: "100%" }} className="form-control">
@@ -145,7 +148,7 @@ const ModifyAssociation = () => {
             </div>
           </div>
         </div>
-      </main>
+      </MainContainer>
     </div>
   );
 };

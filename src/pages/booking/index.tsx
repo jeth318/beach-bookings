@@ -10,7 +10,6 @@ import { emailDispatcher, maxPlayersToShow } from "~/utils/booking.util";
 import { getEmailRecipients } from "~/utils/general.util";
 import { BeatLoader } from "react-spinners";
 import ActionModal from "~/components/ActionModal";
-import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { SelectInput } from "~/components/SelectInput";
 import { DateSelector } from "~/components/DateSelector";
 import { JoinableToggle } from "~/components/JoinableToggle";
@@ -23,22 +22,9 @@ import useUserAssociations from "../../hooks/useUserAssociations";
 import useSingleBooking from "../../hooks/useSingleBooking";
 import { getAssociationsToShow } from "~/utils/association.util";
 import { PageLoader } from "~/components/PageLoader";
-
-export async function getStaticProps() {
-  await serverSideHelpers.facility.getAll.prefetch();
-
-  return {
-    props: {
-      trpcState: serverSideHelpers.dehydrate(),
-    },
-    revalidate: 1,
-  };
-}
+import MainContainer from "~/components/MainContainer";
 
 const Booking = () => {
-  // Fix for server/client render match
-  const [hydrated, setHydrated] = useState<boolean>(false);
-
   const { data: sessionData, status: sessionStatus } = useSession();
   const router = useRouter();
   const [court, setCourt] = useState<string | null>();
@@ -76,13 +62,6 @@ const Booking = () => {
 
   const onJoinableChange = () => {
     setJoinable(!joinable);
-  };
-
-  const onPrivateBookingChange = () => {
-    if (!privateBooking === false) {
-      setAssociation(undefined);
-    }
-    setPrivateBooking(!privateBooking);
   };
 
   // localStorageState
@@ -299,275 +278,250 @@ const Booking = () => {
   };
 
   if (
-    sessionStatus === "authenticated" &&
-    (isInitialLoading || !isUserFetched || !isJoinedAssociationsFetched)
+    sessionStatus === "loading" ||
+    isInitialLoading ||
+    !isUserFetched ||
+    !isJoinedAssociationsFetched
   ) {
     return (
       <PageLoader
         isMainPage
-        bgColor={"bg-gradient-to-b from-[#2c0168] to-[#000000]"}
+        bgColor={"bg-gradient-to-b from-[#2c0168] to-[#15162c]"}
       />
-      /*       <div className="flex h-screen items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <BeatLoader size={20} color="white" />
-      </div> */
     );
   }
 
   if (sessionData?.user.id && !user?.name) {
     return (
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="flex flex-col items-center p-3">
+      <MainContainer bgFrom="2e026d">
+        <div className="flex flex-col items-center justify-center">
           <Image
             alt="beach-spike"
             width={300}
             height={300}
             src="/beach-spike.png"
           />
-          <h2 className="mb-4 text-4xl ">Hello stranger! 👋</h2>
-          <h3 className="text-center text-xl ">
+          <h2 className="mb-4 text-4xl">Hello stranger! 👋</h2>
+          <h3 className="text-center text-xl">
             If you want to publish or join a booking, you must first add your
             name in your account.
           </h3>
-          <Link href="/settings" className="btn-info btn mt-10 ">
+          <Link href="/settings" className="btn-info btn mt-10 w-32 ">
             Settings
           </Link>
         </div>
-      </main>
+      </MainContainer>
     );
   }
 
   return (
     <>
       <SubHeader title={"Publish booking"} />
-      <main className="min-w-sm pd-3 dark:color-white flex h-screen min-w-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        {!isInitialLoading && sessionStatus === "unauthenticated" ? (
-          <div className="flex flex-col items-center p-3 text-white">
-            <Image
-              alt="beach-spike"
-              width={300}
-              height={300}
-              src="/beach-spike.png"
-            />
-            <h2 className="mb-4 text-4xl ">Hello stranger! 👋</h2>
-            <h3 className="text-center text-xl ">
-              If you want to publish or join a booking you must first login.
-            </h3>
-
-            <button
-              onClick={void signIn()}
-              className="btn-info btn mt-10"
+      <MainContainer heightType="h-full" bgFrom="2e026d" bgTo="15162c">
+        <div className="smooth-render-in max-w-md">
+          <div>
+            <ActionModal
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              callback={onPublishClicked}
+              data={undefined}
+              tagRef={`booking`}
+              title="Confirm new booking 🏖️"
+              confirmButtonText={"Publish"}
+              cancelButtonText="Cancel"
+              level="success"
             >
-              Login
-            </button>
-          </div>
-        ) : (
-          <div className="smooth-render-in container max-w-md p-4">
-            {sessionData?.user.id && (
-              <div>
-                <ActionModal
-                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  callback={onPublishClicked}
-                  data={undefined}
-                  tagRef={`booking`}
-                  title="Confirm new booking 🏖️"
-                  confirmButtonText={"Publish"}
-                  cancelButtonText="Cancel"
-                  level="success"
-                >
-                  <p className="py-4">
-                    All beach bookers with notifications enabled will receive an
-                    email about the new booking.
-                  </p>
-                </ActionModal>
-                <ActionModal
-                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  callback={onDraftCancel}
-                  data={undefined}
-                  tagRef={`booking-cancel`}
-                  title="Are you sure?"
-                  level="warning"
-                  confirmButtonText={"Reset"}
-                  cancelButtonText="Keep editing"
-                >
-                  <div className="py-4">
-                    <p>
-                      This draft will be removed and you will have to re-enter
-                      the the booking information.
-                    </p>
-                  </div>
-                </ActionModal>
-
-                <div className="mt-4 flex flex-col gap-4">
-                  <div className="1px solid rounded-md border border-slate-500 p-2">
-                    <JoinableToggle
-                      textColor="white"
-                      value={joinable}
-                      callback={onJoinableChange}
-                    />
-                    <SelectInput
-                      optionSuffix="players"
-                      label="Players"
-                      description="How many can play?"
-                      disabledOption="Players required (including you)"
-                      valid
-                      value={maxPlayers}
-                      items={maxPlayersToShow}
-                      callback={onMaxPlayersSelect}
-                    />
-                  </div>
-                  {!!associationsToShow.length && (
-                    <div className="1px solid rounded-md border border-slate-500 p-2">
-                      <label className="label">
-                        <span className="label-text ">
-                          Visible for everyone or for a private group only?
-                        </span>
-                      </label>
-                      <div className="w-100 btn-group-veri btn-group flex justify-center self-center">
-                        <button
-                          onClick={() => {
-                            setPrivateBooking(false);
-                            setAssociation(null);
-                          }}
-                          className={`btn-${
-                            privateBooking ? "inactive" : "active"
-                          } btn  w-[50%] `}
-                        >
-                          Public
-                        </button>
-                        <button
-                          onClick={() => setPrivateBooking(true)}
-                          style={{ position: "relative" }}
-                          className={`btn btn-${
-                            privateBooking ? "active" : "inactive"
-                          } w-[50%] `}
-                        >
-                          Private
-                        </button>
-                      </div>
-                      {!!associationsToShow.length && privateBooking && (
-                        <SelectInput
-                          label="Group"
-                          disabled={!privateBooking}
-                          disabledOption="Select group"
-                          valid={!privateBooking || !!association}
-                          value={association?.name || "Select group"}
-                          items={associationsToShow}
-                          callback={onAssociationSelect}
-                        />
-                      )}
-                    </div>
-                  )}
-
-                  {showFacility() && (
-                    <div className="1px solid rounded-md border border-slate-500 p-2">
-                      {facility?.name === "GBC Kviberg" && (
-                        <div className="alert alert-info mt-2 flex flex-row text-sm ">
-                          <div>
-                            <Image
-                              className="mr-2 rounded-full shadow-sm shadow-black"
-                              alt="arrogant-frog"
-                              src="/cig-frog.gif"
-                              width={55}
-                              height={55}
-                            />
-                            <p>
-                              <b>Yo!</b> Make sure that you book a court at{" "}
-                              <a
-                                target="_blank"
-                                className="text-blue link"
-                                href="https://gbc.goactivebooking.com/book-service/27?facility=1"
-                              >
-                                {" "}
-                                {facility.name}
-                              </a>{" "}
-                              and receive a confirmation email before publishing
-                              here.
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      <SelectInput
-                        disabledOption="Pick a place"
-                        label="Facility"
-                        description="Where are you playing? (more to come)"
-                        valid={!!facility}
-                        value={facility?.name || "Pick a place"}
-                        items={facilitiesToShow}
-                        callback={onFacilitySelect}
-                      />
-                      {!!facility?.durations?.length && (
-                        <div className="smooth-render-in">
-                          <SelectInput
-                            label="Duration"
-                            disabledOption="Select duration"
-                            optionSuffix={` minutes`}
-                            valid={!!duration}
-                            value={duration || "Select duration"}
-                            items={facility.durations.map((item) => ({
-                              id: item,
-                              name: item,
-                            }))}
-                            callback={onDurationSelect}
-                          />
-                        </div>
-                      )}
-                      {!!facility?.courts.length && (
-                        <div className="smooth-render-in">
-                          <SelectInput
-                            label="Court"
-                            disabledOption="Select court"
-                            valid={!!court}
-                            value={court || "Select court"}
-                            items={facility.courts.map((item) => ({
-                              id: item,
-                              name: item,
-                            }))}
-                            callback={onCourtSelect}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {showDateSelector() && (
-                    <div className="smooth-render-in">
-                      <DateSelector
-                        date={date}
-                        time={time}
-                        callback={onDateSelect}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="mb-20 mt-10 flex flex-col items-center justify-center gap-2">
-                  <label
-                    htmlFor="action-modal-booking-cancel"
-                    className="btn-outline btn w-[200px]  text-white"
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  >
-                    Reset
-                  </label>
-
-                  <label
-                    className={`${
-                      validBooking ? "btn-success" : "btn-disabled"
-                    } btn w-[200px]  dark:text-white`}
-                    htmlFor="action-modal-booking"
-                  >
-                    Publish
-                    {isLoadingCreateBooking && (
-                      <div style={{ position: "absolute", bottom: 0 }}>
-                        <BeatLoader size={8} color="white" />
-                      </div>
-                    )}
-                  </label>
-                </div>
+              <p className="py-4">
+                All beach bookers with notifications enabled will receive an
+                email about the new booking.
+              </p>
+            </ActionModal>
+            <ActionModal
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              callback={onDraftCancel}
+              data={undefined}
+              tagRef={`booking-cancel`}
+              title="Are you sure?"
+              level="warning"
+              confirmButtonText={"Reset"}
+              cancelButtonText="Keep editing"
+            >
+              <div className="py-4">
+                <p>
+                  This draft will be removed and you will have to re-enter the
+                  the booking information.
+                </p>
               </div>
-            )}
+            </ActionModal>
+
+            <div className="mt-4 flex flex-col gap-4">
+              <div className="1px solid rounded-md border border-slate-500 p-2">
+                <JoinableToggle
+                  textColor="white"
+                  value={joinable}
+                  callback={onJoinableChange}
+                />
+                <SelectInput
+                  optionSuffix="players"
+                  label="Players"
+                  description="How many can play?"
+                  disabledOption="Players required (including you)"
+                  valid
+                  value={maxPlayers}
+                  items={maxPlayersToShow}
+                  callback={onMaxPlayersSelect}
+                />
+              </div>
+              {!!associationsToShow.length && (
+                <div className="1px solid rounded-md border border-slate-500 p-2">
+                  <label className="label">
+                    <span className="label-text ">
+                      Visible for everyone or for a private group only?
+                    </span>
+                  </label>
+                  <div className="w-100 btn-group-veri btn-group flex justify-center self-center">
+                    <button
+                      onClick={() => {
+                        setPrivateBooking(false);
+                        setAssociation(null);
+                      }}
+                      className={`btn-${
+                        privateBooking ? "inactive" : "active"
+                      } btn  w-[50%] `}
+                    >
+                      Public
+                    </button>
+                    <button
+                      onClick={() => setPrivateBooking(true)}
+                      style={{ position: "relative" }}
+                      className={`btn btn-${
+                        privateBooking ? "active" : "inactive"
+                      } w-[50%] `}
+                    >
+                      Private
+                    </button>
+                  </div>
+                  {!!associationsToShow.length && privateBooking && (
+                    <SelectInput
+                      label="Group"
+                      disabled={!privateBooking}
+                      disabledOption="Select group"
+                      valid={!privateBooking || !!association}
+                      value={association?.name || "Select group"}
+                      items={associationsToShow}
+                      callback={onAssociationSelect}
+                    />
+                  )}
+                </div>
+              )}
+
+              {showFacility() && (
+                <div className="1px solid rounded-md border border-slate-500 p-2">
+                  {facility?.name === "GBC Kviberg" && (
+                    <div className="alert alert-info mt-2 flex flex-row text-sm ">
+                      <div>
+                        <Image
+                          className="mr-2 rounded-full shadow-sm shadow-black"
+                          alt="arrogant-frog"
+                          src="/cig-frog.gif"
+                          width={55}
+                          height={55}
+                        />
+                        <p>
+                          <b>Yo!</b> Make sure that you book a court at{" "}
+                          <a
+                            target="_blank"
+                            className="text-blue link"
+                            href="https://gbc.goactivebooking.com/book-service/27?facility=1"
+                          >
+                            {" "}
+                            {facility.name}
+                          </a>{" "}
+                          and receive a confirmation email before publishing
+                          here.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <SelectInput
+                    disabledOption="Pick a place"
+                    label="Facility"
+                    description="Where are you playing? (more to come)"
+                    valid={!!facility}
+                    value={facility?.name || "Pick a place"}
+                    items={facilitiesToShow}
+                    callback={onFacilitySelect}
+                  />
+                  {!!facility?.durations?.length && (
+                    <div className="smooth-render-in">
+                      <SelectInput
+                        label="Duration"
+                        disabledOption="Select duration"
+                        optionSuffix={` minutes`}
+                        valid={!!duration}
+                        value={duration || "Select duration"}
+                        items={facility.durations.map((item) => ({
+                          id: item,
+                          name: item,
+                        }))}
+                        callback={onDurationSelect}
+                      />
+                    </div>
+                  )}
+                  {!!facility?.courts.length && (
+                    <div className="smooth-render-in">
+                      <SelectInput
+                        label="Court"
+                        disabledOption="Select court"
+                        valid={!!court}
+                        value={court || "Select court"}
+                        items={facility.courts.map((item) => ({
+                          id: item,
+                          name: item,
+                        }))}
+                        callback={onCourtSelect}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+              {showDateSelector() && (
+                <div className="smooth-render-in">
+                  <DateSelector
+                    date={date}
+                    time={time}
+                    callback={onDateSelect}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="mt-10 flex flex-col items-center justify-center gap-2">
+              <label
+                htmlFor="action-modal-booking-cancel"
+                className="btn-outline btn w-[200px]  text-white"
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              >
+                Reset
+              </label>
+
+              <label
+                className={`${
+                  validBooking ? "btn-success" : "btn-disabled"
+                } btn w-[200px]`}
+                htmlFor="action-modal-booking"
+              >
+                Publish
+                {isLoadingCreateBooking && (
+                  <div style={{ position: "absolute", bottom: 0 }}>
+                    <BeatLoader size={8} color="white" />
+                  </div>
+                )}
+              </label>
+            </div>
           </div>
-        )}
-      </main>
+        </div>
+      </MainContainer>
     </>
   );
 };

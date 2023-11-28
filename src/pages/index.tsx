@@ -2,8 +2,8 @@ import { api } from "~/utils/api";
 import { Bookings } from "~/components/Bookings";
 import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { useEffect, useState } from "react";
-import useBooking from "~/hooks/useBooking";
 import { PageLoader } from "~/components/PageLoader";
+import MainContainer from "~/components/MainContainer";
 
 export async function getStaticProps() {
   await serverSideHelpers.booking.getAll.prefetch();
@@ -60,9 +60,9 @@ const Home = () => {
   }
 
   return (
-    <main className="min-w-sm flex min-w-fit flex-col">
+    <MainContainer bgFrom="2c0168" heightType="h-full">
       <Bookings bookings={bookings} guests={guests} facilities={facilities} />
-    </main>
+    </MainContainer>
   );
 };
 

@@ -10,14 +10,18 @@ const useBooking = () => {
   const { mutate: mutateJoinable, isLoading: isLoadingJoinable } =
     api.booking.updateJoinable.useMutation({});
 
-  const { data: upcomingBookingsCreated } =
-    api.booking.getUpcomingForUser.useQuery(undefined, {
-      enabled: !!session.data?.user.id,
-    });
-  const { data: upcomingBookingsJoined } =
-    api.booking.getJoinedUpcoming.useQuery(undefined, {
-      enabled: !!session.data?.user.id,
-    });
+  const {
+    data: upcomingBookingsCreated,
+    isFetched: isUpcomingCreatedBookingsFetched,
+  } = api.booking.getUpcomingForUser.useQuery(undefined, {
+    enabled: !!session.data?.user.id,
+  });
+  const {
+    data: upcomingBookingsJoined,
+    isFetched: isUpcomingJoinedBookingsFetched,
+  } = api.booking.getJoinedUpcoming.useQuery(undefined, {
+    enabled: !!session.data?.user.id,
+  });
 
   const {
     refetch: refetchBookings,
@@ -36,6 +40,8 @@ const useBooking = () => {
     upcomingBookingsJoined,
     refetchBookings,
     isInitialLoadingRefetch,
+    isUpcomingCreatedBookingsFetched,
+    isUpcomingJoinedBookingsFetched,
   };
 };
 

@@ -1,47 +1,24 @@
 import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/router";
-import { api } from "~/utils/api";
 import { SubHeader } from "~/components/SubHeader";
-import { serverSideHelpers } from "~/utils/staticPropsUtil";
 import { PageLoader } from "~/components/PageLoader";
 import { EmailConsents } from "~/components/EmailConsents";
 import { PlayerInfo } from "~/components/PlayerInfo";
 import { AccountControl } from "~/components/AccountControl";
-
-export async function getStaticProps() {
-  await serverSideHelpers.booking.getAll.prefetch();
-  return {
-    props: {
-      trpcState: serverSideHelpers.dehydrate(),
-    },
-    revalidate: 1,
-  };
-}
+import MainContainer from "~/components/MainContainer";
+import useSessionUser from "~/hooks/useSessionUser";
 
 const Settings = () => {
   const router = useRouter();
-  const {
-    data: user,
-    isFetched: isUserFetched,
-    refetch: refetchUser,
-  } = api.user.get.useQuery();
   const { status: sessionStatus } = useSession();
-  const bookingsQuery = api.booking.getAll.useQuery(undefined, {
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-
-  if (bookingsQuery.status !== "success") {
-    // won't happen since we're using `fallback: "blocking"`
-    return <>Loading...</>;
-  }
+  const { sessionUser, refetchSessionUser } = useSessionUser();
 
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
   }
 
-  if (sessionStatus === "loading" || !isUserFetched || !user) {
+  if (sessionStatus === "loading" || !sessionUser?.id) {
     return (
       <PageLoader
         isMainPage={false}
@@ -54,16 +31,17 @@ const Settings = () => {
   return (
     <>
       <SubHeader title="Settings" />
-
-      <main className="min-w-sm pd-3 flex min-w-fit flex-col items-center bg-gradient-to-b from-[#01797391] to-[#000000]">
-        <div className="smooth-render-in container max-w-md p-4">
-          <PlayerInfo user={user} refetchUser={refetchUser} />
-          <hr className="mb-4 mt-6" />
-          <EmailConsents />
-          <hr className="mb-4 mt-6" />
-          <AccountControl />
+      <MainContainer bgFrom="01797391" heightType="h-full">
+        <div className="flex justify-center">
+          <div className="smooth-render-in container flex w-full max-w-md flex-col self-center p-4">
+            <PlayerInfo user={sessionUser} refetchUser={refetchSessionUser} />
+            <hr className="mb-4 mt-6" />
+            <EmailConsents />
+            <hr className="mb-4 mt-6" />
+            <AccountControl />
+          </div>
         </div>
-      </main>
+      </MainContainer>
     </>
   );
 };
