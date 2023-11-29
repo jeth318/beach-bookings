@@ -17,6 +17,7 @@ const Settings = () => {
   const mainContainerProps = {
     bgFrom: "#8C9287",
     subheading: "Settings",
+    heightType: "h-full",
   };
 
   if (sessionStatus === "unauthenticated") {

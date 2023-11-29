@@ -15,7 +15,7 @@ const MainContainer = ({
   heightType = "h-screen",
   subheading = "",
 }: Props) => {
-  const baseClasses = "flex flex-col justify-center min-w-sm bg-gradient-to-b";
+  const baseClasses = "flex flex-col min-w-sm bg-gradient-to-b";
 
   return (
     <>
