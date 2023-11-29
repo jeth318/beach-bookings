@@ -17,7 +17,7 @@ const Joined = () => {
   const mainContainerProps = {
     subheading: "Joined",
     bgFrom: "#007621a6",
-    heightType: "h-full",
+    heightType: isLoading ? "h-screen" : "h-full",
   };
 
   if (sessionStatus === "unauthenticated") {

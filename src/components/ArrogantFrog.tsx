@@ -14,7 +14,7 @@ export const ArrogantFrog = ({ text, children }: Props) => {
   const joined = router.asPath === "/joined";
   const main = router.asPath === "/";
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex h-screen flex-col items-center">
       <Image
         className="rounded-full"
         alt="arrogant-frog"
