@@ -97,13 +97,7 @@ const Group = () => {
     !hasFetchedMembers ||
     !isUserFetched
   ) {
-    return (
-      <PageLoader
-        noSubmenu
-        isMainPage={false}
-        bgColor={"bg-gradient-to-b from-[#a31da1] to-[#000000]"}
-      />
-    );
+    return <PageLoader />;
   }
 
   if (!association) {

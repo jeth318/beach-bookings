@@ -69,13 +69,7 @@ const Invite = () => {
   };
 
   if (sessionStatus === "loading") {
-    return (
-      <PageLoader
-        isMainPage={false}
-        mainBgColor={"mainPageBgColor"}
-        bgColor={"bg-gradient-to-b from-[#a31da1] to-[#000000]"}
-      />
-    );
+    return <PageLoader />;
   }
 
   if (sessionStatus === "unauthenticated") {
@@ -101,13 +95,7 @@ const Invite = () => {
     !hasFetchedInvite ||
     !hasFetchedInviter
   ) {
-    return (
-      <PageLoader
-        isMainPage={false}
-        mainBgColor={"mainPageBgColor"}
-        bgColor={"bg-gradient-to-b from-[#a31da1] to-[#000000]"}
-      />
-    );
+    return <PageLoader />;
   }
 
   if (

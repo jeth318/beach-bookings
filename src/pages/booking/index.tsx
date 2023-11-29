@@ -283,12 +283,7 @@ const Booking = () => {
     !isUserFetched ||
     !isJoinedAssociationsFetched
   ) {
-    return (
-      <PageLoader
-        isMainPage
-        bgColor={"bg-gradient-to-b from-[#2c0168] to-[#15162c]"}
-      />
-    );
+    return <PageLoader />;
   }
 
   if (sessionData?.user.id && !user?.name) {

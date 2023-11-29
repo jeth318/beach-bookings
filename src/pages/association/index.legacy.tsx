@@ -24,10 +24,7 @@ const Association = () => {
     return (
       <>
         <SubHeader title="Groups" />
-        <PageLoader
-          noSubmenu
-          bgColor={"bg-gradient-to-b from-[#a31da1] to-[#15162c]"}
-        />
+        <PageLoader />
       </>
     );
   }
