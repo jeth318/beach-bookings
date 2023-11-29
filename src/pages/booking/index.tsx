@@ -337,7 +337,7 @@ const Booking = () => {
     <>
       <SubHeader title={"Publish booking"} />
       <MainContainer heightType="h-full" bgFrom="#2c0168" bgTo="#000000">
-        <div className="p-2">
+        <div className="flex max-w-md flex-col justify-center self-center p-2">
           <ActionModal
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             callback={onPublishClicked}

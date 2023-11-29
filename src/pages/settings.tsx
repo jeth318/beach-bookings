@@ -15,8 +15,7 @@ const Settings = () => {
   const { sessionUser, refetchSessionUser } = useSessionUser();
 
   const mainContainerProps = {
-    bgFrom: "#01797391",
-    heightType: "h-full",
+    bgFrom: "#8C9287",
     subheading: "Settings",
   };
 

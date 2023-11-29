@@ -3,15 +3,8 @@ import MainContainer from "~/components/MainContainer";
 
 const Help = () => {
   return (
-    <MainContainer bgFrom="#ffffff" bgTo="emerald-600" subheading="Help">
-      <div
-        style={{
-          padding: 10,
-          paddingTop: 20,
-          maxWidth: 600,
-        }}
-        className="flex flex-col justify-center"
-      >
+    <MainContainer subheading="Help">
+      <>
         <Image
           alt="beach-game"
           className="self-center"
@@ -19,8 +12,8 @@ const Help = () => {
           height={300}
           src="/beach-spike.png"
         />
-        <div className="flex flex-col ">
-          <h2 className=" text-lg">
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-center text-lg">
             If you need help or have any questions, contact me at the email
             below:
           </h2>
@@ -30,30 +23,48 @@ const Help = () => {
         </div>
         <br />
         <br />
-
-        <h1 className="dark: mb-4 text-3xl font-extrabold text-gray-900 md:text-5xl lg:text-6xl">
-          <span className="bg-gradient-to-r from-sky-400 to-emerald-600 bg-clip-text text-transparent">
-            How to beach book
-          </span>{" "}
+{/*         <div className="p-4">
+          <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
+            🌴 Publish a booking
+          </p>
+          <div className="pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+            1️⃣ Visit the{" "}
+            <a className="link" href="https://gbc.goactivebooking.com/">
+              official GBC website
+            </a>
+            , place a regular booking and wait for their confirmation email.
+            <p className="mt-2 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+              2️⃣ Here in Beach Bookings, navigate to the top left menu where you
+              will find the Publish-option. Tap it.
+            </p>
+            <p className="mt-2 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+              3️⃣ Fill in the details from your GBC booking along with the amount
+              of players required/allowed (defaults to 4).
+            </p>
+            <p className="mt-2 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+              4️⃣ Click the green Save-button. All players will instantly receive
+              an email with info about the new booking.
+            </p>
+          </div>
           <br />
-          <p className="dark:text-white">Some advices.</p>
-        </h1>
-        <br />
-        <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
+        </div> */}
+      </>
+
+      {/*  <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">
           🌴 Publish a booking
-        </p>
-        <p className="pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+          </p>
+          <p className="pl-6 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           1️⃣ Visit the{" "}
           <a className="link" href="https://gbc.goactivebooking.com/">
-            official GBC website
+          official GBC website
           </a>{" "}
           , place a regular booking and wait for their confirmation email.
-        </p>
-        <br />
-        <p className="pl-4 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+          </p>
+          <br />
+          <p className="pl-4 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           2️⃣ Here in Beach Bookings, navigate to the top left menu where you
           will find the Publish-option. Tap it.
-        </p>
+          </p>
         <br />
         <p className="pl-2 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
           3️⃣ Fill in the details from your GBC booking along with the amount of
@@ -128,9 +139,7 @@ const Help = () => {
           updates, edits, or cancellations in real-time. Do not worry; you are
           in control! Just head to the settings option in the top-right corner
           to customize your email notifications to your hearts content.
-        </p>
-        <br />
-      </div>
+        </p> */}
     </MainContainer>
   );
 };
