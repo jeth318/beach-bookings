@@ -54,8 +54,6 @@ export const PlayersTable = ({ booking }: Props) => {
   const booker = usersInBooking?.find((user) => user.id === booking.userId);
 
   const getCanShowRemovePlayerButton = (player: PlayerInBooking) => {
-    console.log(player);
-
     return (
       (session.data?.user.id === booking.userId &&
         playersInBooking?.length &&

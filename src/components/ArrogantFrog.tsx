@@ -3,12 +3,15 @@ import { getBgColor } from "~/utils/color.util";
 import { getFrogText } from "~/utils/general.util";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { Children } from "react";
 
 type Props = {
   submenu?: boolean;
+  text?: string;
+  children?: React.ReactNode;
 };
 
-export const ArrogantFrog = ({ submenu = true }: Props) => {
+export const ArrogantFrog = ({ submenu = true, text, children }: Props) => {
   const router = useRouter();
   const created = router.asPath === "/created";
   const joined = router.asPath === "/joined";
@@ -24,9 +27,15 @@ export const ArrogantFrog = ({ submenu = true }: Props) => {
           height={210}
         />
         <div className="p-4 text-center text-xl text-white">
-          <div
-            dangerouslySetInnerHTML={{ __html: getFrogText(router.asPath) }}
-          ></div>
+          {children ? (
+            children
+          ) : (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: text || getFrogText(router.asPath),
+              }}
+            ></div>
+          )}
           {main && (
             <div className="flex items-center justify-center">
               <Link className="btn-info btn mt-4" href="/booking">

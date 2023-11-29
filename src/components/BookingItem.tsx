@@ -56,7 +56,7 @@ export const BookingItem = ({
   return (
     <div
       key={booking?.id}
-      className="smooth-render-in first:border-b-1 border-b border-zinc-400"
+      className="first:border-b-1 border-b border-zinc-400"
     >
       <div className="card-compact card">
         <div

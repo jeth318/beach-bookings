@@ -9,29 +9,29 @@ import useBooking from "~/hooks/useBooking";
 const Joined = () => {
   const router = useRouter();
   const { status: sessionStatus } = useSession();
-  const { upcomingBookingsJoined } = useBooking();
+  const { upcomingBookingsJoined, isUpcomingCreatedBookingsFetched } =
+    useBooking();
+
+  const isLoading =
+    sessionStatus === "loading" || !isUpcomingCreatedBookingsFetched;
+  const mainContainerProps = {
+    subheading: "Joined",
+    bgFrom: "005e1ba6",
+    heightType: "h-full",
+  };
 
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
   }
 
-  if (sessionStatus === "loading") {
-    return (
-      <PageLoader
-        isMainPage={false}
-        mainBgColor={"mainPageBgColor"}
-        bgColor={"bg-gradient-to-b from-[#005e1ba6] to-[#000000]"}
-      />
-    );
-  }
-
   return (
-    <>
-      <SubHeader title="Joined" />
-      <MainContainer bgFrom="005e1ba6" heightType="h-full">
+    <MainContainer {...mainContainerProps}>
+      {isLoading ? (
+        <PageLoader />
+      ) : (
         <Bookings bookings={upcomingBookingsJoined} />
-      </MainContainer>
-    </>
+      )}
+    </MainContainer>
   );
 };
 

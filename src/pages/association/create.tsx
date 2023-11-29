@@ -62,7 +62,7 @@ const CreateAssociation = () => {
   const bgFrom = "a31da1";
   const bgTo = "15162c";
   return (
-    <div>
+    <div className="pt-4">
       <ActionModal
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         callback={onSubmit}
@@ -77,8 +77,7 @@ const CreateAssociation = () => {
           After your group is created. You can invite players by email.
         </p>
       </ActionModal>
-      <SubHeader title="Create a group" />
-      <MainContainer bgFrom={bgFrom} bgTo={bgTo}>
+      <MainContainer subheading="Create a group" bgFrom={bgFrom} bgTo={bgTo}>
         <div className="smooth-render-in container h-screen max-w-md p-4">
           <div style={{ width: "100%" }} className="mb-5 mt-10 gap-4">
             <div style={{ width: "100%" }} className="form-control">

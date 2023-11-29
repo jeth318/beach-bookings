@@ -4,7 +4,6 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { CheckAvailability } from "./CheckAvailability";
-import { getBgColor } from "~/utils/color.util";
 import {
   bookingsByDate,
   emailDispatcher,
@@ -195,7 +194,7 @@ export const Bookings = ({ bookings }: Props) => {
   }
 
   return (
-    <>
+    <div className="pt-4">
       <BookingActionModalGroup
         bookingToChange={bookingToChange}
         joinGame={joinGame}
@@ -221,6 +220,6 @@ export const Bookings = ({ bookings }: Props) => {
         );
       })}
       {createdOnly && <CheckAvailability />}
-    </>
+    </div>
   );
 };

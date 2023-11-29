@@ -69,19 +69,17 @@ const Association = () => {
     }
   };
 
-  if (!user || !isJoinedAssociationsFetched) {
-    return (
-      <>
-        <SubHeader title="My groups" />
-        <PageLoader
-          noSubmenu
-          bgColor={"bg-gradient-to-b from-[#a31da1] to-[#15162c]"}
-        />
-      </>
-    );
-  }
   const bgFrom = "a31da1";
   const bgTo = "15162c";
+
+  if (!user || !isJoinedAssociationsFetched) {
+    return (
+      <MainContainer subheading="My groups" bgFrom={bgFrom} bgTo={bgTo}>
+        <PageLoader color="#ffffff" />
+      </MainContainer>
+    );
+  }
+
   if (isWithoutGroup) {
     return (
       <MainContainer bgFrom={bgFrom} bgTo={bgTo}>

@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 import { type ChangeEvent, useState, useEffect } from "react";
 
@@ -6,7 +6,6 @@ import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { type Association, Booking, type Facility } from "@prisma/client";
 
-import { SubHeader } from "~/components/SubHeader";
 import { emailDispatcher, maxPlayersToShow } from "~/utils/booking.util";
 import {
   getEmailRecipients,
@@ -28,6 +27,9 @@ import { getFacilitiesToShow } from "~/utils/facility.util";
 import { getAssociationsToShow } from "~/utils/association.util";
 import useGuest from "~/hooks/useGuest";
 import MainContainer from "~/components/MainContainer";
+import { PageLoader } from "~/components/PageLoader";
+import { ArrogantFrog } from "~/components/ArrogantFrog";
+import { parseTime } from "~/utils/time.util";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -91,6 +93,13 @@ const Booking = () => {
       });
       onUpdateBookingJoinableSuccess(updatedBooking);
     } catch (error) {}
+  };
+
+  const mainContainerProps = {
+    subheading: "Edit booking",
+    bgFrom: "2e026d",
+    bgTo: "000000",
+    heightType: "h-full",
   };
 
   const facilitiesToShow = getFacilitiesToShow(facilities);
@@ -202,6 +211,13 @@ const Booking = () => {
     (facility?.courts.length ? !!court : true) &&
     (facility?.durations.length ? !!duration : true);
 
+  const isLoading =
+    sessionStatus === "loading" ||
+    isInitialLoading ||
+    !isInitialStateLoaded ||
+    !isJoinedAssociationsFetched ||
+    !isUsersInBookingFetched;
+
   useEffect(() => {
     if (
       isInitialStateLoaded ||
@@ -279,187 +295,183 @@ const Booking = () => {
     isJoinedAssociationsFetched,
   ]);
 
-  return (
-    <>
-      {toastMessage && <Toast body={toastMessage} />}
-      <SubHeader title="Change booking" />
-      <MainContainer bgFrom="2e026d" bgTo="15162c" heightType="h-full">
-        {!isInitialLoading && sessionStatus === "unauthenticated" ? (
-          <div className="flex h-screen flex-col items-center justify-center p-3">
-            <h2 className="text-center text-2xl ">
-              If you want to add or edit bookings, you have to be logged in.
-            </h2>
+  if (isLoading) {
+    return (
+      <MainContainer {...mainContainerProps}>
+        <PageLoader />
+      </MainContainer>
+    );
+  }
+
+  if (sessionStatus === "unauthenticated") {
+    return (
+      <MainContainer {...mainContainerProps}>
+        <ArrogantFrog>
+          <div>
+            You must be{" "}
+            <button className="link" onClick={() => void signIn()}>
+              logged in
+            </button>{" "}
+            to edit bookings.
           </div>
-        ) : (
-          <div className="smooth-render-in container max-w-md p-4">
-            {sessionData?.user.id &&
-            booking?.id &&
-            isJoinedAssociationsFetched &&
-            isUsersInBookingFetched &&
-            booking?.joinable !== undefined ? (
-              <div className="mt-4">
-                <ActionModal
-                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  callback={onBookingUpdateConfirmed}
-                  data={undefined}
-                  tagRef={`booking`}
-                  title={`Confirm ${
-                    router.query.id ? "new booking details" : "new booking"
-                  }`}
-                  confirmButtonText={"Update"}
-                  cancelButtonText="Cancel"
-                  level="success"
+        </ArrogantFrog>
+      </MainContainer>
+    );
+  }
+
+  return (
+    <MainContainer {...mainContainerProps}>
+      <ActionModal
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        callback={onBookingUpdateConfirmed}
+        data={undefined}
+        tagRef={`booking`}
+        title={`Confirm ${
+          router.query.id ? "new booking details" : "new booking"
+        }`}
+        confirmButtonText={"Update"}
+        cancelButtonText="Cancel"
+        level="success"
+      >
+        <p className="py-4">
+          All players in this booking will receive an email about the updated
+          booking details.
+        </p>
+      </ActionModal>
+      {toastMessage && <Toast body={toastMessage} />}
+      <div className="p-2 pl-2 pt-6">
+        <div className="mb-4 text-center text-white">
+          <h2 className="text-2xl">
+            {booking?.date.toLocaleDateString("sv-SE")}
+          </h2>
+          <h4>{booking && parseTime(booking)}</h4>
+        </div>
+        <div className="flex flex-col gap-4">
+          <div className="1px solid rounded-md border border-slate-500 p-2">
+            <JoinableToggle
+              textColor="white"
+              value={joinable || false}
+              isLoading={isLoadingUpdateBookingJoinable}
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              callback={onJoinableChange}
+            />
+            <SelectInput
+              label="Players"
+              optionSuffix="players"
+              description="How many players are required/allowed?"
+              valid={!!maxPlayers}
+              value={String(maxPlayers) || "Players"}
+              items={maxPlayersToShow}
+              callback={onMaxPlayersSelect}
+            />
+          </div>
+
+          {!!associationsToShow.length && (
+            <div className="1px solid rounded-md border border-slate-500 p-2">
+              <label className="label">
+                <span className="label-text ">
+                  Visible for everyone or for a private group only?
+                </span>
+              </label>
+              <div className="w-100 btn-group-veri btn-group flex justify-center self-center">
+                <button
+                  onClick={() => {
+                    setPrivateBooking(false);
+                    setAssociation(undefined);
+                  }}
+                  className={`btn-${
+                    privateBooking ? "inactive" : "active"
+                  } btn  w-[50%] `}
                 >
-                  <p className="py-4">
-                    All players in this booking will receive an email about the
-                    updated booking details.
-                  </p>
-                </ActionModal>
-                <div className="mb-4 text-center text-white">
-                  <h2 className="text-2xl">
-                    {booking?.date.toLocaleDateString("sv-SE")}
-                  </h2>
-                  <h4>{booking?.date.toLocaleTimeString("sv-SE")}</h4>
-                </div>
-                {/* <PlayersTable booking={booking || defaultBooking} /> */}
-                <div className="flex flex-col gap-4">
-                  <div className="1px solid rounded-md border border-slate-500 p-2">
-                    <JoinableToggle
-                      textColor="white"
-                      value={joinable || false}
-                      isLoading={isLoadingUpdateBookingJoinable}
-                      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                      callback={onJoinableChange}
-                    />
-                    <SelectInput
-                      label="Players"
-                      optionSuffix="players"
-                      description="How many players are required/allowed?"
-                      valid={!!maxPlayers}
-                      value={String(maxPlayers) || "Players"}
-                      items={maxPlayersToShow}
-                      callback={onMaxPlayersSelect}
-                    />
-                  </div>
-
-                  {!!associationsToShow.length && (
-                    <div className="1px solid rounded-md border border-slate-500 p-2">
-                      <label className="label">
-                        <span className="label-text ">
-                          Visible for everyone or for a private group only?
-                        </span>
-                      </label>
-                      <div className="w-100 btn-group-veri btn-group flex justify-center self-center">
-                        <button
-                          onClick={() => {
-                            setPrivateBooking(false);
-                            setAssociation(undefined);
-                          }}
-                          className={`btn-${
-                            privateBooking ? "inactive" : "active"
-                          } btn  w-[50%] `}
-                        >
-                          Public
-                        </button>
-                        <button
-                          onClick={() => setPrivateBooking(true)}
-                          style={{ position: "relative" }}
-                          className={`btn btn-${
-                            privateBooking ? "active" : "inactive"
-                          } w-[50%] `}
-                        >
-                          Private
-                        </button>
-                      </div>
-                      {!!associationsToShow.length && privateBooking && (
-                        <SelectInput
-                          label="Group"
-                          disabled={!privateBooking}
-                          disabledOption="Select group"
-                          valid={!privateBooking || !!association}
-                          value={association?.name || "Select group"}
-                          items={associationsToShow}
-                          callback={onAssociationSelect}
-                        />
-                      )}
-                    </div>
-                  )}
-
-                  <div className="1px solid rounded-md border border-slate-500 p-2">
-                    <SelectInput
-                      disabled
-                      label="Facility"
-                      description="Where are you playing? (more to come later)"
-                      valid={!!facility}
-                      value={facility?.name || "Pick a place"}
-                      items={facilitiesToShow}
-                      callback={onFacilitySelect}
-                    />
-                    {!!facility?.durations?.length && (
-                      <SelectInput
-                        label="Duration"
-                        optionSuffix={` minutes`}
-                        valid={!!duration}
-                        value={duration || "Select duration"}
-                        items={facility.durations.map((item) => ({
-                          id: item,
-                          name: item,
-                        }))}
-                        callback={onDurationSelect}
-                      />
-                    )}
-
-                    {!!facility?.courts.length && (
-                      <SelectInput
-                        label="Court"
-                        disabledOption="Pick court"
-                        valid={!!court}
-                        value={court || "Pick court"}
-                        items={facility.courts.map((item) => ({
-                          id: item,
-                          name: item,
-                        }))}
-                        callback={onCourtSelect}
-                      />
-                    )}
-                  </div>
-
-                  <DateSelector
-                    date={date}
-                    time={time}
-                    callback={onDateSelect}
-                  />
-                </div>
-                <div className="flex flex-col justify-center">
-                  <div className="w-100  mb-20 mt-10 flex justify-center self-center">
-                    <label
-                      style={{ position: "relative" }}
-                      className={`${
-                        validBooking && !isLoadingUpdateBooking
-                          ? "btn-success"
-                          : "btn-disabled"
-                      } btn `}
-                      htmlFor="action-modal-booking"
-                    >
-                      Save changes
-                    </label>
-                  </div>
-                  {isLoadingUpdateBooking && (
-                    <div className="mt-4 flex justify-center">
-                      <BeatLoader size={15} color="white" />
-                    </div>
-                  )}
-                </div>
+                  Public
+                </button>
+                <button
+                  onClick={() => setPrivateBooking(true)}
+                  style={{ position: "relative" }}
+                  className={`btn btn-${
+                    privateBooking ? "active" : "inactive"
+                  } w-[50%] `}
+                >
+                  Private
+                </button>
               </div>
-            ) : (
-              <div className="flex h-screen items-center justify-center self-center">
-                <BeatLoader size={20} color="white" />
-              </div>
+              {!!associationsToShow.length && privateBooking && (
+                <SelectInput
+                  label="Group"
+                  disabled={!privateBooking}
+                  disabledOption="Select group"
+                  valid={!privateBooking || !!association}
+                  value={association?.name || "Select group"}
+                  items={associationsToShow}
+                  callback={onAssociationSelect}
+                />
+              )}
+            </div>
+          )}
+
+          <div className="1px solid rounded-md border border-slate-500 p-2">
+            <SelectInput
+              disabled
+              label="Facility"
+              description="Where are you playing? (more to come later)"
+              valid={!!facility}
+              value={facility?.name || "Pick a place"}
+              items={facilitiesToShow}
+              callback={onFacilitySelect}
+            />
+            {!!facility?.durations?.length && (
+              <SelectInput
+                label="Duration"
+                optionSuffix={` minutes`}
+                valid={!!duration}
+                value={duration || "Select duration"}
+                items={facility.durations.map((item) => ({
+                  id: item,
+                  name: item,
+                }))}
+                callback={onDurationSelect}
+              />
+            )}
+
+            {!!facility?.courts.length && (
+              <SelectInput
+                label="Court"
+                disabledOption="Pick court"
+                valid={!!court}
+                value={court || "Pick court"}
+                items={facility.courts.map((item) => ({
+                  id: item,
+                  name: item,
+                }))}
+                callback={onCourtSelect}
+              />
             )}
           </div>
-        )}
-      </MainContainer>
-    </>
+
+          <DateSelector date={date} time={time} callback={onDateSelect} />
+        </div>
+        <div className="flex flex-col justify-center">
+          <div className="w-100  mb-20 mt-10 flex justify-center self-center">
+            <label
+              style={{ position: "relative" }}
+              className={`${
+                validBooking && !isLoadingUpdateBooking
+                  ? "btn-success"
+                  : "btn-disabled"
+              } btn `}
+              htmlFor="action-modal-booking"
+            >
+              Save changes
+            </label>
+          </div>
+          {isLoadingUpdateBooking && (
+            <div className="mt-4 flex justify-center">
+              <BeatLoader size={15} color="white" />
+            </div>
+          )}
+        </div>
+      </div>
+    </MainContainer>
   );
 };
 

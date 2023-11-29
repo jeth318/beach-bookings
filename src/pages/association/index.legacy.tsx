@@ -59,8 +59,7 @@ const Association = () => {
   const bgTo = "15162c";
   return (
     <>
-      <SubHeader title="Groups" />
-      <MainContainer bgFrom={bgFrom} bgTo={bgTo}>
+      <MainContainer subheading="Groups" bgFrom={bgFrom} bgTo={bgTo}>
         <div className="flex h-screen flex-col items-center p-3">
           <Image
             alt="beach-game"

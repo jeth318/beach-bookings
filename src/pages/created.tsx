@@ -14,27 +14,27 @@ const Created = () => {
   const { upcomingBookingsCreated, isUpcomingCreatedBookingsFetched } =
     useBooking();
 
+  const isLoading =
+    sessionStatus === "loading" || !isUpcomingCreatedBookingsFetched;
+
+  const mainContainerProps = {
+    subheading: "Booked by me",
+    bgFrom: "01797391",
+    heightType: "h-full",
+  };
+
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
   }
 
-  if (sessionStatus === "loading" || !isUpcomingCreatedBookingsFetched) {
-    return (
-      <PageLoader
-        isMainPage={false}
-        mainBgColor={"mainPageBgColor"}
-        bgColor={"bg-gradient-to-b from-[#01797391] to-[#000000]"}
-      />
-    );
-  }
-
   return (
-    <>
-      <SubHeader title="Booked by me" />
-      <MainContainer bgFrom="01797391" heightType="h-full">
+    <MainContainer {...mainContainerProps}>
+      {isLoading ? (
+        <PageLoader />
+      ) : (
         <Bookings bookings={upcomingBookingsCreated} />
-      </MainContainer>
-    </>
+      )}
+    </MainContainer>
   );
 };
 

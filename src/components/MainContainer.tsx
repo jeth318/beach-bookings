@@ -1,8 +1,11 @@
+import { SubHeader } from "./SubHeader";
+
 type Props = {
   children: React.ReactNode | null;
   bgFrom?: string;
   bgTo?: string;
-  heightType?: "h-screen" | "h-full";
+  heightType?: string;
+  subheading?: string;
 };
 
 const MainContainer = ({
@@ -10,15 +13,20 @@ const MainContainer = ({
   bgFrom = "",
   bgTo = "000000",
   heightType = "h-screen",
+  subheading = "",
 }: Props) => {
-  const baseClasses = "min-w-sm smooth-render-in min-w-fit bg-gradient-to-b";
+  const baseClasses =
+    "min-w-sm max-w-md smooth-render-in min-w-fit bg-gradient-to-b";
 
   return (
-    <main
-      className={`${baseClasses} ${heightType} bg-gradient-to-b from-[#${bgFrom}] to-[#${bgTo}]`}
-    >
-      {children}
-    </main>
+    <>
+      {subheading && <SubHeader title={subheading} />}
+      <main
+        className={`${baseClasses} ${heightType} bg-gradient-to-b from-[#${bgFrom}] to-[#${bgTo}]`}
+      >
+        {children}
+      </main>
+    </>
   );
 };
 
