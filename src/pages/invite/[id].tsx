@@ -83,7 +83,7 @@ const Invite = () => {
     invite === null
   ) {
     return (
-      <MainContainer bgFrom="a31da1">
+      <MainContainer bgFrom="#a31da1">
         <ArrogantFrog />
       </MainContainer>
     );
@@ -109,7 +109,7 @@ const Invite = () => {
   return (
     <>
       <SubHeader title="Invitaion" />
-      <MainContainer heightType="h-full" bgFrom="a31da1">
+      <MainContainer heightType="h-full" bgFrom="#a31da1">
         <div className={`bg-min-height`}>
           <div className=" flex flex-col justify-center">
             <Image

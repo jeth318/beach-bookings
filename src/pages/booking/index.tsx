@@ -287,7 +287,7 @@ const Booking = () => {
 
   if (sessionStatus === "unauthenticated") {
     return (
-      <MainContainer subheading="Publish" bgFrom="2e026d">
+      <MainContainer subheading="Publish" bgFrom="#2e026d">
         <ArrogantFrog>
           You must be{" "}
           <button className="link" onClick={() => void signIn()}>
@@ -312,7 +312,7 @@ const Booking = () => {
 
   if (sessionData?.user.id && !user?.name) {
     return (
-      <MainContainer bgFrom="2e026d">
+      <MainContainer bgFrom="#2e026d">
         <div className="flex flex-col justify-center">
           <Image
             alt="beach-spike"
@@ -336,7 +336,7 @@ const Booking = () => {
   return (
     <>
       <SubHeader title={"Publish booking"} />
-      <MainContainer heightType="h-full" bgFrom="2c0168" bgTo="000000">
+      <MainContainer heightType="h-full" bgFrom="#2c0168" bgTo="#000000">
         <div className="p-2">
           <ActionModal
             // eslint-disable-next-line @typescript-eslint/no-misused-promises

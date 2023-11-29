@@ -60,7 +60,7 @@ const Home = () => {
   }
 
   return (
-    <MainContainer bgFrom="2c0168" heightType="h-full">
+    <MainContainer bgFrom="#2c0168" heightType="h-full">
       <Bookings bookings={bookings} guests={guests} facilities={facilities} />
     </MainContainer>
   );

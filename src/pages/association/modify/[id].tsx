@@ -82,8 +82,8 @@ const ModifyAssociation = () => {
   const hasAnythingChanged =
     name !== association.name || description !== association.description;
 
-  const bgFrom = "a31da1";
-  const bgTo = "15162c";
+  const bgFrom = "#a31da1";
+  const bgTo = "#15162c";
   return (
     <div>
       {toastMessage && <Toast body={toastMessage} />}

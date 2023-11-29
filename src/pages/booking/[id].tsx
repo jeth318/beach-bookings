@@ -97,8 +97,8 @@ const Booking = () => {
 
   const mainContainerProps = {
     subheading: "Edit booking",
-    bgFrom: "2e026d",
-    bgTo: "000000",
+    bgFrom: "#02968f91",
+    bgTo: "#000000",
     heightType: "h-full",
   };
 
@@ -347,7 +347,7 @@ const Booking = () => {
           <h4>{booking && parseTime(booking)}</h4>
         </div>
         <div className="flex flex-col gap-4">
-          <div className="1px solid rounded-md border border-slate-500 p-2">
+          <div className="1px solid rounded-md border border-slate-100 p-2">
             <JoinableToggle
               textColor="white"
               value={joinable || false}

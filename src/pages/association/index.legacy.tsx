@@ -52,8 +52,8 @@ const Association = () => {
       </main>
     );
   }
-  const bgFrom = "a31da1";
-  const bgTo = "15162c";
+  const bgFrom = "#a31da1";
+  const bgTo = "#15162c";
   return (
     <>
       <MainContainer subheading="Groups" bgFrom={bgFrom} bgTo={bgTo}>

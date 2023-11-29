@@ -3,7 +3,7 @@ import MainContainer from "~/components/MainContainer";
 
 const Help = () => {
   return (
-    <MainContainer subheading="Help">
+    <MainContainer bgFrom="#ffffff" bgTo="emerald-600" subheading="Help">
       <div
         style={{
           padding: 10,
@@ -36,7 +36,7 @@ const Help = () => {
             How to beach book
           </span>{" "}
           <br />
-          <p className="text-white">Some advices.</p>
+          <p className="dark:text-white">Some advices.</p>
         </h1>
         <br />
         <p className="text-lg font-bold text-gray-500 dark:text-gray-400 lg:text-xl">

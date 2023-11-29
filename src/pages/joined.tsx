@@ -16,7 +16,7 @@ const Joined = () => {
     sessionStatus === "loading" || !isUpcomingCreatedBookingsFetched;
   const mainContainerProps = {
     subheading: "Joined",
-    bgFrom: "007621a6",
+    bgFrom: "#007621a6",
     heightType: "h-full",
   };
 

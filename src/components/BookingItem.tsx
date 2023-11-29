@@ -123,7 +123,7 @@ export const BookingItem = ({
                   onBookingChange={onBookingItemChange}
                 />
               ) : (
-                <div className="flex h-[148px] w-[70px] flex-col items-center justify-center">
+                <div className="flex h-[148px] w-[80px] flex-col items-center justify-center">
                   <BeatLoader size={10} color="cyan" />
                 </div>
               )}

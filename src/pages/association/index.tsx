@@ -69,8 +69,8 @@ const Association = () => {
     }
   };
 
-  const bgFrom = "a31da1";
-  const bgTo = "15162c";
+  const bgFrom = "#a31da1";
+  const bgTo = "#15162c";
 
   if (!user || !isJoinedAssociationsFetched) {
     return (
@@ -112,7 +112,7 @@ const Association = () => {
     <>
       {toastMessage && <Toast body={toastMessage} />}
       <SubHeader title="My groups" />
-      <MainContainer bgFrom="a31da1">
+      <MainContainer bgFrom="#a31da1">
         {["delete", "leave"].flatMap((action) => {
           let level = "error";
           let body = "";

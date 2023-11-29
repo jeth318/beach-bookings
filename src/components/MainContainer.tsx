@@ -11,18 +11,20 @@ type Props = {
 const MainContainer = ({
   children,
   bgFrom = "",
-  bgTo = "000000",
+  bgTo = "#000000",
   heightType = "h-screen",
   subheading = "",
 }: Props) => {
   const baseClasses =
     "min-w-sm max-w-md smooth-render-in min-w-fit bg-gradient-to-b";
 
+  console.log(`bg-gradient-to-b from-[#${bgFrom}] to-[#${bgTo}]`);
+
   return (
     <>
       {subheading && <SubHeader title={subheading} />}
       <main
-        className={`${baseClasses} ${heightType} bg-gradient-to-b from-[#${bgFrom}] to-[#${bgTo}]`}
+        className={`${baseClasses} ${heightType} bg-gradient-to-b from-[${bgFrom}] to-[${bgTo}]`}
       >
         {children}
       </main>

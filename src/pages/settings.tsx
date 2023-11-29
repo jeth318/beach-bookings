@@ -15,7 +15,7 @@ const Settings = () => {
   const { sessionUser, refetchSessionUser } = useSessionUser();
 
   const mainContainerProps = {
-    bgFrom: "01797391",
+    bgFrom: "#01797391",
     heightType: "h-full",
     subheading: "Settings",
   };
@@ -35,7 +35,7 @@ const Settings = () => {
   return (
     <MainContainer {...mainContainerProps}>
       <div className="flex justify-center">
-        <div className="smooth-render-in container flex w-full max-w-md flex-col self-center p-4">
+        <div className="flex w-full max-w-md flex-col self-center p-4">
           <PlayerInfo user={sessionUser} refetchUser={refetchSessionUser} />
           <hr className="mb-4 mt-6" />
           <EmailConsents />

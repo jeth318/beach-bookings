@@ -19,7 +19,7 @@ const Created = () => {
 
   const mainContainerProps = {
     subheading: "Booked by me",
-    bgFrom: "02968f91",
+    bgFrom: "#02968f91",
     heightType: "h-full",
   };
 
