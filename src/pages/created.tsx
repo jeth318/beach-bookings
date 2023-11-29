@@ -19,7 +19,7 @@ const Created = () => {
 
   const mainContainerProps = {
     subheading: "Booked by me",
-    bgFrom: "01797391",
+    bgFrom: "02968f91",
     heightType: "h-full",
   };
 
@@ -32,7 +32,9 @@ const Created = () => {
       {isLoading ? (
         <PageLoader />
       ) : (
-        <Bookings bookings={upcomingBookingsCreated} />
+        <div className="pt-2">
+          <Bookings bookings={upcomingBookingsCreated} />
+        </div>
       )}
     </MainContainer>
   );

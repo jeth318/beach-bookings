@@ -19,7 +19,7 @@ const BookingDetails = () => {
 
   const mainContainerProps = {
     subheading: "Details",
-    bgFrom: "2e026d",
+    bgFrom: "2c0168",
   };
 
   const { booking, isFetchedBooking } = useSingleBooking({
@@ -87,9 +87,7 @@ const BookingDetails = () => {
               </span>
               <h4>{facility?.name}</h4>
             </div>
-            <h4>
-              <i>{facility?.address}</i>
-            </h4>
+            <h4 className="text-sm">{facility?.address}</h4>
           </div>
         </div>
         <div>{!!booking && <PlayersTable booking={booking} />}</div>

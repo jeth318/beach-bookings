@@ -16,7 +16,7 @@ const Joined = () => {
     sessionStatus === "loading" || !isUpcomingCreatedBookingsFetched;
   const mainContainerProps = {
     subheading: "Joined",
-    bgFrom: "005e1ba6",
+    bgFrom: "007621a6",
     heightType: "h-full",
   };
 
@@ -29,7 +29,9 @@ const Joined = () => {
       {isLoading ? (
         <PageLoader />
       ) : (
-        <Bookings bookings={upcomingBookingsJoined} />
+        <div className="pt-2">
+          <Bookings bookings={upcomingBookingsJoined} />
+        </div>
       )}
     </MainContainer>
   );
