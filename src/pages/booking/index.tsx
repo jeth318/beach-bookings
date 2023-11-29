@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 import { type ChangeEvent, useEffect, useState } from "react";
 
@@ -23,6 +23,7 @@ import useSingleBooking from "../../hooks/useSingleBooking";
 import { getAssociationsToShow } from "~/utils/association.util";
 import { PageLoader } from "~/components/PageLoader";
 import MainContainer from "~/components/MainContainer";
+import { ArrogantFrog } from "~/components/ArrogantFrog";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -277,12 +278,35 @@ const Booking = () => {
     }
   };
 
+  console.log({
+    sessionStatus,
+    isInitialLoading,
+    isUserFetched,
+    isJoinedAssociationsFetched,
+  });
+
+  if (sessionStatus === "unauthenticated") {
+    return (
+      <MainContainer subheading="Publish" bgFrom="2e026d">
+        <ArrogantFrog>
+          You must be{" "}
+          <button className="link" onClick={() => void signIn()}>
+            logged in
+          </button>{" "}
+          to publish bookings.
+        </ArrogantFrog>
+      </MainContainer>
+    );
+  }
+
   if (
     sessionStatus === "loading" ||
     isInitialLoading ||
     !isUserFetched ||
     !isJoinedAssociationsFetched
   ) {
+    console.log("HEJ");
+
     return <PageLoader />;
   }
 
