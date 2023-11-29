@@ -50,7 +50,7 @@ export const ActionPanelSection = ({
   }
 
   return (
-    <div className="smooth-render-in mt-3 flex flex-col self-center">
+    <div className="mt-3 flex flex-col self-center">
       <div
         className={`radial-progress self-center text-lg font-bold ${getProgressAccent(
           booking,
@@ -69,7 +69,7 @@ export const ActionPanelSection = ({
       {sessionUserId ? (
         <div
           style={{ width: "auto" }}
-          className="smooth-render-in-slower btn-group btn-group-vertical mt-4 flex"
+          className="btn-group btn-group-vertical mt-4 flex"
         >
           {booking.players.includes(sessionUserId) &&
             !isOngoingGame(booking) && (

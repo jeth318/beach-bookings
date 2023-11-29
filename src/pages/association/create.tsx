@@ -78,7 +78,7 @@ const CreateAssociation = () => {
         </p>
       </ActionModal>
       <MainContainer subheading="Create a group" bgFrom={bgFrom} bgTo={bgTo}>
-        <div className="smooth-render-in container h-screen max-w-md p-4">
+        <div className="container h-screen max-w-md p-4">
           <div style={{ width: "100%" }} className="mb-5 mt-10 gap-4">
             <div style={{ width: "100%" }} className="form-control">
               <label className="flex-start label flex flex-col items-start">

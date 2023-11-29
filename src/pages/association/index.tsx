@@ -171,7 +171,7 @@ const Association = () => {
             return (
               <div
                 key={association.id}
-                className="smooth-render-in first:border-b-1 border-b border-zinc-400"
+                className="first:border-b-1 border-b border-zinc-400"
               >
                 <div className="card-compact card">
                   <div
@@ -199,7 +199,7 @@ const Association = () => {
                           {!!user.id ? (
                             <div
                               style={{ width: "auto" }}
-                              className="smooth-render-in-slower btn-group btn-group-vertical flex"
+                              className="btn-group btn-group-vertical flex"
                             >
                               <label
                                 htmlFor="action-modal-leave-association"

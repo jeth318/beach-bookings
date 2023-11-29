@@ -15,8 +15,7 @@ const MainContainer = ({
   heightType = "h-screen",
   subheading = "",
 }: Props) => {
-  const baseClasses =
-    "min-w-sm max-w-md smooth-render-in min-w-fit bg-gradient-to-b";
+  const baseClasses = "min-w-sm max-w-md min-w-fit bg-gradient-to-b";
 
   console.log(`bg-gradient-to-b from-[#${bgFrom}] to-[#${bgTo}]`);
 

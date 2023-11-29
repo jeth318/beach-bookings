@@ -13,7 +13,7 @@ export const JoinableToggle = ({ value, isLoading, callback }: Props) => {
   return (
     <label
       style={{ borderRadius: "0.5rem" }}
-      className="smooth-render-in flex flex-row justify-between bg-slate-200 p-2 dark:bg-slate-800"
+      className="flex flex-row justify-between bg-slate-200 p-2 dark:bg-slate-800"
     >
       <div className="flex w-max items-center space-x-2">
         <div className="avatar">

@@ -11,7 +11,7 @@ export const Group = ({ user, group }: Props) => {
     <div
       key={user.id}
       style={{ marginTop: "-15" }}
-      className="smooth-render-in-slower flex flex-row items-center"
+      className="flex flex-row items-center"
     >
       {group.name}
     </div>
