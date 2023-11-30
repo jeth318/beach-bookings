@@ -14,12 +14,6 @@ const Settings = () => {
   const { status: sessionStatus } = useSession();
   const { sessionUser, refetchSessionUser } = useSessionUser();
 
-  const mainContainerProps = {
-    bgFrom: "#8C9287",
-    subheading: "Settings",
-    heightType: "h-full",
-  };
-
   if (sessionStatus === "unauthenticated") {
     void router.push("/");
   }
@@ -33,7 +27,7 @@ const Settings = () => {
   }
 
   return (
-    <MainContainer {...mainContainerProps}>
+    <div className="bg-gradient-to-b from-[#255eb3] to-black">
       <div className="flex justify-center">
         <div className="flex w-full max-w-md flex-col self-center p-4">
           <PlayerInfo user={sessionUser} refetchUser={refetchSessionUser} />
@@ -43,7 +37,7 @@ const Settings = () => {
           <AccountControl />
         </div>
       </div>
-    </MainContainer>
+    </div>
   );
 };
 
