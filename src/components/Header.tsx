@@ -48,11 +48,7 @@ export const Header = () => {
 
   return (
     <div
-<<<<<<< Updated upstream
-      className={`dark:color-white navbar sticky top-0 z-50 dark:bg-slate-900 ${
-=======
       className={`dark:color-white navbar sticky top-0 z-50 bg-white dark:bg-slate-900 ${
->>>>>>> Stashed changes
         noBoxShadow ? "" : "shadow-md shadow-black"
       }`}
     >
