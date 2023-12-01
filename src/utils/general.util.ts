@@ -281,7 +281,7 @@ export const leaveBookingText =
   "If you leave, the members in this booking will be notified by email. Be a hero and help your fellow players find a replacement.";
 
 export const joinBookingText =
-  "If you join, the members in this booking will be notified by email.";
+  "If you join, the members in this booking will be notified by email. Your email address will be visible for the other players in this booking.";
 
 export const removeAssociationText =
   "If you remove this group, it will be gone forever. Are you sure? Existing group members might still want to have the group active. Consider transferring ownership of the group instead of deleting. To do this, enter the EDIT-view";

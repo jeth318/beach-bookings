@@ -350,7 +350,8 @@ const Booking = () => {
           >
             <p className="py-4">
               All beach bookers with notifications enabled will receive an email
-              about the new booking.
+              about the new booking. Your email address will be visible for the
+              other players in this booking.
             </p>
           </ActionModal>
           <ActionModal

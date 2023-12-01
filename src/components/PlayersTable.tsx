@@ -1,4 +1,4 @@
-import { type Guest, type Booking } from "@prisma/client";
+import { type Booking } from "@prisma/client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
@@ -10,9 +10,10 @@ import { emailDispatcher } from "~/utils/booking.util";
 import { useSession } from "next-auth/react";
 import ActionModal from "./ActionModal";
 import useBooking from "~/hooks/useBooking";
-import useUsersInBooking from "~/hooks/useUsersInBooking";
 import useEmail from "~/hooks/useEmail";
 import useGuest from "~/hooks/useGuest";
+import useUsersInBookingWithEmail from "~/hooks/useUsersInBookingWithEmail";
+import { parseDate } from "~/utils/time.util";
 
 type Props = {
   booking: Booking;
@@ -28,6 +29,7 @@ export const PlayersTable = ({ booking }: Props) => {
     image: string | null;
     isGuest: boolean;
     invitedBy?: string;
+    email?: string | null;
   };
 
   const [playersInBooking, setPlayersInBooking] = useState<
@@ -46,9 +48,11 @@ export const PlayersTable = ({ booking }: Props) => {
 
   const updateBooking = api.booking.update.useMutation();
 
-  const { usersInBooking, isInitialLoadingUsersInBooking } = useUsersInBooking({
-    booking,
-  });
+  const { usersInBooking, isInitialLoadingUsersInBooking } =
+    useUsersInBookingWithEmail({
+      booking,
+    });
+
   const [playerToRemove, setPlayerToRemove] = useState<string | undefined>();
 
   const booker = usersInBooking?.find((user) => user.id === booking.userId);
@@ -66,9 +70,7 @@ export const PlayersTable = ({ booking }: Props) => {
     const guest = allGuestsInBooking?.find((g) => g.id === guestPlayer.id);
     const adder = usersInBooking?.find((user) => user?.id === guest?.invitedBy);
     const displayName =
-      adder?.id === session.data?.user.id
-        ? "you"
-        : getDisplayName(adder as PlayerInBooking);
+      adder?.id === session.data?.user.id ? "you" : getDisplayName(adder?.name);
     return adder?.name
       ? `Added by ${displayName || "unknown player"}`
       : "Added by former player";
@@ -98,10 +100,8 @@ export const PlayersTable = ({ booking }: Props) => {
     setPlayersInBooking([...og, ...g]);
   }, [booking, usersInBooking, allGuestsInBooking]);
 
-  const getDisplayName = (player: PlayerInBooking) =>
-    player?.name && player?.name?.length > 2
-      ? player?.name
-      : `Player${player?.id?.slice(0, 3)}`;
+  const getDisplayName = (name?: string | null) =>
+    name && name?.length > 2 ? name : `Player`;
 
   const renderToast = (body: string) => {
     setToastMessage(body);
@@ -206,7 +206,10 @@ export const PlayersTable = ({ booking }: Props) => {
           <table className="table-xs table-pin-rows table-pin-cols table w-full">
             <thead>
               <tr>
-                <td colSpan={3} className="text-md text-center text-sm">
+                <td
+                  colSpan={3}
+                  className="text-md text-center text-sm dark:text-white"
+                >
                   Player information
                 </td>
               </tr>
@@ -236,7 +239,7 @@ export const PlayersTable = ({ booking }: Props) => {
                             }}
                             className="font-bold"
                           >
-                            {getDisplayName(booker as PlayerInBooking)}
+                            {getDisplayName(booker?.name)}
                           </div>
                           <div
                             className="ellips text-sm opacity-50"
@@ -247,15 +250,14 @@ export const PlayersTable = ({ booking }: Props) => {
                             }}
                           >
                             <a
-                              href={`mailto:admin@beachbookings.se?subject=Booking support - ${booking.id}`}
+                              href={`mailto:${
+                                booker?.email || ""
+                              }?subject=Upcoming beach booking ${parseDate(
+                                booking
+                              )}`}
                               className="link"
-                              onClick={() =>
-                                alert(
-                                  "The players contact number will be shown here later. This feature is coming later. Meanwhile, you can contact me (creator) at admin@beachbooking.se if you need help."
-                                )
-                              }
                             >
-                              admin@beachbookings.se
+                              {booker.email}
                             </a>
                           </div>
                         </div>
@@ -292,7 +294,7 @@ export const PlayersTable = ({ booking }: Props) => {
                             }}
                             className="font-bold"
                           >
-                            {getDisplayName(player)}
+                            {getDisplayName(player.name)}
                             {player.isGuest && (
                               <span className="ml-2">
                                 <i>(guest)</i>
@@ -303,7 +305,7 @@ export const PlayersTable = ({ booking }: Props) => {
                             className="ellips text-sm opacity-50"
                             style={{
                               overflow: "hidden",
-                              maxWidth: "175px",
+                              maxWidth: "380px",
                               textOverflow: "ellipsis",
                             }}
                           >
@@ -311,15 +313,14 @@ export const PlayersTable = ({ booking }: Props) => {
                               getAddedBy(player)
                             ) : (
                               <a
-                                href={`mailto:admin@beachbookings.se?subject=Booking support - ${booking.id}`}
+                                href={`mailto:${
+                                  player?.email || ""
+                                }?subject=Upcoming beach booking (${parseDate(
+                                  booking
+                                )})`}
                                 className="link"
-                                onClick={() =>
-                                  alert(
-                                    "The players contact number will be shown here later. This feature is coming later. Meanwhile, you can contact me (creator) at admin@beachbooking.se if you need help."
-                                  )
-                                }
                               >
-                                admin@beachbookings.se
+                                {player.email}
                               </a>
                             )}
                           </div>

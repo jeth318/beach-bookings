@@ -71,7 +71,7 @@ const BookingDetails = () => {
 
   return (
     <MainContainer {...mainContainerProps}>
-      <div className="container p-2 pt-6">
+      <div className="container self-center p-2 pt-6">
         <div className="mb-4 text-center text-white">
           <div className="flex flex-row items-center justify-center">
             <h2 className="text-2xl">
@@ -103,8 +103,8 @@ const BookingDetails = () => {
             )}
           </div>
           {totalPlayerCount >= 4 ? (
-            <h5 className="text-center">
-              No more guests can be added due to the booking already is full.
+            <h5 className="text-center text-white">
+              No more guests can be added. The booking already is full.
             </h5>
           ) : (
             <h4 className="mb-2 mt-4 text-center text-white">
