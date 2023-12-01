@@ -234,7 +234,7 @@ export const PlayersTable = ({ booking }: Props) => {
                           <div
                             style={{
                               overflow: "hidden",
-                              maxWidth: "170px",
+                              maxWidth: "200px",
                               textOverflow: "ellipsis",
                             }}
                             className="font-bold"
@@ -245,7 +245,7 @@ export const PlayersTable = ({ booking }: Props) => {
                             className="ellips text-sm opacity-50"
                             style={{
                               overflow: "hidden",
-                              maxWidth: "175px",
+                              maxWidth: "200px",
                               textOverflow: "ellipsis",
                             }}
                           >
@@ -289,7 +289,7 @@ export const PlayersTable = ({ booking }: Props) => {
                           <div
                             style={{
                               overflow: "hidden",
-                              maxWidth: "180px",
+                              maxWidth: "200px",
                               textOverflow: "ellipsis",
                             }}
                             className="font-bold"
