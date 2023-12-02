@@ -97,8 +97,7 @@ const Booking = () => {
 
   const mainContainerProps = {
     subheading: "Edit booking",
-    bgFrom: "#02968f91",
-    bgTo: "#000000",
+    bgFrom: "[#02968f91]",
     heightType: "h-full",
   };
 

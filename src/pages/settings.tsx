@@ -30,6 +30,7 @@ const Settings = () => {
   }
 
   return (
+    // Figure out why MainContainer wont render some colors correctly? Insane.
     <>
       <SubHeader title="Settings" />
       <div className="bg-gradient-to-b from-[#255eb3] to-black">

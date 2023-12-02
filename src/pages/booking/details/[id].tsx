@@ -19,7 +19,7 @@ const BookingDetails = () => {
 
   const mainContainerProps = {
     subheading: "Details",
-    bgFrom: "#2c0168",
+    bgFrom: "[#2c0168]",
   };
 
   const { booking, isFetchedBooking } = useSingleBooking({
