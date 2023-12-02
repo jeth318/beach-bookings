@@ -158,7 +158,7 @@ export const GuestPlayers = ({ booking, users }: Props) => {
       isInitialLoadingRefetch ||
       isInitialLoadingUsersInBooking ? (
         <div className="flex justify-center">
-          <BeatLoader size={20} color="#36d7b7" />
+          <BeatLoader size={20} color="white" />
         </div>
       ) : (
         <div>

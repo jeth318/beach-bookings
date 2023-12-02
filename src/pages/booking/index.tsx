@@ -24,6 +24,7 @@ import { getAssociationsToShow } from "~/utils/association.util";
 import { PageLoader } from "~/components/PageLoader";
 import MainContainer from "~/components/MainContainer";
 import { ArrogantFrog } from "~/components/ArrogantFrog";
+import useLocalStorage from "~/hooks/useLocalStorage";
 
 const Booking = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -61,12 +62,11 @@ const Booking = () => {
 
   const { sendEmail } = useEmail();
 
+  const { lss } = useLocalStorage();
+
   const onJoinableChange = () => {
     setJoinable(!joinable);
   };
-
-  // localStorageState
-  const lss = getPrePopulationState(facilities);
 
   const setPrePopulateBookingState = () => {
     const now = new Date();
@@ -92,33 +92,29 @@ const Booking = () => {
 
   const isInitialLoading = sessionStatus === "loading";
 
-  // Populate from localStorage on mount
-  const setInitialState = () => {
-    if (lss) {
-      setDuration(lss?.duration);
-      setCourt(lss?.court);
-      setFacility(lss?.facility);
-      setMaxPlayers(lss?.maxPlayers || 4);
-      setTime(lss?.time);
-      setAssociation(lss?.association);
-      setPrivateBooking(lss?.privateBooking);
-      setIsInitialStateLoaded(true);
-
-      if (lss?.date !== null && lss?.date !== undefined) {
-        setDate(new Date(lss?.date));
-      }
-
-      if (lss?.time !== null && lss?.time !== undefined) {
-        setTime(lss.time);
-      }
-    }
-  };
-
   useEffect(() => {
     if (!isInitialStateLoaded) {
-      setInitialState();
+      if (lss) {
+        // Populate from localStorage on mount
+        setDuration(lss?.duration);
+        setCourt(lss?.court);
+        setFacility(lss?.facility);
+        setMaxPlayers(lss?.maxPlayers || 4);
+        setTime(lss?.time);
+        setAssociation(lss?.association);
+        setPrivateBooking(lss?.privateBooking);
+        setIsInitialStateLoaded(true);
+
+        if (lss?.date !== null && lss?.date !== undefined) {
+          setDate(new Date(lss?.date));
+        }
+
+        if (lss?.time !== null && lss?.time !== undefined) {
+          setTime(lss.time);
+        }
+      }
     }
-  }, [lss]);
+  }, [isInitialStateLoaded, lss]);
 
   useEffect(() => {
     if (!preventLocalStorageWrite) {
@@ -287,7 +283,7 @@ const Booking = () => {
 
   if (sessionStatus === "unauthenticated") {
     return (
-      <MainContainer subheading="Publish" bgFrom="#2e026d">
+      <MainContainer subheading="Publish" bgFrom="[#2e026d]">
         <ArrogantFrog>
           You must be{" "}
           <button className="link" onClick={() => void signIn()}>
@@ -312,7 +308,7 @@ const Booking = () => {
 
   if (sessionData?.user.id && !user?.name) {
     return (
-      <MainContainer bgFrom="#2e026d">
+      <MainContainer bgFrom="[#2e026d]">
         <div className="flex flex-col justify-center">
           <Image
             alt="beach-spike"
@@ -336,7 +332,7 @@ const Booking = () => {
   return (
     <>
       <SubHeader title={"Publish booking"} />
-      <MainContainer heightType="h-full" bgFrom="#2c0168" bgTo="#000000">
+      <MainContainer heightType="h-full">
         <div className="flex max-w-md flex-col justify-center self-center p-2">
           <ActionModal
             // eslint-disable-next-line @typescript-eslint/no-misused-promises

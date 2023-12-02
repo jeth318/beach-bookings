@@ -27,7 +27,7 @@ export const PlayerSection = ({ booking }: Props) => {
       !isUsersInBookingFetched ||
       !isGuestFetched ? (
         <div className="flex justify-start">
-          <BeatLoader size={10} color="#36d7b7" />
+          <BeatLoader size={10} color="white" />
         </div>
       ) : (
         <div className="smooth-render-in">

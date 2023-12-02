@@ -44,7 +44,7 @@ export const readPrePopulateBookingState = ():
   }
 };
 
-export const getPrePopulationState = (facilities: Facility[] | undefined) => {
+export const getPrePopulationState = () => {
   const ls = readPrePopulateBookingState();
   if (ls) {
     return {

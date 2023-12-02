@@ -58,7 +58,7 @@ export const BookingItem = ({
       key={booking?.id}
       className="first:border-b-1 border-b border-zinc-400"
     >
-      <div className="card-compact card">
+      <div className="card card-compact">
         <div
           className={`card-body flex-row justify-between text-primary-content`}
         >
@@ -124,7 +124,7 @@ export const BookingItem = ({
                 />
               ) : (
                 <div className="flex h-[148px] w-[80px] flex-col items-center justify-center">
-                  <BeatLoader size={10} color="cyan" />
+                  <BeatLoader size={10} color="white" />
                 </div>
               )}
             </div>

@@ -148,11 +148,21 @@ export const EmailConsents = () => {
                   </div>
                 </div>
                 <div>
-                  <div className="font-bold">
+                  <div
+                    className={`font-bold ${
+                      internalConsentState.indexOf(consent) > -1
+                        ? ""
+                        : "text-slate-500"
+                    }`}
+                  >
                     {friendlyConsentName[consent].name}
                   </div>
                   <div
-                    className="text-sm opacity-60"
+                    className={`text-sm ${
+                      internalConsentState.indexOf(consent) > -1
+                        ? ""
+                        : "opacity-40"
+                    }`}
                     style={{
                       overflow: "hidden",
                       maxWidth: "150px",

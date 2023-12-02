@@ -2,7 +2,6 @@ import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
-import { SubHeader } from "~/components/SubHeader";
 import { PageLoader } from "~/components/PageLoader";
 import MainContainer from "~/components/MainContainer";
 import useBooking from "~/hooks/useBooking";

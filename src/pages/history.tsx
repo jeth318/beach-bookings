@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+/* import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/router";
 import { Bookings } from "~/components/Bookings";
@@ -40,3 +40,4 @@ const History = () => {
 };
 
 export default History;
+ */
