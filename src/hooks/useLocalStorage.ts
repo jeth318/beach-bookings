@@ -1,8 +1,8 @@
-import { api } from "~/utils/api";
+import { isServerSide } from "~/utils/general.util";
 import { getPrePopulationState } from "~/utils/storage";
 
 const useLocalStorage = () => {
-  const lss = getPrePopulationState();
+  const lss = !isServerSide ? getPrePopulationState() : null;
   return {
     lss: {
       duration: lss?.duration,

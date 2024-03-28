@@ -56,6 +56,7 @@ export const userMenuItems = [
   },
 ];
 
+export const isServerSide = typeof window === "undefined";
 export const menuItems: DropdownItem[] = [
   {
     text: "Publish",
