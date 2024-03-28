@@ -83,11 +83,11 @@ export const menuItems: DropdownItem[] = [
     icon: "history.svg",
   },
   */,
-  {
+  /*{
     text: "Groups",
     href: "/association",
     icon: "people.svg",
-  },
+  },*/
 ];
 
 export const renderToast = (
