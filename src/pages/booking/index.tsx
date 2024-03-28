@@ -13,7 +13,6 @@ import ActionModal from "~/components/ActionModal";
 import { SelectInput } from "~/components/SelectInput";
 import { DateSelector } from "~/components/DateSelector";
 import { JoinableToggle } from "~/components/JoinableToggle";
-import { getPrePopulationState } from "~/utils/storage";
 import Image from "next/image";
 import Link from "next/link";
 import useEmail from "../../hooks/useEmail";
@@ -273,13 +272,6 @@ const Booking = () => {
       return !!court;
     }
   };
-
-  console.log({
-    sessionStatus,
-    isInitialLoading,
-    isUserFetched,
-    isJoinedAssociationsFetched,
-  });
 
   if (sessionStatus === "unauthenticated") {
     return (
